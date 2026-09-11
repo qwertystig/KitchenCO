@@ -1,0 +1,28 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:YourKitchenCo"
+             xmlns:conv="clr-namespace:YourKitchenCo.Converters"
+             x:Class="YourKitchenCo.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <conv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <conv:InvertedBoolConverter x:Key="InverseBoolConverter" />
+            <conv:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmptyConverter" />
+            <conv:StringEqualsConverter x:Key="StringEqualsConverter" />
+            <conv:BoolToActiveStatusConverter x:Key="BoolToActiveStatusConverter" />
+            <conv:MenuIdentityColorConverter x:Key="MenuIdentityColorConverter" />
+            <conv:CycleCategoryColorConverter x:Key="CycleCategoryColorConverter" />
+            <conv:RatingStarConverter x:Key="RatingStarConverter" />
+            <conv:MultiValueEqualsConverter x:Key="MultiValueEqualsConverter" />
+            <conv:StageNodeColorConverter x:Key="StageNodeColorConverter" />
+            <conv:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Ensure this path matches the folder structure of your corrected file -->
+                
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

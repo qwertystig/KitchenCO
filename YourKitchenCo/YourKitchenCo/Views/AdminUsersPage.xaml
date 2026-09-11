@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminUsersPage"
+             Title="User Management"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="adminusers" />
+
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, *">
+
+        <!-- Search Bar -->
+        <SearchBar Grid.Row="0"
+                   Placeholder="Search by name or email..."
+                   Text="{Binding SearchQuery}"
+                   Margin="16,12,16,4" />
+
+        <!-- Role Filter Selector -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="8" Margin="16,0,16,12" VerticalOptions="Center">
+            <Label Text="Role Filter:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+            <Picker ItemsSource="{Binding RoleFilterOptions}"
+                    SelectedItem="{Binding SelectedRoleFilter}"
+                    WidthRequest="160"
+                    Title="Filter Role" />
+        </HorizontalStackLayout>
+
+        <!-- User Accounts List -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Users}"
+                        Margin="16,0,16,16">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border StrokeShape="RoundRectangle 12"
+                            BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                            Padding="16"
+                            Margin="0,0,0,12"
+                            StrokeThickness="0">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
+
+                            <!-- User Info -->
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
+                                <Label Text="{Binding FullName}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Text="{Binding Email}" FontSize="12" TextColor="#888888" />
+                            </VerticalStackLayout>
+
+                            <!-- Role Badge -->
+                            <Border Grid.Column="1" Grid.Row="0"
+                                    StrokeShape="RoundRectangle 6"
+                                    BackgroundColor="#22121212"
+                                    Padding="8,4"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start">
+                                <Label Text="{Binding Role}" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                            </Border>
+
+                            <!-- Dates & Status Text -->
+                            <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Spacing="10" Margin="0,8,0,0">
+                                <Label Text="{Binding JoinedDate, StringFormat='Joined: {0:MMM yyyy}'}" FontSize="11" TextColor="#AAAAAA" />
+                                <Label Text="{Binding IsActive, Converter={StaticResource InverseBoolConverter}, StringFormat='Status: Suspended'}"
+                                       IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}"
+                                       FontSize="11" TextColor="#E53935" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+
+                            <!-- User Actions -->
+                            <HorizontalStackLayout Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Spacing="8" Margin="0,12,0,0">
+                                <Button Text="Change Role"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminUsersViewModel}}, Path=ChangeUserRoleCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="12"
+                                        HeightRequest="36"
+                                        Padding="12,0"
+                                        BackgroundColor="#22888888"
+                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                <Button Text="{Binding IsActive, Converter={StaticResource InverseBoolConverter}, StringFormat='Activate'}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminUsersViewModel}}, Path=ToggleUserStatusCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}"
+                                        FontSize="12"
+                                        HeightRequest="36"
+                                        Padding="12,0"
+                                        BackgroundColor="#2E7D32"
+                                        TextColor="White" />
+
+                                <Button Text="Suspend"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminUsersViewModel}}, Path=ToggleUserStatusCommand}"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding IsActive}"
+                                        FontSize="12"
+                                        HeightRequest="36"
+                                        Padding="12,0"
+                                        BackgroundColor="#C62828"
+                                        TextColor="White" />
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+        </Grid>
+</ContentPage>

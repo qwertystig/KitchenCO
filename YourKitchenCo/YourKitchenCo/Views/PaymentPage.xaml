@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             x:Class="YourKitchenCo.Views.PaymentPage"
+             x:DataType="vm:PaymentViewModel"
+             Title="Payment"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Amount summary -->
+                <Border StrokeThickness="0"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                        Padding="18">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Amount Due" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                        <Label Text="{Binding AmountDue, StringFormat='R{0:F2}'}" FontSize="32" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Label Text="{Binding DeliveryFee, StringFormat='Includes R{0:F2} delivery'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Payment method selector -->
+                <Label Text="Choose Payment Method" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="2"
+                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                            Padding="14">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding SelectedMethod}" Value="Card">
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectMethodCommand}" CommandParameter="Card" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="💳" FontSize="26" HorizontalOptions="Center" />
+                            <Label Text="Card" FontAttributes="Bold" FontSize="14" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="2"
+                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                            Padding="14">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding SelectedMethod}" Value="PayFast">
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectMethodCommand}" CommandParameter="PayFast" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="⚡" FontSize="26" HorizontalOptions="Center" />
+                            <Label Text="PayFast" FontAttributes="Bold" FontSize="14" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+
+                <!-- Card payment form -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding IsCardSelected}">
+
+                    <Border StrokeThickness="1" Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="14,4">
+                        <Entry Placeholder="Name on Card" Text="{Binding CardholderName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </Border>
+
+                    <Border StrokeThickness="1" Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="14,4">
+                        <Entry Placeholder="Card Number" Text="{Binding CardNumber}" Keyboard="Numeric" MaxLength="19" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </Border>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" StrokeThickness="1" Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="14,4">
+                            <Entry Placeholder="MM/YY" Text="{Binding ExpiryDate}" Keyboard="Numeric" MaxLength="5" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </Border>
+                        <Border Grid.Column="1" StrokeThickness="1" Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="14,4">
+                            <Entry Placeholder="CVV" Text="{Binding Cvv}" Keyboard="Numeric" MaxLength="4" IsPassword="True" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </Border>
+                    </Grid>
+
+                    <Label Text="🔒 This is a demo checkout — no real card details are transmitted or stored." FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+
+                    <Button Text="{Binding AmountDue, StringFormat='Pay R{0:F2}'}"
+                            Command="{Binding PayWithCardCommand}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50"
+                            Margin="0,8,0,0" />
+                </VerticalStackLayout>
+
+                <!-- PayFast option -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding IsCardSelected, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border StrokeThickness="1" Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="You'll be securely redirected to PayFast to complete this payment — South Africa's trusted payment gateway, supporting EFT, Instant EFT, and all major cards."
+                                   FontSize="13"
+                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="🔒 This is a demo checkout — no real redirect or transaction occurs." FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Button Text="{Binding AmountDue, StringFormat='Pay R{0:F2} with PayFast'}"
+                            Command="{Binding PayWithPayFastCommand}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50" />
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Processing overlay -->
+        <Grid BackgroundColor="#AA000000" IsVisible="{Binding IsProcessing}">
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                    Padding="30"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="220">
+                <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="True" Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    <Label Text="{Binding ProcessingMessage}" FontSize="13" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

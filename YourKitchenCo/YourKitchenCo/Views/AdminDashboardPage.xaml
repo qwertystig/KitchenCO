@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminDashboardPage"
+             x:DataType="vm:AdminDashboardViewModel"
+             Title="Kitchen Operations Hub"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="admindashboard" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- 1. KPI ANALYTICS HEADER CARDS -->
+            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="12">
+
+                <!-- Revenue Card -->
+                <Border Grid.Column="0" Grid.Row="0"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="4">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="💰" FontSize="16"/>
+                            <Label Text="Today's Deliveries Revenue" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding TodaysRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="#121212" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Active Orders Card -->
+                <Border Grid.Column="1" Grid.Row="0"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="4">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="🔥" FontSize="16"/>
+                            <Label Text="Active Orders" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding ActiveOrderCount}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Companies Card -->
+                <Border Grid.Column="0" Grid.Row="1"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="4">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="🏢" FontSize="16"/>
+                            <Label Text="Client Companies" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding CompanyCount}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Customers Card -->
+                <Border Grid.Column="1" Grid.Row="1"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                    </Border.Shadow>
+                    <VerticalStackLayout Spacing="4">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="👥" FontSize="16"/>
+                            <Label Text="Registered Customers" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding CustomerCount}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- 2. LIVE QUEUE HEADER -->
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <Label Grid.Column="0" 
+                       Text="Upcoming Deliveries" 
+                       FontSize="18" 
+                       FontAttributes="Bold" 
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                <Button Grid.Column="1"
+                        Text="Refresh"
+                        Command="{Binding RefreshOrdersCommand}"
+                        FontSize="12"
+                        HeightRequest="32"
+                        Padding="10,0"
+                        BackgroundColor="Transparent"
+                        TextColor="#121212" />
+            </Grid>
+
+            <!-- Company & Date Filters -->
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Label Text="Company:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                    <Picker ItemsSource="{Binding CompanyFilterOptions}"
+                            SelectedItem="{Binding SelectedCompanyFilter}"
+                            WidthRequest="170"
+                            Title="Filter Company" />
+                    <Label Text="Date:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" Margin="10,0,0,0" />
+                    <Picker ItemsSource="{Binding DateFilterOptions}"
+                            SelectedItem="{Binding SelectedDateFilter}"
+                            WidthRequest="160"
+                            Title="Filter Date" />
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Bulk update — send the same status to every filtered order in one tap,
+                 e.g. every order for one company arriving on one day -->
+            <Button Text="{Binding UpcomingOrders.Count, StringFormat='📤  Bulk Update Status ({0} orders)'}"
+                    Command="{Binding BulkUpdateStatusCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="13"
+                    HeightRequest="40"
+                    CornerRadius="8" />
+
+            <!-- 3. UPCOMING ORDERS QUEUE -->
+            <CollectionView ItemsSource="{Binding UpcomingOrders}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8" Padding="30">
+                        <Label Text="No upcoming orders match these filters." FontSize="14" TextColor="Gray" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AdminOrderRow">
+                        <Border StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                                StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                                Padding="16"
+                                Margin="0,0,0,12">
+                            <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8">
+
+                                <!-- Order Header -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontAttributes="Bold" FontSize="15" />
+                                        <Label Text="{Binding Order.CustomerName}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                    </VerticalStackLayout>
+                                    <Border Grid.Column="1" StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="#EFE9DC" Padding="8,4">
+                                        <Label Text="{Binding Order.Status}" FontSize="11" FontAttributes="Bold" TextColor="#121212" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- Company / location / date -->
+                                <Label Grid.Row="1" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} — {1} — {2}">
+                                            <Binding Path="CompanyName" />
+                                            <Binding Path="LocationName" />
+                                            <Binding Path="DeliveryDateLabel" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <!-- Item -->
+                                <Label Grid.Row="2" Text="{Binding Order.ItemName}" FontSize="13" TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}" />
+
+                                <!-- Action Buttons to Progress Order Status -->
+                                <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="Preparing" HeightRequest="36" FontSize="11" CornerRadius="8"
+                                            BackgroundColor="#1E88E5" TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=MarkPreparingCommand}"
+                                            CommandParameter="{Binding .}" />
+
+                                    <Button Grid.Column="1" Text="Out for Delivery" HeightRequest="36" FontSize="10" CornerRadius="8"
+                                            BackgroundColor="#FB8C00" TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=MarkOutForDeliveryCommand}"
+                                            CommandParameter="{Binding .}" />
+
+                                    <Button Grid.Column="2" Text="Delivered" HeightRequest="36" FontSize="11" CornerRadius="8"
+                                            BackgroundColor="#43A047" TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDashboardViewModel}}, Path=MarkDeliveredCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.SettingsPage"
+             Title="Settings"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Only visible when this shared page is reached via AdminShell —
+             toggled in OnAppearing, since customers also use this same page
+             and must never see admin navigation here. -->
+        <views:AdminNavStrip x:Name="AdminNav" Grid.Row="0" ActiveRoute="adminsettings" IsVisible="False" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24" Spacing="16">
+
+            <!-- Signed in as -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    Padding="16, 12">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Signed in as" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    <Label Text="{Binding AccountEmail}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Context Subtitle -->
+            <Label Text="App Preferences" 
+                   FontSize="14" 
+                   FontAttributes="Bold" 
+                   TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" 
+                   Margin="4,0,0,4"/>
+
+            <!-- Notification Settings Card -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    Padding="16, 12">
+                <Grid ColumnDefinitions="*, Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Push Notifications" 
+                               FontAttributes="Bold" 
+                               FontSize="15"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label Text="Alerts for order delivery updates" 
+                               FontSize="12" 
+                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" 
+                            IsToggled="{Binding IsNotificationsEnabled}" 
+                            OnColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Dark Mode Settings Card -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    Padding="16, 12">
+                <Grid ColumnDefinitions="*, Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Dark Interface Mode" 
+                               FontAttributes="Bold" 
+                               FontSize="15"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label Text="Switch between light and dark display" 
+                               FontSize="12" 
+                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" 
+                            IsToggled="{Binding IsDarkModeEnabled}" 
+                            OnColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <Button Text="Sign Out"
+                    Command="{Binding SignOutCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="#C62828"
+                    FontAttributes="Bold"
+                    BorderColor="#C62828"
+                    BorderWidth="1"
+                    CornerRadius="10"
+                    HeightRequest="46"
+                    Margin="0,12,0,0" />
+
+        </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

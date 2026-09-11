@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        Your Kitchen Co. brand colours — MAJOR REVISION: switched to a
+        monochrome "executive" palette, matching the visual direction of a
+        parallel reference implementation (React Native/Expo, built by a
+        collaborator) that the client is leaning towards. This replaces
+        every previous color experiment in this file's history (pink, then
+        white, then various blue/red/yellow combinations) — this is
+        deliberately NOT another color swap layered on top; the whole
+        premise changes from "which accent color" to "no bright accent
+        color at all, just near-black/cream contrast plus real photography
+        and typography for visual interest."
+
+        LIGHT MODE:
+          - Page background: Cream #F7F2E8 (unchanged from before)
+          - Card / surface backgrounds: White
+          - Primary accent (headings, prices, CTAs, icons): near-black #121212
+          - Body text: near-black #121212, secondary text warm gray #4E4E4E
+
+        DARK MODE (previously "Summer Harvest" warm terracotta — retired,
+        since the reference app applies the same monochrome logic to both
+        themes rather than a separate warm palette for dark mode):
+          - Page background: near-black #121212
+          - Card / surface backgrounds: dark charcoal #1C1C1E
+          - Primary accent (headings, prices, CTAs, icons): cream #F7F2E8
+          - Body text: cream #F7F2E8, secondary text cool gray #A1A1AA
+
+        Color is now reserved for semantic state only — error (red) and
+        success (green) — never for decoration. This is a deliberate,
+        opposite reaction to "too colorful, not professional" feedback from
+        a few passes back: rather than tuning which colors, there mostly
+        aren't any anymore.
+
+        #363C1E ("Forest Green") remains intentionally excluded, though
+        it's moot now since there's no green in this palette at all besides
+        the semantic success color below.
+    -->
+
+    <!-- Light Theme Values -->
+    <Color x:Key="PageBgLight">#F7F2E8</Color>
+    <Color x:Key="CardBgLight">#FFFFFF</Color>
+    <Color x:Key="PrimaryTextLight">#121212</Color>
+    <Color x:Key="SecondaryTextLight">#4E4E4E</Color>
+    <Color x:Key="ButtonBgLight">#121212</Color>
+    <Color x:Key="ButtonTextLight">#FFFFFF</Color>
+
+    <!-- Dark Theme Values -->
+    <Color x:Key="PageBgDark">#121212</Color>
+    <Color x:Key="CardBgDark">#1C1C1E</Color>
+    <Color x:Key="PrimaryTextDark">#F7F2E8</Color>
+    <Color x:Key="SecondaryTextDark">#A1A1AA</Color>
+    <Color x:Key="ButtonBgDark">#F7F2E8</Color>
+    <Color x:Key="ButtonTextDark">#121212</Color>
+
+    <!-- ===== Accent colours — monochrome: same logic both themes, just inverted ===== -->
+    <!-- Consume via: {AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}} -->
+
+    <!-- Primary: near-black (light) / cream (dark) — the one accent, everywhere -->
+    <Color x:Key="Primary">#121212</Color>
+    <Color x:Key="PrimaryDark">#F7F2E8</Color>
+    <Color x:Key="PrimaryDarkText">#121212</Color>
+
+    <!-- Secondary: same monochrome logic — kept as a distinct key for existing bindings, not a different hue -->
+    <Color x:Key="Secondary">#121212</Color>
+    <Color x:Key="SecondaryDark">#F7F2E8</Color>
+    <Color x:Key="SecondaryDarkText">#121212</Color>
+
+    <!-- BrandGold (legacy key name) — icon tinting app-wide, monochrome -->
+    <Color x:Key="BrandGold">#121212</Color>
+    <Color x:Key="BrandGoldDark">#F7F2E8</Color>
+
+    <!-- Gold (legacy key name) — selected-state accents, monochrome -->
+    <Color x:Key="Gold">#121212</Color>
+    <Color x:Key="GoldDark">#F7F2E8</Color>
+
+    <!-- Tertiary — monochrome -->
+    <Color x:Key="Tertiary">#121212</Color>
+    <Color x:Key="TertiaryDark">#F7F2E8</Color>
+
+    <!-- Semantic state colors — the ONLY colors in this palette besides monochrome -->
+    <Color x:Key="ErrorLight">#DC2626</Color>
+    <Color x:Key="ErrorDark">#F87171</Color>
+    <Color x:Key="SuccessLight">#059669</Color>
+    <Color x:Key="SuccessDark">#34D399</Color>
+
+    <!-- Border colors, used to give white-on-cream / charcoal-on-black surfaces definition without a fill color -->
+    <Color x:Key="SurfaceBorderLight">#E5DFD3</Color>
+    <Color x:Key="SurfaceBorderDark">#2E2E32</Color>
+
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+    <Color x:Key="Cream">#F7F2E8</Color>
+    <Color x:Key="Charcoal">#121212</Color>
+    <Color x:Key="OffBlack">#121212</Color>
+
+    <!-- Kept for Styles.xaml's implicit Label/TabBar setters, which reference these key names directly. -->
+    <Color x:Key="MidnightBlue">#121212</Color>
+    <Color x:Key="Magenta">#121212</Color>
+
+    <!-- Grayscale -->
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
+    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
+    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
+    <SolidColorBrush x:Key="GoldBrush" Color="{StaticResource Gold}"/>
+
+</ResourceDictionary>

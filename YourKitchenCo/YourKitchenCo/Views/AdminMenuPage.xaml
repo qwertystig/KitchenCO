@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminMenuPage"
+             x:DataType="vm:AdminMenuViewModel"
+             Title="Menu Catalog"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="adminmenu" />
+
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, *">
+
+        <!-- Menu Type Toggle -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, *" ColumnSpacing="8" Margin="16,12,16,4">
+            <Button Grid.Column="0"
+                    Text="Static Menu"
+                    Command="{Binding SwitchToStaticCommand}"
+                    CornerRadius="8"
+                    HeightRequest="38"
+                    FontAttributes="Bold">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Static">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                        <Setter Property="TextColor" Value="White" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Cycle">
+                        <Setter Property="BackgroundColor" Value="#22888888" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="1"
+                    Text="Cycle Menu (8-week)"
+                    Command="{Binding SwitchToCycleCommand}"
+                    CornerRadius="8"
+                    HeightRequest="38"
+                    FontAttributes="Bold">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Cycle">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                        <Setter Property="TextColor" Value="White" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Static">
+                        <Setter Property="BackgroundColor" Value="#22888888" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+
+        <!-- ================= STATIC MENU header row ================= -->
+        <Grid Grid.Row="1" Margin="16,8,16,4" VerticalOptions="Center"
+              IsVisible="{Binding CurrentMenuType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Static}">
+            <SearchBar Placeholder="Search menu items..." Text="{Binding SearchQuery}" />
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="16,0,16,12" VerticalOptions="Center"
+              IsVisible="{Binding CurrentMenuType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Static}">
+            <Label Grid.Column="0" 
+                   Text="Menu Inventory" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   VerticalOptions="Center" 
+                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+            <Button Grid.Column="1"
+                    Text="+ Add Item"
+                    Command="{Binding AddProductCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    HeightRequest="38" />
+        </Grid>
+
+        <!-- Static Product Collection -->
+        <CollectionView Grid.Row="3"
+                        ItemsSource="{Binding Products}"
+                        Margin="16,0,16,16"
+                        IsVisible="{Binding CurrentMenuType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Static}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Product">
+                    <Border StrokeShape="RoundRectangle 12"
+                            BackgroundColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}}"
+                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                            Padding="12"
+                            Margin="0,0,0,12"
+                            StrokeThickness="1">
+                        <Grid ColumnDefinitions="70, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="6">
+
+                            <!-- Food Photo — translucent white backing so the photo stays clear against whatever category color the row has -->
+                            <Border Grid.Column="0" Grid.RowSpan="2" StrokeShape="RoundRectangle 8" HeightRequest="65" WidthRequest="65"
+                                    BackgroundColor="#33FFFFFF"
+                                    StrokeThickness="0">
+                                <Image Source="{Binding ImageUrl}" Aspect="AspectFill" />
+                            </Border>
+
+                            <!-- Title & Description -->
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="15" LineBreakMode="TailTruncation" TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" />
+                                <Label Text="{Binding Category}" FontSize="11" TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" Opacity="0.75" />
+                                <Label Text="{Binding BasePrice, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" />
+                            </VerticalStackLayout>
+
+                            <!-- In Stock Toggle -->
+                            <VerticalStackLayout Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center">
+                                <Label Text="Available" FontSize="10" HorizontalOptions="Center" TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" Opacity="0.75" />
+                                <Switch IsToggled="{Binding IsAvailable, Mode=TwoWay}" 
+                                        OnColor="#121212"
+                                        ThumbColor="White" />
+                            </VerticalStackLayout>
+
+                            <!-- Item Actions — kept a fixed neutral look deliberately, since these
+                                 need to stay clearly legible regardless of which category color
+                                 the row lands on -->
+                            <HorizontalStackLayout Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Spacing="8" HorizontalOptions="End">
+                                <Button Text="Edit"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminMenuViewModel}}, Path=EditProductCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="11"
+                                        HeightRequest="32"
+                                        Padding="12,0"
+                                        BackgroundColor="#33FFFFFF"
+                                        TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" />
+
+                                <Button Text="Delete"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminMenuViewModel}}, Path=DeleteProductCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="11"
+                                        HeightRequest="32"
+                                        Padding="12,0"
+                                        BackgroundColor="#C62828"
+                                        TextColor="White" />
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- ================= CYCLE MENU ================= -->
+        <Grid Grid.Row="3"
+              Grid.RowSpan="1"
+              RowDefinitions="Auto, *"
+              IsVisible="{Binding CurrentMenuType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Cycle}">
+
+            <!-- Week selector & activation -->
+            <VerticalStackLayout Grid.Row="0" Spacing="10" Margin="16,8,16,12">
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="#22121212" Padding="12">
+                    <Label Text="{Binding ActiveWeekNumber, StringFormat='Currently active for this week: Week {0}'}"
+                           FontSize="13" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
+                </Border>
+
+                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Label Text="Browse / activate:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" />
+                    <Picker ItemsSource="{Binding WeekOptions}"
+                            SelectedItem="{Binding SelectedWeek}"
+                            WidthRequest="140"
+                            Title="Week" />
+                    <Button Text="Set as Active Week"
+                            Command="{Binding SetActiveWeekCommand}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                            FontAttributes="Bold"
+                            FontSize="12"
+                            CornerRadius="8"
+                            HeightRequest="36"
+                            Padding="10,0" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Cycle items for the selected week -->
+            <CollectionView Grid.Row="1" ItemsSource="{Binding CycleItems}" Margin="16,0,16,16">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CycleMenuItemRow">
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                Padding="12"
+                                Margin="0,0,0,10"
+                                StrokeThickness="0">
+                            <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto, Auto" RowSpacing="4">
+                                <Label Grid.Column="0" Grid.Row="0"
+                                       Text="{Binding DisplayHeader}"
+                                       FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+
+                                <Label Grid.Column="0" Grid.Row="1"
+                                       Text="{Binding DisplayValue}"
+                                       FontSize="14"
+                                       LineBreakMode="WordWrap"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                <Button Grid.Column="1" Grid.RowSpan="2"
+                                        Text="{Binding EditButtonText}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminMenuViewModel}}, Path=EditCycleItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="11"
+                                        HeightRequest="32"
+                                        VerticalOptions="Center"
+                                        Padding="12,0"
+                                        BackgroundColor="#22888888"
+                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                <Button Grid.Column="2" Grid.RowSpan="2"
+                                        Text="Remove"
+                                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminMenuViewModel}}, Path=DeleteCycleItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="11"
+                                        HeightRequest="32"
+                                        VerticalOptions="Center"
+                                        Padding="10,0"
+                                        BackgroundColor="#C62828"
+                                        TextColor="White" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+    </Grid>
+        </Grid>
+</ContentPage>

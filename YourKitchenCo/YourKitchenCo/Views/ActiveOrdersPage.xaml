@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             x:Class="YourKitchenCo.Views.ActiveOrdersPage"
+             Title="Active Orders"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
+        <CollectionView ItemsSource="{Binding ActiveOrders}" Margin="16, 12">
+
+            <CollectionView.Header>
+                <Grid IsVisible="{Binding NextOrder, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                    <Border StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                            StrokeShape="RoundRectangle 20"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                            Padding="16"
+                            Margin="0,0,0,16"
+                            BindingContext="{Binding NextOrder}"
+                            x:DataType="models:Order">
+
+                    <VerticalStackLayout Spacing="16">
+
+                        <!-- Header -->
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="DELIVERY PROGRESS" FontSize="10" FontAttributes="Bold" CharacterSpacing="0.5"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                <Label Text="{Binding DeliveryDate, StringFormat='{0:dddd, dd MMM}'}" FontSize="15" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                    StrokeShape="RoundRectangle 8" Padding="8,4" VerticalOptions="Start">
+                                <Label Text="{Binding OrderNumber, StringFormat='Order #{0}'}" FontSize="10" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Stage 1: Received -->
+                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto">
+                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}">
+                                <Label Text="1" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1:Text}" />
+                            </Border>
+                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}" />
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                <Label Text="Order Received" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Text="Your order has been confirmed and booked into the kitchen schedule." FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Stage 2: Preparing -->
+                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
+                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}">
+                                <Label Text="2" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2:Text}" />
+                            </Border>
+                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}" />
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                <Label Text="Kitchen Preparing" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Text="Our culinary team is preparing your meal fresh this morning." FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Stage 3: Out for Delivery -->
+                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
+                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}">
+                                <Label Text="3" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3:Text}" />
+                            </Border>
+                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}" />
+                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                <Label Text="Out for Delivery" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Text="Your order is en route in insulated carriers to your delivery location." FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Stage 4: Delivered -->
+                        <Grid ColumnDefinitions="36, *">
+                            <Border Grid.Column="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4}">
+                                <Label Text="4" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4:Text}" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="12,0,0,0">
+                                <Label Text="Delivered" FontSize="14" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Text="Arrives securely at your delivery location, ready to enjoy." FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </CollectionView.Header>
+
+            <!-- NO ACTIVE ORDERS WATERMARK / EMPTY VIEW -->
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="14" Padding="30">
+
+                    <!-- Watermark Icon Badge -->
+                    <Border StrokeThickness="0"
+                            StrokeShape="RoundRectangle 40"
+                            BackgroundColor="{AppThemeBinding Light=#10000000, Dark=#15FFFFFF}"
+                            WidthRequest="80"
+                            HeightRequest="80"
+                            HorizontalOptions="Center">
+                        <Label Text="🍳" 
+                               FontSize="36" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" 
+                               Opacity="0.8" />
+                    </Border>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="No Active Orders" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                        <Label Text="Your live kitchen orders will appear here in real-time as soon as you place them." 
+                               FontSize="13" 
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
+                               MaximumWidthRequest="280" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <!-- ACTIVE ORDER CARD TEMPLATE -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                            StrokeShape="RoundRectangle 16"
+                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                            Padding="16"
+                            Margin="0,0,0,12">
+
+                        <Border.Shadow>
+                            <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                        </Border.Shadow>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="14" VerticalOptions="Center">
+
+                            <Border Grid.Column="0" 
+                                    StrokeThickness="0" 
+                                    StrokeShape="RoundRectangle 12" 
+                                    BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
+                                    WidthRequest="44" 
+                                    HeightRequest="44"
+                                    VerticalOptions="Center">
+                                <Label Text="🔥" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                <Label Text="{Binding ItemName}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="15" 
+                                       LineBreakMode="TailTruncation"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                <Label Text="{Binding OrderId, StringFormat='Order #{0}'}" 
+                                       FontSize="12" 
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            </VerticalStackLayout>
+
+                            <Border Grid.Column="2" 
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
+                                    Padding="10,4"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Status}" 
+                                       FontSize="11" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#121212" />
+                            </Border>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>

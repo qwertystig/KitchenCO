@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             x:Class="YourKitchenCo.Views.CartPage"
+             x:DataType="vm:CartPageViewModel"
+             Title="Your Basket"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="*, Auto">
+
+        <!-- Cart Content List -->
+        <CollectionView Grid.Row="0" 
+                        ItemsSource="{Binding CartItems}"
+                        Margin="15">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" 
+                                     HorizontalOptions="Center" 
+                                     Spacing="10"
+                                     Padding="20">
+                    <Label Text="🛒" FontSize="48" HorizontalOptions="Center"/>
+                    <Label Text="Your basket is empty" FontSize="18" FontAttributes="Bold" TextColor="Gray" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CartItem">
+                    <Border StrokeThickness="0"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                            Margin="0,0,0,12">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8" Padding="15">
+
+                            <!-- Product Details -->
+                            <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
+                                <Label Text="{Binding Product.Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding FinalPrice, StringFormat='R{0:F2}'}" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" FontAttributes="Bold" />
+                                <Label Text="{Binding DeliveryDateLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+
+                            <!-- Remove Button -->
+                            <Button Grid.Column="1" Grid.Row="0"
+                                    Text="✕"
+                                    TextColor="Red"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="40" WidthRequest="40"
+                                    HorizontalOptions="End" VerticalOptions="Start"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartPageViewModel}}, Path=RemoveItemCommand}"
+                                    CommandParameter="{Binding .}" />
+
+                            <!-- Customizations Display Loop -->
+                            <FlexLayout Grid.Row="1" Grid.Column="0" Wrap="Wrap" Direction="Row" Margin="0,5,0,0"
+                                        BindableLayout.ItemsSource="{Binding SelectedOptions}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Option">
+                                        <Border BackgroundColor="LightGray" StrokeShape="RoundRectangle 4" Margin="0,0,6,6">
+                                            <Label Text="{Binding Name}" FontSize="11" TextColor="Black" Margin="6,3"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+
+                            <!-- Quantity Stepper (+ / -) -->
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1" 
+                                                   Spacing="6" 
+                                                   VerticalOptions="Center" 
+                                                   HorizontalOptions="End">
+                                <Button Text="-"
+                                        WidthRequest="32" HeightRequest="32"
+                                        CornerRadius="16"
+                                        Padding="0"
+                                        FontSize="16" FontAttributes="Bold"
+                                        BackgroundColor="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                                        TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartPageViewModel}}, Path=DecreaseQuantityCommand}"
+                                        CommandParameter="{Binding .}" />
+
+                                <Label Text="{Binding Quantity}"
+                                       FontSize="14" FontAttributes="Bold"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       WidthRequest="24" />
+
+                                <Button Text="+"
+                                        WidthRequest="32" HeightRequest="32"
+                                        CornerRadius="16"
+                                        Padding="0"
+                                        FontSize="16" FontAttributes="Bold"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartPageViewModel}}, Path=IncreaseQuantityCommand}"
+                                        CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Special Instructions Note -->
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                   Text="{Binding SpecialRequests, StringFormat='Note: {0}'}"
+                                   FontSize="12"
+                                   TextColor="Gray"
+                                   FontAttributes="Italic"
+                                   IsVisible="{Binding SpecialRequests, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+                            <!-- Allergy Note — kept visually distinct (warning color) since this is a chef safety alert -->
+                            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                   Text="{Binding AllergyNotes, StringFormat='⚠️ Allergy alert: {0}'}"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="#B45309"
+                                   IsVisible="{Binding HasAllergyNotes}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Bottom Checkout Board -->
+        <Border Grid.Row="1" 
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 15,15,0,0"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                IsVisible="{Binding HasItems}">
+            <VerticalStackLayout Spacing="15" Padding="20">
+
+                <Border StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10"
+                        BackgroundColor="#FFF3CD"
+                        Padding="12"
+                        IsVisible="{Binding IsOrderingOpen, Converter={StaticResource InvertedBoolConverter}}">
+                    <Label Text="Ordering is temporarily closed. Your basket is saved — checkout will reopen shortly."
+                           TextColor="#856404"
+                           FontSize="13" />
+                </Border>
+
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="Meal Total:" FontSize="14" TextColor="Gray" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding CartTotal, StringFormat='R{0:F2}'}" FontSize="16" TextColor="Gray"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding SubsidyLabel, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                    <Label Text="{Binding SubsidyLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" VerticalOptions="Center" LineBreakMode="WordWrap" />
+                    <Label Grid.Column="1" Text="{Binding CompanySubsidyTotal, StringFormat='-R{0:F2}'}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                </Grid>
+
+                <!-- Delivery fee, by distance tier from the customer's location -->
+                <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding DeliveryFeeLabel, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                    <Label Text="{Binding DeliveryFeeLabel}"
+                           FontSize="12"
+                           VerticalOptions="Center"
+                           LineBreakMode="WordWrap"
+                           TextColor="Gray">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsOutsideDeliveryRange}" Value="True">
+                                <Setter Property="TextColor" Value="#C62828" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Grid.Column="1"
+                           Text="{Binding DeliveryFee, StringFormat='R{0:F2}'}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           IsVisible="{Binding IsOutsideDeliveryRange, Converter={StaticResource InvertedBoolConverter}}"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"/>
+                </Grid>
+
+                <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" IsVisible="{Binding SubsidyLabel, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="You Pay:" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding AmountDue, StringFormat='R{0:F2}'}" FontSize="22" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                </Grid>
+
+                <Button Text="Proceed to Payment"
+                        Command="{Binding CheckoutCommand}"
+                        IsEnabled="{Binding IsOrderingOpen}"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminCompaniesPage"
+             x:DataType="vm:AdminCompaniesViewModel"
+             Title="Companies &amp; Locations"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="admincompanies" />
+
+        <Grid Grid.Row="1" RowDefinitions="Auto, *">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="16,12,16,8" VerticalOptions="Center">
+            <Label Grid.Column="0"
+                   Text="Client Companies"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+            <Button Grid.Column="1"
+                    Text="+ Add Company"
+                    Command="{Binding AddCompanyCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    HeightRequest="38" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsBusy}" Command="{Binding LoadCompaniesCommand}" RefreshColor="#121212">
+            <CollectionView ItemsSource="{Binding Companies}" Margin="16,0,16,16">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
+                        <Label Text="🏢" FontSize="36" HorizontalOptions="Center" Opacity="0.8" />
+                        <Label Text="No companies yet. Tap + Add Company to create one."
+                               FontSize="14" HorizontalTextAlignment="Center" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CompanyRow">
+                        <Border StrokeShape="RoundRectangle 14"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                Padding="14"
+                                Margin="0,0,0,14"
+                                StrokeThickness="0">
+                            <VerticalStackLayout Spacing="10">
+
+                                <!-- Company header -->
+                                <Grid ColumnDefinitions="*, Auto, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Company.Name}" FontAttributes="Bold" FontSize="16"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Label Text="{Binding Company.BillingEmail}" FontSize="12" TextColor="#888888" />
+                                    </VerticalStackLayout>
+
+                                    <Border Grid.Column="1"
+                                            StrokeShape="RoundRectangle 6"
+                                            BackgroundColor="#22121212"
+                                            Padding="8,4"
+                                            VerticalOptions="Start"
+                                            Margin="0,0,8,0">
+                                        <Label Text="{Binding Company.IsActive, Converter={StaticResource BoolToActiveStatusConverter}}" FontSize="10" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Border>
+
+                                    <Button Grid.Column="2"
+                                            Text="Edit"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=EditCompanyCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="11" HeightRequest="30" Padding="10,0"
+                                            BackgroundColor="#22888888"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                </Grid>
+
+                                <!-- Subsidy & discount summary -->
+                                <Label Text="{Binding Company.FinancialsSummary}" FontSize="11" TextColor="#888888" />
+
+                                <HorizontalStackLayout Spacing="8">
+                                    <Button Text="Toggle Active"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=ToggleCompanyActiveCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="10" HeightRequest="28" Padding="8,0"
+                                            BackgroundColor="#22888888"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    <Button Text="Financials"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=ManageFinancialsCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="10" HeightRequest="28" Padding="8,0"
+                                            BackgroundColor="#22888888"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    <Button Text="Domains"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=ManageDomainsCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="10" HeightRequest="28" Padding="8,0"
+                                            BackgroundColor="#22888888"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    <Button Text="+ Add Location"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=AddLocationCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="10" HeightRequest="28" Padding="8,0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                                </HorizontalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#EEEEEE, Dark=#2A2A2A}" />
+
+                                <!-- Locations -->
+                                <Label Text="Delivery Locations" FontSize="11" FontAttributes="Bold" TextColor="#888888" />
+
+                                <CollectionView ItemsSource="{Binding Locations}">
+                                    <CollectionView.EmptyView>
+                                        <Label Text="No locations yet for this company." FontSize="12" TextColor="Gray" Margin="0,4" />
+                                    </CollectionView.EmptyView>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:CompanyLocation">
+                                            <Grid ColumnDefinitions="*, Auto" Padding="0,6">
+                                                <VerticalStackLayout Grid.Column="0" Spacing="1">
+                                                    <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                                    <Label Text="{Binding Address}" FontSize="11" TextColor="#888888" />
+                                                    <Label Text="{Binding DistanceKm, StringFormat='{0:F1}km from kitchen'}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                                </VerticalStackLayout>
+                                                <Button Grid.Column="1"
+                                                        Text="Edit"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCompaniesViewModel}}, Path=EditLocationCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        FontSize="10" HeightRequest="28" Padding="10,0"
+                                                        BackgroundColor="#22888888"
+                                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        </Grid>
+    </Grid>
+</ContentPage>

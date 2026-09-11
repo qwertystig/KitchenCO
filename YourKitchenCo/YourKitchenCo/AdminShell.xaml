@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="YourKitchenCo.AdminShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:YourKitchenCo.Views"
+    FlyoutBehavior="Disabled"
+    Shell.BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+    Shell.ForegroundColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+    Shell.TitleColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}">
+
+    <!--
+        Navigation moved from the flyout drawer to a horizontal scrolling
+        tab strip (see Views/AdminNavStrip.xaml), matching the reference
+        app's actual admin navigation — a segmented pill-tab switcher, not
+        a drawer and not bottom tabs (which wouldn't comfortably fit 8
+        sections). FlyoutItem is kept here purely for route registration —
+        FlyoutBehavior="Disabled" means the drawer itself is never shown or
+        reachable; GoToAsync("//route") from AdminNavStrip's button clicks
+        is the only way these pages are reached now.
+
+        Each of the 8 admin pages embeds <views:AdminNavStrip ActiveRoute="..."/>
+        at its own top, rather than this Shell hosting one shared instance —
+        keeping every admin page as its own safe, independent page rather
+        than consolidating them into one page with swapped content, which
+        would have been a much larger and riskier rewrite for the same
+        practical result.
+    -->
+    <FlyoutItem Title="Overview Hub" Route="admindashboard">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Active Orders" Route="adminactiveorders">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminActiveOrdersPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Companies" Route="admincompanies">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminCompaniesPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Notifications" Route="adminnotifications">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminNotificationsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Menu Catalog" Route="adminmenu">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminMenuPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="User Management" Route="adminusers">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminUsersPage}"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Reports &amp; Analytics" Route="adminreports">
+        <ShellContent ContentTemplate="{DataTemplate views:AdminReportsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Settings" Route="adminsettings">
+        <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </FlyoutItem>
+
+</Shell>

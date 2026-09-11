@@ -1,0 +1,2115 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>YourKitchenCo</name>
+    </assembly>
+    <members>
+        <member name="T:YourKitchenCo.Converters.CycleCategoryColorConverter">
+             <summary>
+             Card/badge background + text for a category. Previously cycled every
+             category through 7 different saturated colors (bold red/orange/yellow/
+             sage/blue) — the client flagged the app as too colorful and unprofessional
+             as a direct result, so this was simplified to one clean, consistent
+             color for every category (now pale blue, per a later request to move the
+             whole palette to blue). Real food photography (ImageUrl) already does
+             the job of visually distinguishing one dish from another; the card
+             underneath it doesn't need to as well.
+            
+             Kept as a converter (rather than deleting it and touching every binding
+             that references it) so this class of "too colorful" feedback can't
+             resurface from a missed spot — every card/badge/chip in the app reads
+             from this one place.
+             </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.GreaterThanZeroConverter">
+            <summary>
+            True if the bound numeric value is greater than zero. Exists because
+            IsNotNullOrEmptyConverter has been mistakenly reached for on non-nullable
+            value types (decimal, int) several times across this app — a boxed
+            value type is never null, so that converter always returns true
+            regardless of the actual value, silently showing things that should be
+            hidden when the amount is zero. Use this instead for "hide if zero."
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.IsNotNullOrEmptyConverter">
+            <summary>
+            True when the bound value is a non-empty string, or any non-null object.
+            NOTE: CartPage.xaml already referenced {StaticResource IsNotNullOrEmptyConverter}
+            before this file existed anywhere in the project (and it wasn't registered in
+            App.xaml either) — that would throw a XamlParseException the first time
+            CartPage loaded. Added here and registered in App.xaml to fix that.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.MenuIdentityColorConverter">
+             <summary>
+             Selected-state color for the Main Menu / Cycling Menu toggle and the
+             "All" category chip. Previously used two different hues (blue for Main,
+             pale-blue/charcoal for Cycling) as a decorative day-theme touch — the
+             client flagged the app as too colorful overall, and since the toggle
+             already shows "Main Menu"/"Cycling Menu" as plain text, a color
+             distinction here was never carrying real information. Simplified to one
+             consistent brand accent for both (now medium blue, per a later request
+             to move the whole palette to blue).
+            
+             Accepts either the dashboard's CurrentMenu string ("Main"/"Weekly") or a
+             Product's MenuType enum (Static/Cycle) for backward compatibility with
+             existing bindings, but no longer branches on it.
+             </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.MultiValueEqualsConverter">
+            <summary>
+            Compares two bound values for equality (case-insensitive if both are
+            strings) — used where a DataTrigger can't help because both sides are
+            bindings, not a binding vs. a literal. E.g. a category chip inside a
+            BindableLayout comparing its own Name against the ancestor ViewModel's
+            ActiveCategory to know whether it's the selected one.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.RatingStarConverter">
+            <summary>
+            Renders one star in a 5-star row: "★" if the bound Rating is at least
+            this star's position (via ConverterParameter, "1" through "5"), "☆"
+            otherwise. Used for both the customer's tappable rating row and the
+            admin's read-only display of it.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.StageNodeColorConverter">
+            <summary>
+            Node color for one stage of the 4-stage delivery tracker. Bound value is
+            the order's current Stage (int, 1-4); ConverterParameter is the stage
+            number this particular node represents ("1" through "4"). Also handles
+            the "Text" role for the node's number/checkmark label color.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Converters.StringEqualsConverter">
+            <summary>True when the bound string equals ConverterParameter (case-insensitive). Used to show/hide a section based on a mode string like CurrentMenuType.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Graphics.PieChartDrawable.HoleColor">
+            <summary>Set from the page to match the surrounding card background (light vs dark mode).</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminMenuViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemAsync(YourKitchenCo.ViewModel.CycleMenuItemRow)">
+            <summary>
+            Removes a dish from the cycle menu — the day/category grid itself is
+            fixed (every day always has exactly 5 category slots), so "delete"
+            clears the slot's dish rather than removing the row. An empty slot
+            then shows "Add Dish" instead of "Edit" (see CycleMenuItemRow), and
+            tapping it goes through the same EditCycleItemAsync above — typing
+            something into an empty slot is effectively "add".
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SearchQuery">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminMenuViewModel._searchQuery"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminMenuViewModel._isBusy"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.CurrentMenuType">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminMenuViewModel._currentMenuType"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SelectedWeek">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminMenuViewModel._selectedWeek"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.ActiveWeekNumber">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminMenuViewModel._activeWeekNumber"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminMenuViewModel.OnSearchQueryChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SearchQuery"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SearchQuery"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminMenuViewModel.OnSelectedWeekChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SelectedWeek"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SelectedWeek"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.switchToStaticCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToStaticCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToStaticCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToStatic"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.switchToCycleCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToCycleCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToCycleCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.SwitchToCycleAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.loadProductsCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.LoadProductsCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.LoadProductsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.LoadProductsAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.addProductCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.AddProductCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.AddProductCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.AddProductAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.toggleAvailabilityCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.ToggleAvailabilityCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.ToggleAvailabilityCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.ToggleAvailabilityAsync(YourKitchenCo.Models.Product)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.editProductCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.EditProductCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.EditProductCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.EditProductAsync(YourKitchenCo.Models.Product)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.deleteProductCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteProductCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteProductCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteProductAsync(YourKitchenCo.Models.Product)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.setActiveWeekCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SetActiveWeekCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.SetActiveWeekCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.SetActiveWeekAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.editCycleItemCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.EditCycleItemCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.EditCycleItemCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.EditCycleItemAsync(YourKitchenCo.ViewModel.CycleMenuItemRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminMenuViewModel.deleteCycleItemCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemAsync(YourKitchenCo.ViewModel.CycleMenuItemRow)"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.ActiveOrdersViewModel">
+            <summary>The logged-in user's own upcoming orders (DeliveryDate >= today).</summary>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel._isBusy"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.NextOrder">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel._nextOrder"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel.refreshOrdersCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.RefreshOrdersCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.RefreshOrdersCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ActiveOrdersViewModel.RefreshOrdersAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintOrderSheetAsync">
+            <summary>
+            Builds a plain-text order sheet for whatever's currently filtered
+            (by company and/or date) and hands it to the OS share sheet, where
+            "Print" is one of the standard options on both iOS and Android —
+            there's no MAUI-native print API, so this is the practical
+            zero-dependency way to get a physical order sheet.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync">
+            <summary>Same idea as PrintOrderSheetAsync, but for the aggregated kitchen prep list instead of individual orders.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel._isBusy"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedCompanyFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel._selectedCompanyFilter"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedDateFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel._selectedDateFilter"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.IsPrepViewActive">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel._isPrepViewActive"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.OnSelectedCompanyFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedCompanyFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedCompanyFilter"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.OnSelectedDateFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedDateFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.SelectedDateFilter"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.refreshOrdersCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.RefreshOrdersCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.RefreshOrdersCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.RefreshOrdersAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.toggleViewCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ToggleViewCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ToggleViewCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ToggleView"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.updateStatusCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.UpdateStatusCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.UpdateStatusCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.UpdateStatusAsync(YourKitchenCo.ViewModel.AdminOrderRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.printOrderSheetCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintOrderSheetCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintOrderSheetCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintOrderSheetAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.printPrepSheetCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminCompaniesViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsAsync(YourKitchenCo.ViewModel.CompanyRow)">
+            <summary>
+            Subsidy (per-meal ZAR the company covers) and discount (percentage
+            or flat ZAR off the order total, a separate lever — a company can
+            have either, both, or neither) — combined into one flow since
+            there was previously no admin UI for subsidy at all, only seed data.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDomainsAsync(YourKitchenCo.ViewModel.CompanyRow)">
+            <summary>
+            Manages the whitelisted email domains that auto-match employees to
+            this company at registration. Simple add/remove loop via prompts —
+            matching the pattern used elsewhere in this admin screen rather than
+            building a dedicated multi-select UI for what's usually just 1-2 domains.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel._isBusy"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.loadCompaniesCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.LoadCompaniesCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.LoadCompaniesCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.LoadCompaniesAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.addCompanyCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddCompanyCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddCompanyCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddCompanyAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.editCompanyCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditCompanyCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditCompanyCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditCompanyAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.toggleCompanyActiveCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ToggleCompanyActiveCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ToggleCompanyActiveCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ToggleCompanyActiveAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.manageFinancialsCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.addLocationCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddLocationCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddLocationCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.AddLocationAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.editLocationCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditLocationCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditLocationCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.EditLocationAsync(YourKitchenCo.Models.CompanyLocation)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.manageDomainsCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDomainsCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDomainsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDomainsAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminDashboardViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.BulkUpdateStatusAsync">
+            <summary>
+            Sends the same status update to every currently-filtered order at
+            once — the point being that when Company + Date are both narrowed
+            down, that's every order for one company arriving on one day, so
+            there's no reason to tap through them individually.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.TodaysRevenue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._todaysRevenue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.ActiveOrderCount">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._activeOrderCount"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.CompanyCount">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._companyCount"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.CustomerCount">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._customerCount"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._isBusy"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedCompanyFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._selectedCompanyFilter"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedDateFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._selectedDateFilter"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.OnSelectedCompanyFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedCompanyFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedCompanyFilter"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.OnSelectedDateFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedDateFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.SelectedDateFilter"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel.refreshOrdersCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.RefreshOrdersCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.RefreshOrdersCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.RefreshOrdersAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel.markPreparingCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkPreparingCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkPreparingCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkPreparingAsync(YourKitchenCo.ViewModel.AdminOrderRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel.markOutForDeliveryCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkOutForDeliveryCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkOutForDeliveryCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkOutForDeliveryAsync(YourKitchenCo.ViewModel.AdminOrderRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel.markDeliveredCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkDeliveredCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkDeliveredCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.MarkDeliveredAsync(YourKitchenCo.ViewModel.AdminOrderRow)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel.bulkUpdateStatusCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.BulkUpdateStatusCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.BulkUpdateStatusCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.BulkUpdateStatusAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminNotificationsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.Title">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminNotificationsViewModel._title"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.Message">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminNotificationsViewModel._message"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.SelectedAudience">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminNotificationsViewModel._selectedAudience"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminNotificationsViewModel._isBusy"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminNotificationsViewModel.sendNotificationCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.SendNotificationCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminNotificationsViewModel.SendNotificationCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminNotificationsViewModel.SendNotificationAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminOrderRow">
+            <summary>Order plus resolved company/location names, for the admin active-orders grid.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminReportsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedTimeframe">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._selectedTimeframe"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCompanyFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._selectedCompanyFilter"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.IsCustomRangeVisible">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._isCustomRangeVisible"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomStartDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._customStartDate"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomEndDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._customEndDate"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.TotalRevenue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._totalRevenue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.TotalOrders">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._totalOrders"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.AverageOrderValue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._averageOrderValue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.TopSellingItem">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._topSellingItem"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._isBusy"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.PieChart">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._pieChart"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.BarChart">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._barChart"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCategoryFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._selectedCategoryFilter"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.HasDisputes">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._hasDisputes"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnSelectedTimeframeChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedTimeframe"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedTimeframe"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnSelectedCompanyFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCompanyFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCompanyFilter"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnCustomStartDateChanged(System.DateTime)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomStartDate"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomStartDate"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnCustomEndDateChanged(System.DateTime)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomEndDate"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.CustomEndDate"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnSelectedCategoryFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCategoryFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCategoryFilter"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.resolveDisputeCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeAsync(YourKitchenCo.Models.Order)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.exportReportCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.AdminUsersViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SearchQuery">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminUsersViewModel._searchQuery"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SelectedRoleFilter">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminUsersViewModel._selectedRoleFilter"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminUsersViewModel.OnSearchQueryChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SearchQuery"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SearchQuery"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminUsersViewModel.OnSelectedRoleFilterChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SelectedRoleFilter"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SelectedRoleFilter"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminUsersViewModel.toggleUserStatusCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.ToggleUserStatusCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.ToggleUserStatusCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminUsersViewModel.ToggleUserStatusAsync(YourKitchenCo.Models.UserAccount)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminUsersViewModel.changeUserRoleCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.ChangeUserRoleCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.ChangeUserRoleCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminUsersViewModel.ChangeUserRoleAsync(YourKitchenCo.Models.UserAccount)"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.CartPageViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.CartTotal">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._cartTotal"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.CompanySubsidyTotal">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._companySubsidyTotal"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.AmountDue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._amountDue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.DeliveryFee">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._deliveryFee"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.DeliveryFeeLabel">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._deliveryFeeLabel"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.IsOutsideDeliveryRange">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._isOutsideDeliveryRange"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.SubsidyLabel">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._subsidyLabel"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.IsCartEmpty">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._isCartEmpty"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.HasItems">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._hasItems"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.IsOrderingOpen">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.CartPageViewModel._isOrderingOpen"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.CartPageViewModel.removeItemCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.CartPageViewModel.RemoveItemCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.RemoveItemCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.CartPageViewModel.RemoveItem(YourKitchenCo.Models.CartItem)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.CartPageViewModel.increaseQuantityCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.CartPageViewModel.IncreaseQuantityCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.IncreaseQuantityCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.CartPageViewModel.IncreaseQuantity(YourKitchenCo.Models.CartItem)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.CartPageViewModel.decreaseQuantityCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.CartPageViewModel.DecreaseQuantityCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.DecreaseQuantityCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.CartPageViewModel.DecreaseQuantity(YourKitchenCo.Models.CartItem)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.CartPageViewModel.checkoutCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.CartPageViewModel.CheckoutCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.CartPageViewModel.CheckoutCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.CartPageViewModel.CheckoutAsync"/>.</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:YourKitchenCo.ViewModel.CompanyRow" -->
+        <member name="T:YourKitchenCo.ViewModel.CycleMenuItemRow">
+            <summary>One editable dish within the cycle menu admin screen.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.HelpViewModel">
+            <inheritdoc/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.HelpViewModel.viewCancellationPolicyCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.HelpViewModel.ViewCancellationPolicyCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.HelpViewModel.ViewCancellationPolicyCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.HelpViewModel.ViewCancellationPolicyAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.LoginViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.Email">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.LoginViewModel._email"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.Password">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.LoginViewModel._password"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.IsRememberMe">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.LoginViewModel._isRememberMe"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.LoginViewModel.registerCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.LoginViewModel.RegisterCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.RegisterCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.LoginViewModel.RegisterAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.LoginViewModel.forgotPasswordCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.LoginViewModel.ForgotPasswordCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.ForgotPasswordCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.LoginViewModel.ForgotPasswordAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.LoginViewModel.loginCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.LoginViewModel.LoginCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.LoginViewModel.LoginCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.LoginViewModel.LoginAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.OrderConfirmationViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.FirstOrder">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel._firstOrder"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.TotalPaid">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel._totalPaid"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.ItemCount">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel._itemCount"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel.trackOrderCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.TrackOrderCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.TrackOrderCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderConfirmationViewModel.TrackOrderAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel.viewInvoiceCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.ViewInvoiceCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.ViewInvoiceCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderConfirmationViewModel.ViewInvoiceAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderConfirmationViewModel.doneCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.DoneCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderConfirmationViewModel.DoneCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderConfirmationViewModel.DoneAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.OrderHistoryViewModel">
+            <summary>The logged-in user's own past orders (DeliveryDate before today).</summary>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.RateStarAsync(System.String)">
+            <summary>Star tapped on an order — CommandParameter is "OrderId|Position" from the XAML.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.OrderHistoryViewModel._isBusy"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderHistoryViewModel.refreshHistoryCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.RefreshHistoryCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.RefreshHistoryCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.RefreshHistoryAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderHistoryViewModel.rateStarCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.RateStarCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.RateStarCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.RateStarAsync(System.String)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderHistoryViewModel.reportDisputeCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReportDisputeCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReportDisputeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReportDisputeAsync(YourKitchenCo.Models.Order)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderHistoryViewModel.viewInvoiceCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ViewInvoiceCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ViewInvoiceCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.ViewInvoiceAsync(YourKitchenCo.Models.Order)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.OrderHistoryViewModel.reorderCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReorderCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReorderCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.OrderHistoryViewModel.ReorderAsync(YourKitchenCo.Models.Order)"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.PaymentViewModel">
+            <summary>
+            Handles the payment step between Cart and order confirmation. This is a
+            demo/mock flow — there's no PCI-compliant backend to actually process a
+            card or a real PayFast merchant integration yet (PayFast requires a live
+            merchant account and server-side ITN/webhook handling to confirm payment
+            safely — that can't live only on the client). Both payment paths here
+            simulate a realistic processing delay and then place the order exactly
+            as if payment had succeeded, so the rest of the app (order history,
+            admin views, reports) has real data to work with while the actual
+            payment gateway integration is still pending.
+            </summary>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.AmountDue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._amountDue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.DeliveryFee">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._deliveryFee"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.SelectedMethod">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._selectedMethod"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.IsCardSelected">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._isCardSelected"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.CardNumber">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._cardNumber"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.ExpiryDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._expiryDate"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.Cvv">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._cvv"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.CardholderName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._cardholderName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.IsProcessing">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._isProcessing"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.ProcessingMessage">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.PaymentViewModel._processingMessage"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.PaymentViewModel.selectMethodCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.PaymentViewModel.SelectMethodCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.SelectMethodCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.PaymentViewModel.SelectMethod(System.String)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.PaymentViewModel.payWithCardCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.PaymentViewModel.PayWithCardCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.PayWithCardCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.PaymentViewModel.PayWithCardAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.PaymentViewModel.payWithPayFastCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.PaymentViewModel.PayWithPayFastCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.PaymentViewModel.PayWithPayFastCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.PaymentViewModel.PayWithPayFastAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.ProductDetailViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.selectedProduct"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.TotalPrice">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.totalPrice"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SpecialRequests">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.specialRequests"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.AllergyNotes">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.allergyNotes"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedDeliveryDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.selectedDeliveryDate"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.IsOrderingOpen">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.isOrderingOpen"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.ProductDetailViewModel.OnSelectedProductChanged(YourKitchenCo.Models.Product)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProductDetailViewModel.addToCartCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.AddToCartCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.AddToCartCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProductDetailViewModel.AddToCart"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.ProfileViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.UserName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._userName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.Email">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._email"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.Role">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._role"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.CompanyName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._companyName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.MealSubsidyLabel">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._mealSubsidyLabel"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.LocationName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._locationName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.DeliveryFloor">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._deliveryFloor"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.MemberSince">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ProfileViewModel._memberSince"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProfileViewModel.changeProfilePictureCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProfileViewModel.ChangeProfilePictureCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.ChangeProfilePictureCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProfileViewModel.ChangeProfilePicture"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProfileViewModel.editDeliveryFloorCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProfileViewModel.EditDeliveryFloorCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.EditDeliveryFloorCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProfileViewModel.EditDeliveryFloorAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProfileViewModel.navigateToSettingsCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToSettingsCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToSettingsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToSettingsAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProfileViewModel.navigateToHelpCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToHelpCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToHelpCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProfileViewModel.NavigateToHelpAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProfileViewModel.signOutCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProfileViewModel.SignOutCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProfileViewModel.SignOutCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProfileViewModel.SignOutAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.RegisterViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.FullName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._fullName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.Email">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._email"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.IsCompanyAutoMatched">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._isCompanyAutoMatched"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.Password">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._password"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.ConfirmPassword">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._confirmPassword"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.SelectedCompany">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._selectedCompany"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.SelectedLocation">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._selectedLocation"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.IsBusy">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.RegisterViewModel._isBusy"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.RegisterViewModel.OnEmailChanged(System.String)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.Email"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.Email"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.RegisterViewModel.OnSelectedCompanyChanged(YourKitchenCo.Models.Company)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.SelectedCompany"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.SelectedCompany"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.RegisterViewModel.registerCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.RegisterCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.RegisterCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.RegisterViewModel.RegisterAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.RegisterViewModel.backToLoginCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.RegisterViewModel.BackToLoginCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.RegisterViewModel.BackToLoginCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.RegisterViewModel.BackToLoginAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SelectedDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel._selectedDate"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.IsChangingDay">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel._isChangingDay"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.confirmCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ConfirmCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ConfirmCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ConfirmAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.SettingsViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.AccountEmail">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._accountEmail"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.IsNotificationsEnabled">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._isNotificationsEnabled"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.IsDarkModeEnabled">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._isDarkModeEnabled"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.SettingsViewModel.OnIsNotificationsEnabledChanged(System.Boolean)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsNotificationsEnabled"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsNotificationsEnabled"/> is changed.</remarks>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.SettingsViewModel.OnIsDarkModeEnabledChanged(System.Boolean)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsDarkModeEnabled"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsDarkModeEnabled"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.SettingsViewModel.signOutCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.SignOutCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.SignOutCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SettingsViewModel.SignOutAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.TaxInvoiceViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.Order">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel._order"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.CustomerCompanyName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel._customerCompanyName"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.CustomerLocationName">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel._customerLocationName"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel.shareInvoiceCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.ShareInvoiceCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.ShareInvoiceCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.TaxInvoiceViewModel.ShareInvoiceAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.UserDashboardViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayAsync">
+            <summary>Opens the full date picker — used by the compact date display so the person can change day without leaving the dashboard.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.CartCount">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.UserDashboardViewModel._cartCount"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.CartTotal">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.UserDashboardViewModel._cartTotal"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.filterCategoryCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.FilterCategoryCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.FilterCategoryCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.FilterCategory(System.String)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.searchCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SearchCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SearchCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.Search"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.switchToMainCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToMainCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToMainCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToMainAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.switchToCyclingCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToCyclingCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToCyclingCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.SwitchToCyclingAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.navigateToProductCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToProductCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToProductCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToProductAsync(YourKitchenCo.Models.Product)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.navigateToCartCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToCartCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToCartCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.NavigateToCartAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.changeDeliveryDayCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayAsync"/>.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.CartItem">
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.Models.CartItem.Quantity">
+            <inheritdoc cref="F:YourKitchenCo.Models.CartItem._quantity"/>
+        </member>
+        <member name="P:YourKitchenCo.Models.CartItem.FinalPrice">
+            <inheritdoc cref="F:YourKitchenCo.Models.CartItem._finalPrice"/>
+        </member>
+        <member name="M:YourKitchenCo.Models.CartItem.OnQuantityChanged(System.Int32)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.Models.CartItem.Quantity"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.Models.CartItem.Quantity"/> is changed.</remarks>
+        </member>
+        <member name="T:YourKitchenCo.Models.CategorySection">
+            <summary>One category's hero banner + its dishes, for the sectioned dashboard list.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.MealSubsidyAmount">
+            <summary>Per-meal subsidy the company covers, VAT-inclusive. Applied per cart item at checkout.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.DiscountType">
+            <summary>Discount applied to the order total, separate from the per-meal subsidy above — a company can have either, both, or neither.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.DiscountValue">
+            <summary>Meaning depends on DiscountType: a percentage (0-100) or a flat ZAR amount.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.WhitelistedDomains">
+            <summary>
+            Email domains (no "@", lowercase — e.g. "ecogra.org") that
+            auto-match an employee to this company during registration. A
+            company can have more than one (e.g. regional subsidiaries sharing
+            one account). Registration still allows manual company selection
+            for anyone whose domain isn't whitelisted — auto-match is a
+            convenience, not a requirement, so nobody gets locked out of
+            registering just because their company hasn't set this up yet.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.CycleMenuDay">
+            <summary>One day's rotating menu — five categories, as they appear in cycleMenu.json.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.CycleMenuDay.WeekNumber">
+            <summary>Set by CycleMenuService when it resolves a day — not present in the JSON itself.</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.CycleMenuDay.Categories">
+            <summary>Convenience list for binding all five categories in a UI (e.g. a CollectionView).</summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.DeliveryDateOption">
+            <summary>
+            One selectable delivery date, for binding to the "which day am I ordering
+            for" picker. For the cycle menu, CycleMenu is populated with that day's
+            specific items; for the static menu it's left null since the menu doesn't
+            change day to day.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.MenuType">
+            <summary>
+            Static: always-available a-la-carte menu (staticMenu.json / the product xlsx).
+                    Orderable up to 2 weeks (10 weekdays) in advance.
+            Cycle:  the 8-week rotating daily menu (cycleMenu.json), 5 categories per day.
+                    Orderable across the coming week (5 weekdays) in advance, and each
+                    day pulls that specific day's items.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.Option">
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.Models.Option.IsSelected">
+            <inheritdoc cref="F:YourKitchenCo.Models.Option.isSelected"/>
+        </member>
+        <member name="M:YourKitchenCo.Models.Order.ParseItemNameAndQuantity">
+            <summary>
+            ItemName is stored as a display string like "2x Classic Burger -
+            Beef" rather than separate dish/quantity fields — this recovers
+            both. Shared here rather than duplicated wherever it's needed
+            (reorder lookup, kitchen prep aggregation).
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Models.PrepSummaryItem">
+            <summary>One dish's total quantity needed across all filtered orders — the kitchen's bulk prep list, matching the reference app's AggregatedPrepItem.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.AlertService">
+             <summary>
+             Shows branded, theme-matched popups instead of the native OS alert dialog
+             (which ignores the app's colors entirely on every platform).
+            
+             Also exposed as a static `Instance` (set once in App.xaml.cs at startup) so
+             ViewModels that already reach for `Shell.Current`/`Application.Current` for
+             alerts can call `AlertService.Instance....` directly without every one of
+             them needing a constructor-injection change — this is a deliberate,
+             pragmatic exception to the DI-everywhere pattern used elsewhere in the
+             app, scoped specifically to this cross-cutting UI concern.
+             </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.CycleMenuService">
+             <summary>
+             Reads cycleMenu.json (bundled as a MauiAsset under Resources/Raw) and
+             resolves which week/day menu applies to a given calendar date. Also holds
+             the admin-facing controls: which week is "active" right now, and editing
+             individual dishes.
+            
+             This is the "local file" version to get the feature working end to end.
+             When you move to Supabase, swap this implementation for one that reads
+             from a cycle_menu_weeks / cycle_menu_days table instead — the interface
+             (ICycleMenuService) doesn't need to change, so nothing that consumes it
+             (ViewModels, admin screens) will need to change either. The "active week"
+             override would become a row in a settings table instead of an in-memory
+             field, but SetActiveWeekAsync's re-anchoring math stays the same.
+             </summary>
+        </member>
+        <member name="F:YourKitchenCo.Services.CycleMenuService._anchorMonday">
+            <summary>
+            The Monday that "Week 1" of the current 8-week cycle starts on.
+            Mutable (not the original hardcoded constant) because SetActiveWeekAsync
+            re-anchors it whenever an admin manually activates a specific week.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.DeliveryFeeCalculator">
+             <summary>
+             Delivery fee tiers, by straight-line distance from the kitchen:
+               0     – 15km   → R100
+               15.01 – 20km   → R140
+               20.01 – 30km   → R200
+               30.01 – 50km   → R350
+            
+             Anything beyond 50km isn't a defined tier in the business rules given —
+             rather than silently guessing a price, this returns null so the caller
+             can flag it (e.g. "outside delivery range, contact us") instead of
+             charging a made-up fee.
+             </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IAlertService.ShowAsync(System.String,System.String,System.String)">
+            <summary>Single-button informational alert. Mirrors Page.DisplayAlert(title, message, cancel).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IAlertService.ShowConfirmAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Two-button confirm dialog. Mirrors Page.DisplayAlert(title, message, accept, cancel).
+            Returns true if the first (accept) button was tapped.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IAlertService.ShowPromptAsync(System.String,System.String,System.String,Microsoft.Maui.Keyboard,System.String,System.String)">
+            <summary>
+            Text-entry dialog. Mirrors Page.DisplayPromptAsync. Returns the typed
+            text, or null if cancelled (matches the native API's null-on-cancel behavior).
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IAlertService.ShowActionSheetAsync(System.String,System.String,System.String[])">
+            <summary>
+            Bottom-sheet style option picker. Mirrors Page.DisplayActionSheet(title, cancel, destruction, buttons).
+            Returns the tapped option's text, or null if cancelled.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.GetCycleWeekNumber(System.DateOnly)">
+            <summary>Which week (1-8) of the 8-week cycle a given calendar date falls in.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.GetMenuForDateAsync(System.DateOnly)">
+            <summary>The rotating 5-category menu for a specific delivery date, or null if the day has no menu (weekend).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.GetMenuForDatesAsync(System.Collections.Generic.IEnumerable{System.DateOnly})">
+            <summary>The rotating menu for every date in a list — handy for building a week's worth of DeliveryDateOptions in one call.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.GetAllWeeksAsync">
+            <summary>The full 8-week structure ("Week 1".."Week 8"), for the admin cycle-menu screen.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.GetActiveWeekNumberAsync">
+            <summary>Which week number (1-8) is currently active, i.e. what GetCycleWeekNumber(today) resolves to.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.SetActiveWeekAsync(System.Int32)">
+            <summary>
+            Admin override: makes the given week (1-8) the active one for the
+            current calendar week, re-anchoring the whole 8-week rotation so it
+            continues cycling normally from there afterwards.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.ICycleMenuService.UpdateCycleItemAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Edits a single dish. categoryPropertyName must be one of "Main Meal",
+            "Vegetarian Meal", "Healthy Meal", "Curry of the Day", "Gourmet Sandwich".
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:YourKitchenCo.Services.IOrderSchedulingService" -->
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.IsOrderingOpen(System.Nullable{System.DateTime})">
+            <summary>
+            Always true — ordering is open every day of the week, including
+            weekends (customers just land on Wednesday as their earliest
+            delivery option, same as ordering Monday after the cutoff would).
+            Kept as a method rather than removed outright so a future business
+            rule change (e.g. a public holiday closure) has somewhere to live
+            without re-threading every call site again.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.GetEffectiveOrderDate(System.Nullable{System.DateTime})">
+            <summary>
+            The order date to treat "right now" as: today, if it's a weekday and
+            before the cutoff time; otherwise the next available weekday.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.GetDeliveryDateForOrderDate(System.DateOnly)">
+            <summary>Maps a given order date to its delivery date under the 2-business-day rule.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.GetNextAvailableDeliveryDate(System.Nullable{System.DateTime})">
+            <summary>The earliest date a customer could get food delivered if they ordered right now.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.GetOrderableDeliveryDates(System.Int32,System.Nullable{System.DateTime})">
+            <summary>
+            The list of delivery dates a customer is currently allowed to order for,
+            starting from the next available date. Use windowInWeekdays = 5 for the
+            cycle menu (order across the coming week) and 10 for the static menu
+            (order up to 2 weeks ahead).
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderSchedulingService.IsValidDeliveryDate(System.DateOnly,System.Int32,System.Nullable{System.DateTime})">
+            <summary>
+            Defensive re-check before submitting an order: confirms the requested
+            delivery date is still inside the currently allowed window. Call this
+            again at checkout time, not just when the date picker was first shown,
+            in case the user left the app open across a cutoff.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.PlaceOrderAsync(YourKitchenCo.Models.Order)">
+            <summary>Adds an order to the store. Assigns Id/OrderNumber if not already set.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.PlaceCartOrdersAsync(System.Collections.Generic.IEnumerable{YourKitchenCo.Models.CartItem},YourKitchenCo.Models.UserAccount,YourKitchenCo.Models.Company,System.Decimal)">
+            <summary>
+            Converts a cart's items into real Order records — one order per cart
+            line for now (see the implementation for why), applying the
+            company's per-meal subsidy and a single flat delivery fee charged
+            only once per checkout. Shared between the cart's own checkout
+            button and the payment screen so both go through identical logic.
+            Returns the created orders so the confirmation screen can show real
+            details rather than a generic success message.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.GetOrdersForUserAsync(System.String)">
+            <summary>All orders (past and future) placed by a specific user.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.GetActiveOrdersForUserAsync(System.String)">
+            <summary>A user's own upcoming orders (DeliveryDate is today or later).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.GetOrderHistoryForUserAsync(System.String)">
+            <summary>A user's own past orders (DeliveryDate before today).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.GetAllActiveOrdersAsync">
+            <summary>Every upcoming order across every company — for the admin order-management screen.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.GetAllOrdersAsync">
+            <summary>Every order regardless of user, company, or date — for admin reporting/analytics.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.UpdateOrderRatingAsync(System.String,System.Int32)">
+            <summary>Customer's 1-5 star rating for a delivered order.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.UpdateOrderRatingFeedbackAsync(System.String,System.String)">
+            <summary>Optional written feedback alongside a star rating.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.ReportDisputeAsync(System.String,System.String)">
+            <summary>Customer flags a delivered order with an issue — generates a support ticket reference and sets the dispute to "Investigating".</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.IOrderService.UpdateDisputeStatusAsync(System.String,System.String)">
+            <summary>Admin updates a dispute's resolution status.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.JsonProductService">
+             <summary>
+             Real menu data source, replacing MockProductService. Reads two bundled
+             MauiAssets:
+               - staticMenu.json: the always-available a-la-carte menu (categories,
+                 icons, items with standard/large prices and descriptions)
+               - cycleMenu.json: the 8-week rotating daily menu (via ICycleMenuService)
+            
+             "Main" (or any category other than "Weekly") returns the static menu.
+             "Weekly" returns the cycle menu items for the current orderable window
+             (the coming 5 weekdays), each one locked to its specific delivery date
+             since the dish only exists on that day.
+            
+             This is still a local-file stand-in for the eventual Supabase tables —
+             nothing that consumes IProductService needs to change when that happens.
+             </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.JsonProductService.StaticCategoryIcon(System.String)">
+            <summary>
+            Vivid, detailed emoji per static-menu category — deliberately not the
+            generic suggestions from staticMenu.json's own "_icons" map, chosen
+            instead for how accurately and colorfully each one represents the
+            category (e.g. an actual ramen bowl emoji, not a generic bowl).
+            </summary>
+        </member>
+        <member name="F:YourKitchenCo.Services.JsonProductService.CustomCategoryImages">
+            <summary>
+            Real photography per static-menu category — non-copyright, sourced
+            from Unsplash (Unsplash License: free for commercial use, no
+            attribution required — see https://unsplash.com/license). Each URL
+            points at a specific photo's stable CDN address, not a search/random
+            endpoint, so the same image loads every time.
+            </summary>
+            <summary>
+            Admin-set hero image for a category not covered by the hardcoded
+            mapping below — e.g. a brand new category created via "Add Menu
+            Item" with a category name that didn't exist before. Checked first;
+            falls through to the switch below for every category that already
+            has a curated photo.
+            </summary>
+        </member>
+        <member name="F:YourKitchenCo.Services.JsonProductService.ItemPhotoIds">
+            <summary>
+            Exact per-item photo overrides, built up incrementally (one accurate
+            photo per dish, sourced individually — see CHANGELOG for progress).
+            Keyed by the exact item name as it appears in staticMenu.json,
+            case-insensitive. Checked before the category-level fallback below.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:YourKitchenCo.Services.JsonProductService.StaticItemImageUrl(System.String,System.String,System.String)" -->
+        <member name="T:YourKitchenCo.Services.MockCompanyDirectoryService">
+            <summary>
+            In-memory stand-in for the company/company_locations tables. Registered as a
+            singleton so edits persist for the app session. Swap for a Supabase-backed
+            implementation later — nothing that consumes ICompanyDirectoryService needs
+            to change.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.MockOrderService">
+            <summary>
+            In-memory stand-in for the orders/order_items tables. Registered as a
+            singleton so orders placed during the session show up in Active Orders /
+            Order History / the admin order screen immediately. Swap for a
+            Supabase-backed implementation later — the interface doesn't need to change.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.MockOrderService.GenerateTaxInvoiceNumber">
+            <summary>"INV-KC-2609-0001" — INV-KC-YYMM-#### — matching the reference app's tax invoice number format.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.MockUserDirectoryService">
+            <summary>
+            In-memory stand-in for the users table (would map to Supabase auth.users +
+            a profile table). Seeded so LoginPage and AdminUsersPage have something
+            real, and shared as a singleton so admin edits are visible everywhere.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Services.OrderSchedulingService.CutoffTime">
+            <summary>
+            Latest time of day an order can still count as placed "today".
+            The kitchen's real cutoff is 9:00 AM — orders placed after that
+            roll to the next day's cutoff window. Two business days' notice is
+            required (e.g. order Wednesday by 9am for Friday delivery; order
+            Thursday by 9am for Monday delivery, since weekends don't count).
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Services.ISessionService.SelectedOrderingDate">
+            <summary>
+            The delivery day the person picked when they logged in (or last
+            changed it from the cart prompt). Used as the default delivery date
+            for static-menu items added to the basket — cycle-menu items still
+            use their own fixed day since the dish itself only exists on one day.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.SessionService">
+            <summary>
+            Simple in-memory session holder, registered as a singleton. This is a
+            stand-in for Supabase Auth's session — when that's wired in, SignIn/SignOut
+            here would be driven by the auth state-change callback instead of being
+            called directly from LoginViewModel.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Views.AdminNavStrip.ActiveRoute">
+            <summary>
+            The route of the page currently hosting this strip — e.g.
+            "adminreports". Each host page sets this to its own route so the
+            matching tab highlights. Set once per page, not automatically
+            derived, since a ContentView embedded in a page has no reliable way
+            to know its own host's route from the inside.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Views.PageAnimation">
+            <summary>
+            One consistent "how things follow from one page to the next" entrance
+            animation, shared so every page looks and feels the same instead of some
+            pages snapping into view abruptly while others fade in.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Views.Popups.AppAlertPage.ResultTask">
+            <summary>Index of the button that was tapped (0 = first/primary button).</summary>
+        </member>
+        <member name="T:YourKitchenCo.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Button.TextColorTo(Microsoft.Maui.Controls.Button,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_DatePicker.TextColorTo(Microsoft.Maui.Controls.DatePicker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Editor.TextColorTo(Microsoft.Maui.Controls.Editor,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Entry.TextColorTo(Microsoft.Maui.Controls.Entry,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_InputView.TextColorTo(Microsoft.Maui.Controls.InputView,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Label.TextColorTo(Microsoft.Maui.Controls.Label,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_Picker.TextColorTo(Microsoft.Maui.Controls.Picker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_RadioButton.TextColorTo(Microsoft.Maui.Controls.RadioButton,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_SearchBar.TextColorTo(Microsoft.Maui.Controls.SearchBar,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="M:Microsoft.Maui.Controls.ColorAnimationExtensions_TimePicker.TextColorTo(Microsoft.Maui.Controls.TimePicker,Microsoft.Maui.Graphics.Color,System.UInt32,System.UInt32,Microsoft.Maui.Easing,System.Threading.CancellationToken)">
+            <summary>
+            Animates the TextColor of an <see cref = "T:Microsoft.Maui.ITextStyle"/> to the given color
+            </summary>
+            <param name = "element"></param>
+            <param name = "color">The target color to animate the <see cref = "P:Microsoft.Maui.ITextStyle.TextColor"/> to</param>
+            <param name = "rate">The time, in milliseconds, between the frames of the animation</param>
+            <param name = "length">The duration, in milliseconds, of the animation</param>
+            <param name = "easing">The easing function to be used in the animation</param>
+            <param name = "token"><see cref = "T:System.Threading.CancellationToken"/></param>
+            <returns>Value indicating if the animation completed successfully or not</returns>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SearchQuery">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SearchQuery" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsBusy">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsBusy" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CurrentMenuType">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CurrentMenuType" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedWeek">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedWeek" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ActiveWeekNumber">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ActiveWeekNumber" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Quantity">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Quantity" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.FinalPrice">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "FinalPrice" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.NextOrder">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "NextOrder" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedCompanyFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedCompanyFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedDateFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedDateFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsPrepViewActive">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsPrepViewActive" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TodaysRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TodaysRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ActiveOrderCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ActiveOrderCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CompanyCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CompanyCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomerCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomerCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Title">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Title" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Message">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Message" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedAudience">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedAudience" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedTimeframe">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedTimeframe" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCustomRangeVisible">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCustomRangeVisible" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomStartDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomStartDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomEndDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomEndDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalOrders">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalOrders" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.AverageOrderValue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "AverageOrderValue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TopSellingItem">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TopSellingItem" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.PieChart">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "PieChart" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.BarChart">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "BarChart" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedCategoryFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedCategoryFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasDisputes">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasDisputes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedRoleFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedRoleFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CartTotal">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CartTotal" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CompanySubsidyTotal">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CompanySubsidyTotal" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.AmountDue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "AmountDue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.DeliveryFee">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "DeliveryFee" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.DeliveryFeeLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "DeliveryFeeLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsOutsideDeliveryRange">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsOutsideDeliveryRange" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SubsidyLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SubsidyLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCartEmpty">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCartEmpty" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasItems">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasItems" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsOrderingOpen">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsOrderingOpen" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Email">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Email" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Password">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Password" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsRememberMe">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsRememberMe" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.FirstOrder">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "FirstOrder" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalPaid">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalPaid" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ItemCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ItemCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedMethod">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedMethod" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCardSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCardSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CardNumber">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CardNumber" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ExpiryDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ExpiryDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Cvv">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Cvv" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CardholderName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CardholderName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsProcessing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsProcessing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ProcessingMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ProcessingMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedProduct">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedProduct" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalPrice">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalPrice" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SpecialRequests">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SpecialRequests" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.AllergyNotes">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "AllergyNotes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedDeliveryDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedDeliveryDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.UserName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "UserName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Role">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Role" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CompanyName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CompanyName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.MealSubsidyLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "MealSubsidyLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.LocationName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "LocationName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.DeliveryFloor">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "DeliveryFloor" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.MemberSince">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "MemberSince" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.FullName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "FullName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsCompanyAutoMatched">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsCompanyAutoMatched" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.ConfirmPassword">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "ConfirmPassword" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedCompany">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedCompany" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedLocation">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedLocation" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsChangingDay">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsChangingDay" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.AccountEmail">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "AccountEmail" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsNotificationsEnabled">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsNotificationsEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsDarkModeEnabled">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsDarkModeEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Order">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Order" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomerCompanyName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomerCompanyName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomerLocationName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomerLocationName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CartCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CartCount" generated properties.</summary>
+        </member>
+        <member name="T:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs">
+            <summary>
+            A helper type providing cached, reusable <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instances
+            for all properties generated with <see cref="T:CommunityToolkit.Mvvm.ComponentModel.ObservablePropertyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SearchQuery">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SearchQuery" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsBusy">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsBusy" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CurrentMenuType">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CurrentMenuType" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedWeek">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedWeek" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ActiveWeekNumber">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ActiveWeekNumber" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Quantity">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Quantity" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.FinalPrice">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "FinalPrice" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.NextOrder">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "NextOrder" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedCompanyFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedCompanyFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedDateFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedDateFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsPrepViewActive">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsPrepViewActive" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TodaysRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TodaysRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ActiveOrderCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ActiveOrderCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CompanyCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CompanyCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomerCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomerCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Title">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Title" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Message">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Message" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedAudience">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedAudience" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedTimeframe">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedTimeframe" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCustomRangeVisible">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCustomRangeVisible" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomStartDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomStartDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomEndDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomEndDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalOrders">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalOrders" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.AverageOrderValue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "AverageOrderValue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TopSellingItem">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TopSellingItem" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.PieChart">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "PieChart" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.BarChart">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "BarChart" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedCategoryFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedCategoryFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasDisputes">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasDisputes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedRoleFilter">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedRoleFilter" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CartTotal">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CartTotal" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CompanySubsidyTotal">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CompanySubsidyTotal" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.AmountDue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "AmountDue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.DeliveryFee">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "DeliveryFee" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.DeliveryFeeLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "DeliveryFeeLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsOutsideDeliveryRange">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsOutsideDeliveryRange" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SubsidyLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SubsidyLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCartEmpty">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCartEmpty" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasItems">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasItems" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsOrderingOpen">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsOrderingOpen" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Email">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Email" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Password">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Password" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsRememberMe">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsRememberMe" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.FirstOrder">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "FirstOrder" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalPaid">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalPaid" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ItemCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ItemCount" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedMethod">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedMethod" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCardSelected">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCardSelected" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CardNumber">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CardNumber" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ExpiryDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ExpiryDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Cvv">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Cvv" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CardholderName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CardholderName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsProcessing">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsProcessing" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ProcessingMessage">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ProcessingMessage" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedProduct">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedProduct" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalPrice">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalPrice" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SpecialRequests">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SpecialRequests" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.AllergyNotes">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "AllergyNotes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedDeliveryDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedDeliveryDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.UserName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "UserName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Role">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Role" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CompanyName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CompanyName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.MealSubsidyLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "MealSubsidyLabel" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.LocationName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "LocationName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.DeliveryFloor">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "DeliveryFloor" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.MemberSince">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "MemberSince" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.FullName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "FullName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsCompanyAutoMatched">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsCompanyAutoMatched" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.ConfirmPassword">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "ConfirmPassword" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedCompany">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedCompany" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedLocation">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedLocation" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsChangingDay">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsChangingDay" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.AccountEmail">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "AccountEmail" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsNotificationsEnabled">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsNotificationsEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsDarkModeEnabled">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsDarkModeEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Order">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Order" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomerCompanyName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomerCompanyName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomerLocationName">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomerLocationName" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CartCount">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CartCount" generated properties.</summary>
+        </member>
+    </members>
+</doc>

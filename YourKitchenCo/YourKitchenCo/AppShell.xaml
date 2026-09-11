@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="YourKitchenCo.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:YourKitchenCo.Views"
+    FlyoutBehavior="Disabled"
+    Shell.BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+    Shell.ForegroundColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+    Shell.TitleColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+    Shell.TabBarBackgroundColor="{AppThemeBinding Light=#121212, Dark=#F7F2E8}"
+    Shell.TabBarTitleColor="{AppThemeBinding Light=White, Dark=#121212}"
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light=#EFE9DC, Dark=#3C3C42}">
+
+    <!--
+        Bottom tab navigation, replacing the flyout drawer — matching the
+        reference app's design direction. Note on fidelity: the reference
+        uses a floating glass-effect pill (rounded, margins on all sides,
+        translucent blur) positioned above the content. MAUI Shell's native
+        TabBar can't replicate that — it's always a solid, edge-to-edge bar,
+        with no built-in floating/blur support, and reliably faking that
+        with custom platform-specific rendering isn't something I can verify
+        without a live build. This uses Shell's real TabBar instead: fully
+        reliable, monochrome-styled to match the palette, functionally
+        equivalent (persistent bottom nav, active/inactive states) — just
+        not pixel-identical to the floating pill.
+
+        Settings and Help no longer have their own tab (3 tabs matches the
+        reference's non-admin tab count more closely than the previous
+        5-item flyout) — both are still fully reachable as a normal pushed
+        page from Profile > Settings / Profile > Help & Support.
+    -->
+    <TabBar>
+        <Tab Title="Menu" Icon="home.png">
+            <ShellContent Route="userdashboard" ContentTemplate="{DataTemplate views:UserDashboardPage}" />
+        </Tab>
+
+        <Tab Title="Orders" Icon="orders.png">
+            <ShellContent Route="activeorders" Title="Active" ContentTemplate="{DataTemplate views:ActiveOrdersPage}" />
+            <ShellContent Route="orderhistory" Title="History" ContentTemplate="{DataTemplate views:OrderHistoryPage}" />
+        </Tab>
+
+        <Tab Title="Profile" Icon="user.png">
+            <ShellContent Route="profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
+    </TabBar>
+
+</Shell>

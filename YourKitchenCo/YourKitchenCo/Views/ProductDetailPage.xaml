@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="YourKitchenCo.Views.ProductDetailPage"
+             x:DataType="vm:ProductDetailViewModel"
+             Title="{Binding SelectedProduct.Name}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Product Header Photo -->
+            <VerticalStackLayout Spacing="10">
+                <Border StrokeThickness="0" 
+                        StrokeShape="RoundRectangle 12" 
+                        BackgroundColor="{Binding SelectedProduct.Category, Converter={StaticResource CycleCategoryColorConverter}}"
+                        HeightRequest="180">
+                    <Image Source="{Binding SelectedProduct.ImageUrl}"
+                           Aspect="AspectFill" />
+                </Border>
+
+                <Label Text="{Binding SelectedProduct.Name}" FontSize="24" FontAttributes="Bold" />
+                <Label Text="{Binding TotalPrice, StringFormat='R{0:F2}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" FontAttributes="Bold" />
+                <Label Text="{Binding SelectedProduct.Description}" FontSize="14" TextColor="Gray" />
+            </VerticalStackLayout>
+
+            <Line Stroke="LightGray" StrokeThickness="1" />
+
+            <!-- Weekend / ordering-closed banner -->
+            <Border StrokeThickness="0"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#FFF3CD"
+                    Padding="12"
+                    IsVisible="{Binding IsOrderingOpen, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="Ordering is temporarily closed — go ahead and build your basket, checkout will reopen shortly."
+                       TextColor="#856404"
+                       FontSize="13" />
+            </Border>
+
+            <!-- Delivery date picker -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Choose a delivery day" FontAttributes="Bold" FontSize="16" />
+
+                <CollectionView ItemsSource="{Binding AvailableDeliveryDates}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedDeliveryDate, Mode=TwoWay}"
+                                HeightRequest="88">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:DeliveryDateOption">
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}"
+                                    StrokeShape="RoundRectangle 10"
+                                    Padding="12,8"
+                                    WidthRequest="130">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroupList>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateGroupList>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding DisplayLabel}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding CycleMenu.MainMeal}"
+                                           FontSize="10"
+                                           TextColor="Gray"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation"
+                                           IsVisible="{Binding CycleMenu, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <Line Stroke="LightGray" StrokeThickness="1" />
+
+            <!-- Dynamic Customization Groups -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding CustomizationGroups}" Spacing="25">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:CustomizationGroup">
+                        <VerticalStackLayout Spacing="10">
+
+                            <!-- Group Title (e.g., Extras, Spice Level) -->
+                            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" />
+
+                            <!-- SINGLE-SELECT UI (Radio Buttons) -->
+                            <StackLayout BindableLayout.ItemsSource="{Binding Options}" IsVisible="False">
+                                <StackLayout.Triggers>
+                                    <DataTrigger TargetType="StackLayout" Binding="{Binding IsMultiSelect}" Value="False">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                </StackLayout.Triggers>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Option">
+                                        <!-- FIXED: Passed Name directly to Content attribute and stripped style defaults -->
+                                        <RadioButton Content="{Binding DisplayName}"
+                                                     IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                     GroupName="{Binding Source={RelativeSource AncestorType={x:Type models:CustomizationGroup}}, Path=Title}"
+                                                     Style="{x:Null}">
+                                            <RadioButton.ControlTemplate>
+                                                <ControlTemplate>
+                                                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center" Padding="0,5">
+                                                        <Grid WidthRequest="20" HeightRequest="20" VerticalOptions="Center">
+                                                            <!-- Custom Gold Outer Ring -->
+                                                            <Ellipse Stroke="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" StrokeThickness="2" Fill="Transparent"/>
+                                                            <!-- Custom Gold Center Dot -->
+                                                            <Ellipse Fill="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" 
+                                                                     WidthRequest="10" 
+                                                                     HeightRequest="10" 
+                                                                     HorizontalOptions="Center" 
+                                                                     VerticalOptions="Center" 
+                                                                     IsVisible="{TemplateBinding IsChecked}"/>
+                                                        </Grid>
+
+                                                        <!-- FIXED: Read content from the TemplatedParent to bypass the context loss bug -->
+                                                        <Label Text="{Binding Content, Source={RelativeSource TemplatedParent}}" 
+                                                               VerticalOptions="Center" 
+                                                               FontSize="14">
+                                                            <Label.Triggers>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsChecked, Source={RelativeSource TemplatedParent}}" Value="True">
+                                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
+                                                                </DataTrigger>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IsChecked, Source={RelativeSource TemplatedParent}}" Value="False">
+                                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                                                </DataTrigger>
+                                                            </Label.Triggers>
+                                                        </Label>                                                    </HorizontalStackLayout>
+                                                </ControlTemplate>
+                                            </RadioButton.ControlTemplate>
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+
+                            <!-- MULTI-SELECT UI (CheckBoxes) -->
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Options}" IsVisible="False">
+                                <VerticalStackLayout.Triggers>
+                                    <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsMultiSelect}" Value="True">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                </VerticalStackLayout.Triggers>
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Option">
+                                        <HorizontalStackLayout Spacing="10" Margin="0,5,0,5">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                                      Style="{x:Null}"
+                                                      Color="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
+
+                                            <Label Text="{Binding DisplayName}" 
+                                                   VerticalOptions="Center" 
+                                                   FontSize="14">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Line Stroke="LightGray" StrokeThickness="1" />
+
+            <!-- Special Requests -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Special Requests" FontAttributes="Bold" FontSize="16" />
+
+                <Editor Text="{Binding SpecialRequests, Mode=TwoWay}"
+                        Placeholder="e.g., No onions, sauce on the side..."
+                        HeightRequest="70"
+                        AutoSize="Disabled">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#EFE9DC, Dark=#242426}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                </Editor>
+            </VerticalStackLayout>
+
+            <!-- Allergy Notes — kept visually distinct since this is a chef safety
+                 alert, not a general preference; flagged separately on the tax
+                 invoice and counted separately in the kitchen's prep summary. -->
+            <VerticalStackLayout Spacing="5">
+                <HorizontalStackLayout Spacing="6">
+                    <Label Text="⚠️" FontSize="14" VerticalOptions="Center" />
+                    <Label Text="Allergy Notes (Chef Alert)" FontAttributes="Bold" FontSize="16" TextColor="#B45309" />
+                </HorizontalStackLayout>
+
+                <Editor Text="{Binding AllergyNotes, Mode=TwoWay}"
+                        Placeholder="e.g., Severe peanut allergy — chef alert only"
+                        HeightRequest="60"
+                        AutoSize="Disabled">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#1AF59E0B" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#33F59E0B" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                </Editor>
+            </VerticalStackLayout>
+
+            <!-- Action Button -->
+            <Button Text="Add to Basket" 
+                    Command="{Binding AddToCartCommand}"
+                    Margin="0,20,0,0"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

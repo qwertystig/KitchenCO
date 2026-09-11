@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminActiveOrdersPage"
+             x:DataType="vm:AdminActiveOrdersViewModel"
+             Title="Active Orders"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="adminactiveorders" />
+
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, *">
+
+        <!-- Company & Date Filters -->
+        <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+            <HorizontalStackLayout Spacing="8" Margin="16,12,16,8" VerticalOptions="Center">
+                <Label Text="Company:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                <Picker ItemsSource="{Binding CompanyFilterOptions}"
+                        SelectedItem="{Binding SelectedCompanyFilter}"
+                        WidthRequest="180"
+                        Title="Filter Company" />
+                <Label Text="Date:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" Margin="10,0,0,0" />
+                <Picker ItemsSource="{Binding DateFilterOptions}"
+                        SelectedItem="{Binding SelectedDateFilter}"
+                        WidthRequest="170"
+                        Title="Filter Date" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- View toggle -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="8" Margin="16,0,16,8">
+            <Button Grid.Column="0"
+                    Text="📋  Orders View"
+                    Command="{Binding ToggleViewCommand}"
+                    FontAttributes="Bold"
+                    FontSize="13"
+                    HeightRequest="40"
+                    CornerRadius="8"
+                    BorderWidth="1">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="False">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                        <Setter Property="BorderColor" Value="Transparent" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Grid.Column="1"
+                    Text="🍳  Prep Summary"
+                    Command="{Binding ToggleViewCommand}"
+                    FontAttributes="Bold"
+                    FontSize="13"
+                    HeightRequest="40"
+                    CornerRadius="8"
+                    BorderWidth="1">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                        <Setter Property="BorderColor" Value="Transparent" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="False">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+
+        <!-- Print — Orders sheet or Prep sheet, whichever view is active -->
+        <Button Grid.Row="2"
+                Margin="16,0,16,8"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                FontAttributes="Bold"
+                FontSize="13"
+                HeightRequest="40"
+                CornerRadius="8">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="False">
+                    <Setter Property="Text" Value="🖨️  Print Order Sheet" />
+                    <Setter Property="Command" Value="{Binding PrintOrderSheetCommand}" />
+                </DataTrigger>
+                <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="True">
+                    <Setter Property="Text" Value="🖨️  Print Prep Sheet" />
+                    <Setter Property="Command" Value="{Binding PrintPrepSheetCommand}" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+
+        <RefreshView Grid.Row="3" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
+            <Grid>
+
+            <CollectionView ItemsSource="{Binding Orders}" Margin="16,0,16,16" IsVisible="{Binding IsPrepViewActive, Converter={StaticResource InvertedBoolConverter}}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
+                        <Label Text="📋" FontSize="36" HorizontalOptions="Center" Opacity="0.8" />
+                        <Label Text="No active orders match these filters."
+                               FontSize="14" HorizontalTextAlignment="Center" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AdminOrderRow">
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                Padding="16"
+                                Margin="0,0,0,12"
+                                StrokeThickness="0">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="4">
+
+                                <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
+                                    <Label Text="{Binding CompanyName}" FontAttributes="Bold" FontSize="15"
+                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    <Label Text="{Binding LocationName}" FontSize="12" TextColor="#888888" />
+                                </VerticalStackLayout>
+
+                                <Border Grid.Column="1" Grid.Row="0"
+                                        StrokeShape="RoundRectangle 6"
+                                        BackgroundColor="#22121212"
+                                        Padding="8,4"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="Start">
+                                    <Label Text="{Binding Order.Status}" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                </Border>
+
+                                <Label Grid.Column="0" Grid.Row="1"
+                                       Text="{Binding Order.ItemName}"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Spacing="10">
+                                    <Label Text="{Binding DeliveryDateLabel}" FontSize="11" TextColor="#AAAAAA" />
+                                    <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontSize="11" TextColor="#AAAAAA" />
+                                    <Label Text="{Binding Order.TotalAmount, StringFormat='R{0:F2}'}" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </HorizontalStackLayout>
+
+                                <!-- Customer's rating — read-only here, only shown once they've actually rated it -->
+                                <HorizontalStackLayout Grid.Column="0" Grid.Row="3" Spacing="2" IsVisible="{Binding Order.HasRating}">
+                                    <Label Text="{Binding Order.Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=1}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Label Text="{Binding Order.Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=2}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Label Text="{Binding Order.Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=3}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Label Text="{Binding Order.Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=4}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <Label Text="{Binding Order.Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=5}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </HorizontalStackLayout>
+
+                                <!-- Allergy alert — kitchen staff need to actually see this -->
+                                <Border Grid.Column="0" Grid.Row="4"
+                                        IsVisible="{Binding Order.HasAllergyNotes}"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 6"
+                                        BackgroundColor="#1AF59E0B"
+                                        Padding="8,4"
+                                        HorizontalOptions="Start">
+                                    <Label Text="{Binding Order.AllergyNotes, StringFormat='⚠️ {0}'}" FontSize="11" FontAttributes="Bold" TextColor="#B45309" />
+                                </Border>
+
+                                <Button Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+                                        Text="Update"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminActiveOrdersViewModel}}, Path=UpdateStatusCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="12"
+                                        HeightRequest="36"
+                                        VerticalOptions="Center"
+                                        Padding="12,0"
+                                        BackgroundColor="#22888888"
+                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Kitchen Prep Summary — same filtered orders, aggregated by dish -->
+            <CollectionView ItemsSource="{Binding PrepSummary}" Margin="16,0,16,16" IsVisible="{Binding IsPrepViewActive}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
+                        <Label Text="🍳" FontSize="36" HorizontalOptions="Center" Opacity="0.8" />
+                        <Label Text="No dishes to prep for these filters."
+                               FontSize="14" HorizontalTextAlignment="Center" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.Header>
+                    <Label Text="Total quantity needed per dish, across all matching orders — for bulk kitchen prep, not individual plating."
+                           FontSize="12"
+                           Margin="0,0,0,10"
+                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PrepSummaryItem">
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                StrokeThickness="1"
+                                Padding="14"
+                                Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0"
+                                        WidthRequest="44" HeightRequest="44"
+                                        StrokeThickness="0" StrokeShape="RoundRectangle 22"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                    <Label Text="{Binding TotalQuantity}" FontSize="16" FontAttributes="Bold"
+                                           HorizontalOptions="Center" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                                </Border>
+                                <Label Grid.Column="1" Text="{Binding DishName}" FontSize="15" FontAttributes="Bold"
+                                       VerticalOptions="Center" Margin="14,0,0,0"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            </Grid>
+        </RefreshView>
+        </Grid>
+    </Grid>
+</ContentPage>

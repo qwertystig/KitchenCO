@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YourKitchenCo.Views.RegisterPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <!-- ScrollView ensures users on smaller devices can comfortably scroll the form fields -->
+    <ScrollView>
+        <VerticalStackLayout Padding="30" VerticalOptions="Center" Spacing="20">
+
+            <!-- Dynamic Brand Logo Frame -->
+            <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
+                   HeightRequest="250"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   Margin="0,10,0,0" />
+
+            <!-- Title Header -->
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                <Label Text="Create Account" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                <Label Text="Join YourKitchenCo today" 
+                       FontSize="14" 
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+            </VerticalStackLayout>
+
+            <!-- Form Input Group -->
+            <VerticalStackLayout Spacing="14">
+
+                <!-- Full Name -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50">
+                    <Entry Placeholder="Full Name (e.g., John Doe)" 
+                           Text="{Binding FullName}" 
+                           Keyboard="Text"
+                           BackgroundColor="Transparent"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                           PlaceholderColor="#888888"
+                           Margin="15,0"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Email Address -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50">
+                    <Entry Placeholder="Email Address (e.g., john.doe@example.com)" 
+                           Keyboard="Email" 
+                           Text="{Binding Email}" 
+                           BackgroundColor="Transparent"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                           PlaceholderColor="#888888"
+                           Margin="15,0"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Password -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50">
+                    <Entry Placeholder="Password (min. 8 characters)" 
+                           IsPassword="True" 
+                           Text="{Binding Password}" 
+                           BackgroundColor="Transparent"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                           PlaceholderColor="#888888"
+                           Margin="15,0"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Confirm Password -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50">
+                    <Entry Placeholder="Confirm Password (match your password)" 
+                           IsPassword="True" 
+                           Text="{Binding ConfirmPassword}" 
+                           BackgroundColor="Transparent"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                           PlaceholderColor="#888888"
+                           Margin="15,0"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Company -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50">
+                    <Picker Title="Select your company"
+                            ItemsSource="{Binding Companies}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedCompany}"
+                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                            Margin="15,0"
+                            VerticalOptions="Center" />
+                </Border>
+
+                <Label Text="✓ Matched automatically from your email address"
+                       FontSize="11"
+                       FontAttributes="Bold"
+                       TextColor="#059669"
+                       IsVisible="{Binding IsCompanyAutoMatched}"
+                       Margin="4,-6,0,0" />
+
+                <!-- Location -->
+                <Border StrokeThickness="1" 
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="50"
+                        IsEnabled="{Binding SelectedCompany, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                    <Picker Title="Select your delivery location"
+                            ItemsSource="{Binding Locations}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedLocation}"
+                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                            Margin="15,0"
+                            VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Dynamic Icon Actions Section -->
+            <VerticalStackLayout Spacing="10" Margin="0,10,0,0">
+                <!-- Icon-Enhanced Premium Sign Up Button -->
+                <Button Text="🚀  🚀  GET STARTED"
+                        Command="{Binding RegisterCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                        FontAttributes="Bold"
+                        FontSize="15"
+                        HeightRequest="50"
+                        CornerRadius="25">
+                    <Button.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#20000000, Dark=#40000000}" Offset="0,4" Radius="6" Opacity="0.7"/>
+                    </Button.Shadow>
+                </Button>
+
+                <!-- Navigation Back Link -->
+                <Button Text="Already have an account? Login" 
+                        Command="{Binding BackToLoginCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        FontAttributes="Bold"
+                        FontSize="13" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

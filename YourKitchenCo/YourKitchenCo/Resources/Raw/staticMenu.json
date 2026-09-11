@@ -1,0 +1,924 @@
+{
+  "SALAD BAR": {
+    "items": [
+      {
+        "name": "Tuna Salad",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Roasted Butternut Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Grilled Chicken Salad",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Grilled Haloumi Salad",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Thai Beef Noodle Salad",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Cajun Chicken & Brown Rice Salad",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Roasted Vegetable and Couscous Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Chicken Greek Village Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Grilled Chicken",
+        "price": "R30.00"
+      },
+      {
+        "name": "Grilled Halloumi",
+        "price": "R30.00"
+      },
+      {
+        "name": "Grilled Sirloin Steak 150g",
+        "price": "R95.00"
+      },
+      {
+        "name": "Danish Feta",
+        "price": "R20.00"
+      }
+    ]
+  },
+  "POKE BOWL": {
+    "items": [
+      {
+        "name": "Salmon",
+        "prices": [
+          "R140.00",
+          "R280.00"
+        ]
+      },
+      {
+        "name": "Chicken Teriyaki",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      },
+      {
+        "name": "Tinned Tuna",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "High Protein",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      },
+      {
+        "name": "Mediterranean",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Grilled Chicken",
+        "price": "R30.00"
+      },
+      {
+        "name": "Grilled Halloumi",
+        "price": "R30.00"
+      },
+      {
+        "name": "Grilled Sirloin Steak 150g",
+        "price": "R95.00"
+      },
+      {
+        "name": "Danish Feta",
+        "price": "R20.00"
+      }
+    ]
+  },
+  "STIR FRY": {
+    "items": [
+      {
+        "name": "Beef Stir-Fry (Noodles)",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Beef Stir-Fry (Rice)",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Chicken Stir-Fry (Noodles)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Chicken Stir-Fry (Rice)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Pork Stir-Fry (Noodles)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Pork Stir-Fry (Rice)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Vegetarian Stir-Fry (Noodles)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Vegetarian Stir-Fry (Rice)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Extra Chicken",
+        "price": "R30.00"
+      },
+      {
+        "name": "Extra Beef",
+        "price": "R45.00"
+      },
+      {
+        "name": "Extra Pork",
+        "price": "R40.00"
+      }
+    ]
+  },
+  "CIAO ITALY": {
+    "items": [
+      {
+        "name": "Chicken Aglio e Olio Penne",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Chicken Napolitana Penne",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Chicken Alfredo Linguini Pasta",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Chicken Pesto Penne",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Spaghetti Meatballs",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Spaghetti Bolognaise",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Beef Lasagne",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Macaroni, Cheese and Macon",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Creamy Lemon Prawn & Calamari Spaghetti",
+        "prices": [
+          "R145.00",
+          "R300.00"
+        ]
+      },
+      {
+        "name": "Traditional Spaghetti Carbonara",
+        "prices": [
+          "R90.00",
+          "R170.00"
+        ]
+      },
+      {
+        "name": "Traditional Alfredo Linguini",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Mafia Gnocchi",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Deboned Oxtail Risotto",
+        "prices": [
+          "R120.00",
+          "R200.00"
+        ]
+      },
+      {
+        "name": "Porcini Mushroom Risotto (V)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Spaghetti ala Courgette (V)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Penne Arrabbiata (V)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Roasted Vegetable Penne (V)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Creamy Spinach and Feta Penne (V)",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Butternut Napolitana Ravioli (V)",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Aubergine & Courgette Lasagne (V)",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Spaghetti Cacio e Pepe Carbonara (V)",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Extra Parmesan Cheese",
+        "price": "R25.00"
+      },
+      {
+        "name": "Extra Mozzarella",
+        "price": "R25.00"
+      },
+      {
+        "name": "Extra Bacon",
+        "price": "R15.00"
+      },
+      {
+        "name": "Extra Macon",
+        "price": "R30.00"
+      }
+    ]
+  },
+  "WRAPS": {
+    "items": [
+      {
+        "name": "Middle Eastern",
+        "price": "R80.00"
+      },
+      {
+        "name": "Mexican Grilled Chicken",
+        "price": "R80.00"
+      },
+      {
+        "name": "BBQ Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "Salmon",
+        "price": "R80.00"
+      },
+      {
+        "name": "Halloumi",
+        "price": "R80.00"
+      },
+      {
+        "name": "Japanese BBQ Roast Pork",
+        "price": "R80.00"
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Sweet Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Asian Slaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Coleslaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Village Greek Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Green Salad",
+        "price": "R20.00"
+      },
+      {
+        "name": "Potato Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Grilled Chicken",
+        "price": "R30.00"
+      },
+      {
+        "name": "Grilled Halloumi",
+        "price": "R30.00"
+      },
+      {
+        "name": "Beef",
+        "price": "R45.00"
+      }
+    ]
+  },
+  "SANDWICHES": {
+    "items": [
+      {
+        "name": "Grilled Chicken",
+        "price": "R80.00"
+      },
+      {
+        "name": "Egg Mayonnaise",
+        "price": "R80.00"
+      },
+      {
+        "name": "Roast Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "Napoli",
+        "price": "R80.00"
+      },
+      {
+        "name": "Water Thin Chicken Roll",
+        "price": "R80.00"
+      },
+      {
+        "name": "Goat Cheese",
+        "price": "R80.00"
+      },
+      {
+        "name": "Middle Eastern",
+        "price": "R80.00"
+      },
+      {
+        "name": "Ham & Cheese",
+        "price": "R80.00"
+      },
+      {
+        "name": "Ham & Cheese Omelette",
+        "price": "R80.00"
+      },
+      {
+        "name": "Chicken Mayonnaise",
+        "price": "R80.00"
+      },
+      {
+        "name": "Macon, Egg, Cheese & Tomato",
+        "price": "R80.00"
+      },
+      {
+        "name": "Macon, Cheese & Tomato",
+        "price": "R80.00"
+      },
+      {
+        "name": "Cheese & Tomato",
+        "price": "R80.00"
+      },
+      {
+        "name": "Bacon, Egg, Cheese & Tomato",
+        "price": "R80.00"
+      },
+      {
+        "name": "Bacon, Cheese & Tomato",
+        "price": "R80.00"
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Sweet Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Asian Slaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Coleslaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Village Greek Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Green Salad",
+        "price": "R20.00"
+      },
+      {
+        "name": "Potato Salad",
+        "price": "R25.00"
+      }
+    ]
+  },
+  "HOT DOGS": {
+    "items": [
+      {
+        "name": "Mexican Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "Classic Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "French Beef",
+        "price": "R80.00"
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Sweet Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Asian Slaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Coleslaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Village Greek Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Green Salad",
+        "price": "R20.00"
+      },
+      {
+        "name": "Potato Salad",
+        "price": "R25.00"
+      }
+    ]
+  },
+  "BURGER BAR": {
+    "items": [
+      {
+        "name": "Classic Burger - Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "Classic Burger - Chicken",
+        "price": "R80.00"
+      },
+      {
+        "name": "Classic Burger - Halloumi",
+        "price": "R80.00"
+      },
+      {
+        "name": "Cheese Burger - Beef",
+        "price": "R80.00"
+      },
+      {
+        "name": "Cheese Burger - Chicken",
+        "price": "R80.00"
+      },
+      {
+        "name": "Cheese Burger - Halloumi",
+        "price": "R80.00"
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Cheese Sauce",
+        "price": "R35.00"
+      },
+      {
+        "name": "Cheesy Jalapeno Sauce",
+        "price": "R35.00"
+      },
+      {
+        "name": "Mushroom Sauce",
+        "price": "R35.00"
+      },
+      {
+        "name": "Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Sweet Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Asian Slaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Coleslaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Village Greek Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Green Salad",
+        "price": "R20.00"
+      },
+      {
+        "name": "Potato Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Extra Beef Patty",
+        "price": "R40.00"
+      },
+      {
+        "name": "Extra Chicken Fillet",
+        "price": "R35.00"
+      },
+      {
+        "name": "Extra Halloumi",
+        "price": "R45.00"
+      },
+      {
+        "name": "Extra Cheese",
+        "price": "R25.00"
+      },
+      {
+        "name": "Extra Bacon",
+        "price": "R15.00"
+      },
+      {
+        "name": "Extra Macon",
+        "price": "R30.00"
+      }
+    ]
+  },
+  "FITNESS MEALS": {
+    "items": [
+      {
+        "name": "Grilled Chicken Fillet | Sweet Potato | Broccoli",
+        "price": "R80.00"
+      },
+      {
+        "name": "Grilled Chicken Fillet | Brown Rice| Broccoli",
+        "price": "R80.00"
+      },
+      {
+        "name": "Grilled Chicken Fillet | Seasonal Vegetables | Broccoli",
+        "price": "R80.00"
+      },
+      {
+        "name": "Grilled Beef Fillet | Sweet Potato | Broccoli",
+        "price": "R130.00"
+      },
+      {
+        "name": "Grilled Beef Fillet | Brown Rice| Broccoli",
+        "price": "R130.00"
+      },
+      {
+        "name": "Grilled Beef Fillet | Seasonal Vegetables | Broccoli",
+        "price": "R130.00"
+      }
+    ],
+    "addOns": []
+  },
+  "HOMEMADE WINTER SOUPS": {
+    "items": [
+      {
+        "name": "Ginger & Honey Butternut Soup",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Pea, Tomato & Lentil Soup",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Barley and Vegetable Soup",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      }
+    ],
+    "addOns": []
+  },
+  "RAMEN BOWLS": {
+    "items": [
+      {
+        "name": "Pulled Chicken",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      },
+      {
+        "name": "Slow Cooked Brisket",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      },
+      {
+        "name": "Tofu and Vegetable",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      },
+      {
+        "name": "Roasted Pork Belly",
+        "prices": [
+          "R80.00",
+          "R160.00"
+        ]
+      }
+    ],
+    "addOns": []
+  },
+  "VEGAN MEALS": {
+    "items": [
+      {
+        "name": "Roasted Butternut Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Roasted Vegetable and Couscous Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Green Salad",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Potato Salad (Vinaigrette)",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Spaghetti ala Courgette",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Penne Arrabbiata",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Roasted Vegetable Penne",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Butternut Napolitana Ravioli",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Aubergine and Courgette Lasagne",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Vegetarian Stir-Fry",
+        "prices": [
+          "R80.00",
+          "R120.00"
+        ]
+      },
+      {
+        "name": "Mediterranean Poke Bowl",
+        "prices": [
+          "R80.00",
+          "R130.00"
+        ]
+      },
+      {
+        "name": "Mediterranean Sandwich",
+        "price": "R80.00"
+      },
+      {
+        "name": "Hummus & Roasted Vegetable Sandwich",
+        "price": "R80.00"
+      }
+    ],
+    "addOns": []
+  },
+  "PORK SPECIALITIES": {
+    "items": [
+      {
+        "name": "Slow Cooked Pork Belly",
+        "prices": [
+          "R120.00",
+          "R200.00"
+        ]
+      },
+      {
+        "name": "Pork Bangers & Mash",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Sweet & Sour Pork",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      },
+      {
+        "name": "Flame Grilled Pork Rashers",
+        "prices": [
+          "R80.00",
+          "R140.00"
+        ]
+      }
+    ],
+    "addOns": [
+      {
+        "name": "Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Sweet Potato Wedges",
+        "price": "R35.00"
+      },
+      {
+        "name": "Asian Slaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Coleslaw",
+        "price": "R20.00"
+      },
+      {
+        "name": "Village Greek Salad",
+        "price": "R25.00"
+      },
+      {
+        "name": "Green Salad",
+        "price": "R20.00"
+      },
+      {
+        "name": "Potato Salad",
+        "price": "R25.00"
+      }
+    ]
+  }
+}
