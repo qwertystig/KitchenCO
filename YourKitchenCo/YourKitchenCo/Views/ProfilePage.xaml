@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="YourKitchenCo.Views.ProfilePage"
              Title="My Profile"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="24" HorizontalOptions="Fill">

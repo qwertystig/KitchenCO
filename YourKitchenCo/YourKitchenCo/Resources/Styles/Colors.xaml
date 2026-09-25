@@ -3,102 +3,97 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!--
-        Your Kitchen Co. brand colours — MAJOR REVISION: switched to a
-        monochrome "executive" palette, matching the visual direction of a
-        parallel reference implementation (React Native/Expo, built by a
-        collaborator) that the client is leaning towards. This replaces
-        every previous color experiment in this file's history (pink, then
-        white, then various blue/red/yellow combinations) — this is
-        deliberately NOT another color swap layered on top; the whole
-        premise changes from "which accent color" to "no bright accent
-        color at all, just near-black/cream contrast plus real photography
-        and typography for visual interest."
+        Your Kitchen Co. brand colours, synced to match the React Native/Expo
+        build (src/utils/theme.ts) so both apps read as the same product.
 
-        LIGHT MODE:
-          - Page background: Cream #F7F2E8 (unchanged from before)
-          - Card / surface backgrounds: White
-          - Primary accent (headings, prices, CTAs, icons): near-black #121212
-          - Body text: near-black #121212, secondary text warm gray #4E4E4E
+        Base: black/white monochrome, matching the client's "keep the
+        overall feel black and white" instruction. BrandPop (#3571B7 light /
+        #B6DFF8 dark, from the client's CI palette) is reserved for exactly
+        three narrow spots, same as the RN app: the selected tab bar icon,
+        the soft glow behind the login logo, and the delivery-day calendar
+        icon. It is NOT used for BrandGold/Gold (still monochrome below) —
+        those keys are used broadly across admin/profile labels and selected
+        states, and recoloring them would over-apply colour well beyond what
+        the client asked for.
 
-        DARK MODE (previously "Summer Harvest" warm terracotta — retired,
-        since the reference app applies the same monochrome logic to both
-        themes rather than a separate warm palette for dark mode):
-          - Page background: near-black #121212
-          - Card / surface backgrounds: dark charcoal #1C1C1E
-          - Primary accent (headings, prices, CTAs, icons): cream #F7F2E8
-          - Body text: cream #F7F2E8, secondary text cool gray #A1A1AA
-
-        Color is now reserved for semantic state only — error (red) and
-        success (green) — never for decoration. This is a deliberate,
-        opposite reaction to "too colorful, not professional" feedback from
-        a few passes back: rather than tuning which colors, there mostly
-        aren't any anymore.
-
-        #363C1E ("Forest Green") remains intentionally excluded, though
-        it's moot now since there's no green in this palette at all besides
-        the semantic success color below.
+        Error/Success/Warning/Info are the semantic status colours, values
+        matched 1:1 to theme.ts.
     -->
 
     <!-- Light Theme Values -->
-    <Color x:Key="PageBgLight">#F7F2E8</Color>
+    <Color x:Key="PageBgLight">#FFFFFF</Color>
     <Color x:Key="CardBgLight">#FFFFFF</Color>
-    <Color x:Key="PrimaryTextLight">#121212</Color>
-    <Color x:Key="SecondaryTextLight">#4E4E4E</Color>
-    <Color x:Key="ButtonBgLight">#121212</Color>
+    <Color x:Key="PrimaryTextLight">#000000</Color>
+    <Color x:Key="SecondaryTextLight">#6B6B6B</Color>
+    <Color x:Key="ButtonBgLight">#000000</Color>
     <Color x:Key="ButtonTextLight">#FFFFFF</Color>
 
     <!-- Dark Theme Values -->
-    <Color x:Key="PageBgDark">#121212</Color>
-    <Color x:Key="CardBgDark">#1C1C1E</Color>
-    <Color x:Key="PrimaryTextDark">#F7F2E8</Color>
-    <Color x:Key="SecondaryTextDark">#A1A1AA</Color>
-    <Color x:Key="ButtonBgDark">#F7F2E8</Color>
-    <Color x:Key="ButtonTextDark">#121212</Color>
+    <Color x:Key="PageBgDark">#0B0B0B</Color>
+    <Color x:Key="CardBgDark">#141414</Color>
+    <Color x:Key="PrimaryTextDark">#FFFFFF</Color>
+    <Color x:Key="SecondaryTextDark">#A0A0A0</Color>
+    <Color x:Key="ButtonBgDark">#FFFFFF</Color>
+    <Color x:Key="ButtonTextDark">#000000</Color>
 
     <!-- ===== Accent colours — monochrome: same logic both themes, just inverted ===== -->
     <!-- Consume via: {AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}} -->
 
-    <!-- Primary: near-black (light) / cream (dark) — the one accent, everywhere -->
-    <Color x:Key="Primary">#121212</Color>
-    <Color x:Key="PrimaryDark">#F7F2E8</Color>
-    <Color x:Key="PrimaryDarkText">#121212</Color>
+    <!-- Primary: black (light) / white (dark) — every primary button/CTA -->
+    <Color x:Key="Primary">#000000</Color>
+    <Color x:Key="PrimaryDark">#FFFFFF</Color>
+    <Color x:Key="PrimaryDarkText">#000000</Color>
 
     <!-- Secondary: same monochrome logic — kept as a distinct key for existing bindings, not a different hue -->
-    <Color x:Key="Secondary">#121212</Color>
-    <Color x:Key="SecondaryDark">#F7F2E8</Color>
-    <Color x:Key="SecondaryDarkText">#121212</Color>
+    <Color x:Key="Secondary">#000000</Color>
+    <Color x:Key="SecondaryDark">#FFFFFF</Color>
+    <Color x:Key="SecondaryDarkText">#000000</Color>
 
-    <!-- BrandGold (legacy key name) — icon tinting app-wide, monochrome -->
-    <Color x:Key="BrandGold">#121212</Color>
-    <Color x:Key="BrandGoldDark">#F7F2E8</Color>
+    <!-- BrandGold (legacy key name) — used app-wide for admin/profile field labels and values. Monochrome, matching accent, NOT BrandPop. -->
+    <Color x:Key="BrandGold">#000000</Color>
+    <Color x:Key="BrandGoldDark">#FFFFFF</Color>
 
-    <!-- Gold (legacy key name) — selected-state accents, monochrome -->
-    <Color x:Key="Gold">#121212</Color>
-    <Color x:Key="GoldDark">#F7F2E8</Color>
+    <!-- Gold (legacy key name) — selected-state accents (cart delivery label, product customization). Monochrome, matching accent, NOT BrandPop. -->
+    <Color x:Key="Gold">#000000</Color>
+    <Color x:Key="GoldDark">#FFFFFF</Color>
 
     <!-- Tertiary — monochrome -->
-    <Color x:Key="Tertiary">#121212</Color>
-    <Color x:Key="TertiaryDark">#F7F2E8</Color>
+    <Color x:Key="Tertiary">#000000</Color>
+    <Color x:Key="TertiaryDark">#FFFFFF</Color>
 
-    <!-- Semantic state colors — the ONLY colors in this palette besides monochrome -->
-    <Color x:Key="ErrorLight">#DC2626</Color>
-    <Color x:Key="ErrorDark">#F87171</Color>
-    <Color x:Key="SuccessLight">#059669</Color>
-    <Color x:Key="SuccessDark">#34D399</Color>
+    <!-- ===== BrandPop — the client's CI blue, reserved for 3 narrow spots only ===== -->
+    <Color x:Key="BrandPop">#3571B7</Color>
+    <Color x:Key="BrandPopDark">#B6DFF8</Color>
+    <!-- Pre-computed low-alpha tints of BrandPop for the login glow rings (5% / 9%), so LoginPage.xaml doesn't need per-platform alpha math. -->
+    <Color x:Key="BrandPopGlowOuterLight">#0D3571B7</Color>
+    <Color x:Key="BrandPopGlowOuterDark">#0DB6DFF8</Color>
+    <Color x:Key="BrandPopGlowInnerLight">#173571B7</Color>
+    <Color x:Key="BrandPopGlowInnerDark">#17B6DFF8</Color>
 
-    <!-- Border colors, used to give white-on-cream / charcoal-on-black surfaces definition without a fill color -->
-    <Color x:Key="SurfaceBorderLight">#E5DFD3</Color>
-    <Color x:Key="SurfaceBorderDark">#2E2E32</Color>
+    <!-- Semantic state colors — values matched to theme.ts -->
+    <Color x:Key="ErrorLight">#AF1718</Color>
+    <Color x:Key="ErrorDark">#CB6869</Color>
+    <Color x:Key="SuccessLight">#1DA836</Color>
+    <Color x:Key="SuccessDark">#22C55E</Color>
+    <Color x:Key="WarningLight">#E8A100</Color>
+    <Color x:Key="WarningDark">#F5A623</Color>
+    <Color x:Key="InfoLight">#0073E6</Color>
+    <Color x:Key="InfoDark">#3B9EFF</Color>
+
+    <!-- Border colors, used to give white-on-white / charcoal-on-black surfaces definition without a fill color -->
+    <Color x:Key="SurfaceBorderLight">#EBEBEB</Color>
+    <Color x:Key="SurfaceBorderDark">#2C2C2C</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
-    <Color x:Key="Cream">#F7F2E8</Color>
-    <Color x:Key="Charcoal">#121212</Color>
-    <Color x:Key="OffBlack">#121212</Color>
+    <!-- Cream: light-mode-only screen background for Menu, Cart, Orders, Profile and Checkout (matches RN's #FDF9E9 usage on those same screens; not used in dark mode). -->
+    <Color x:Key="Cream">#FDF9E9</Color>
+    <Color x:Key="Charcoal">#0B0B0B</Color>
+    <Color x:Key="OffBlack">#000000</Color>
 
-    <!-- Kept for Styles.xaml's implicit Label/TabBar setters, which reference these key names directly. -->
-    <Color x:Key="MidnightBlue">#121212</Color>
-    <Color x:Key="Magenta">#121212</Color>
+    <!-- Kept for Styles.xaml's implicit Label/TabBar setters, which reference these key names directly. Monochrome — headings stay black/white, not BrandPop. -->
+    <Color x:Key="MidnightBlue">#000000</Color>
+    <Color x:Key="Magenta">#000000</Color>
 
     <!-- Grayscale -->
     <Color x:Key="Gray100">#E1E1E1</Color>
@@ -120,5 +115,6 @@
     <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="GoldBrush" Color="{StaticResource Gold}"/>
+    <SolidColorBrush x:Key="BrandPopBrush" Color="{StaticResource BrandPop}"/>
 
 </ResourceDictionary>

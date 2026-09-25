@@ -6,7 +6,7 @@
              x:Class="YourKitchenCo.Views.CartPage"
              x:DataType="vm:CartPageViewModel"
              Title="Your Basket"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <Grid RowDefinitions="*, Auto">
 
