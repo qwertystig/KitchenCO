@@ -26,6 +26,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IOrderSchedulingService, OrderSchedulingService>();
         builder.Services.AddSingleton<ICycleMenuService, CycleMenuService>();
         builder.Services.AddSingleton<ICompanyDirectoryService, MockCompanyDirectoryService>();
+        builder.Services.AddSingleton<IDiscountService, MockDiscountService>();
         builder.Services.AddSingleton<IUserDirectoryService, MockUserDirectoryService>();
         builder.Services.AddSingleton<IOrderService, MockOrderService>();
         builder.Services.AddSingleton<ISessionService, SessionService>();
@@ -57,8 +58,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AdminMenuViewModel>();
         builder.Services.AddTransient<AdminActiveOrdersViewModel>();
         builder.Services.AddTransient<AdminCompaniesViewModel>();
-   
-
+        builder.Services.AddTransient<AdminDiscountsViewModel>();
 
         // 4. Views
         builder.Services.AddTransient<UserDashboardPage>();
@@ -83,6 +83,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AdminMenuPage>();
         builder.Services.AddTransient<AdminActiveOrdersPage>();
         builder.Services.AddTransient<AdminCompaniesPage>();
+        builder.Services.AddTransient<AdminDiscountsPage>();
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
