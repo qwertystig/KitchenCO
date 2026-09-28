@@ -6,6 +6,7 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
+    <ScrollView>
     <VerticalStackLayout Padding="30" VerticalOptions="Center" Spacing="20">
 
         <!-- Logo Frame Scaling, with the client's brand-blue glow behind it (matches the RN app's login screen) -->
@@ -98,7 +99,7 @@
             <Button Text="🔐  SECURE LOGIN"
                     Command="{Binding LoginCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                     FontAttributes="Bold"
                     FontSize="15"
                     HeightRequest="50"
@@ -125,4 +126,5 @@
         </VerticalStackLayout>
 
     </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

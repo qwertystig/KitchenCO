@@ -54,7 +54,7 @@
                                         <VisualState Name="Selected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                                                <Setter TargetName="DateLabel" Property="Label.TextColor" Value="White" />
+                                                <Setter TargetName="DateLabel" Property="Label.TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>

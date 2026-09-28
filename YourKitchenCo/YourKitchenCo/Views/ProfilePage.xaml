@@ -38,9 +38,9 @@
                         <!-- Routes directly to change image commands inside your view model -->
                         <TapGestureRecognizer Command="{Binding ChangeProfilePictureCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="📷" 
-                           FontSize="14" 
-                           TextColor="White"
+                    <Label Text="📷"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                            HorizontalOptions="Center" 
                            VerticalOptions="Center" />
                 </Border>

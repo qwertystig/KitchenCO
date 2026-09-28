@@ -134,7 +134,7 @@
             <Button Text="{Binding UpcomingOrders.Count, StringFormat='📤  Bulk Update Status ({0} orders)'}"
                     Command="{Binding BulkUpdateStatusCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                     FontAttributes="Bold"
                     FontSize="13"
                     HeightRequest="40"
