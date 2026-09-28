@@ -6,14 +6,24 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
+    <ScrollView>
     <VerticalStackLayout Padding="30" VerticalOptions="Center" Spacing="20">
 
-        <!-- Logo Frame Scaling -->
-        <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
-               HeightRequest="350"
-               HorizontalOptions="Center"
-               Aspect="AspectFit"
-               Margin="0,0,0,5" />
+        <!-- Logo Frame Scaling, with the client's brand-blue glow behind it (matches the RN app's login screen) -->
+        <Grid HorizontalOptions="Center" Margin="0,0,0,5">
+            <Ellipse WidthRequest="130" HeightRequest="130"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     InputTransparent="True"
+                     Fill="{AppThemeBinding Light={StaticResource BrandPopGlowOuterLight}, Dark={StaticResource BrandPopGlowOuterDark}}" />
+            <Ellipse WidthRequest="78" HeightRequest="78"
+                     HorizontalOptions="Center" VerticalOptions="Center"
+                     InputTransparent="True"
+                     Fill="{AppThemeBinding Light={StaticResource BrandPopGlowInnerLight}, Dark={StaticResource BrandPopGlowInnerDark}}" />
+            <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
+                   HeightRequest="350"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit" />
+        </Grid>
 
         <!-- Subtitle Context Header -->
         <Label Text="Sign in to continue" 
@@ -89,7 +99,7 @@
             <Button Text="🔐  SECURE LOGIN"
                     Command="{Binding LoginCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                     FontAttributes="Bold"
                     FontSize="15"
                     HeightRequest="50"
@@ -116,4 +126,5 @@
         </VerticalStackLayout>
 
     </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

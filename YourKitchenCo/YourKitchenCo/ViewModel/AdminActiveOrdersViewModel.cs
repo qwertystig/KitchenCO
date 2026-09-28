@@ -152,6 +152,49 @@ public partial class AdminActiveOrdersViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Sets every order in the current company/date filter to one status in
+    /// one go — Ingrid's "select all orders or individual or per company to
+    /// change status of delivery" request. Individual per-order updates
+    /// still go through UpdateStatusAsync above; this is the batch version,
+    /// scoped to whatever's currently filtered (so "all of Ecogra's Tuesday
+    /// order" is just filter-then-mark-all, without needing a separate
+    /// selection UI).
+    /// </summary>
+    [RelayCommand]
+    private async Task MarkAllFilteredAsync()
+    {
+        if (Orders.Count == 0)
+        {
+            await AlertService.Instance.ShowAsync("No Orders", "There are no orders matching the current filters.", "OK");
+            return;
+        }
+
+        string action = await AlertService.Instance.ShowActionSheetAsync(
+            $"Mark all {Orders.Count} filtered order(s) as...", "Cancel", "Received", "Preparing", "Out for Delivery", "Delivered");
+
+        if (string.IsNullOrEmpty(action) || action == "Cancel") return;
+
+        bool confirmed = await AlertService.Instance.ShowConfirmAsync(
+            "Confirm Bulk Update",
+            $"Set all {Orders.Count} order(s) for {SelectedCompanyFilter} / {SelectedDateFilter} to \"{action}\"?",
+            "Confirm", "Cancel");
+        if (!confirmed) return;
+
+        IsBusy = true;
+        int count = Orders.Count;
+        foreach (var row in Orders)
+        {
+            row.Order.Status = action;
+            await _orderService.UpdateOrderStatusAsync(row.Order.Id, action);
+        }
+        IsBusy = false;
+
+        ApplyFilter();
+
+        await AlertService.Instance.ShowAsync("Updated", $"{count} order(s) marked as {action}.", "OK");
+    }
+
+    /// <summary>
     /// Builds a plain-text order sheet for whatever's currently filtered
     /// (by company and/or date) and hands it to the OS share sheet, where
     /// "Print" is one of the standard options on both iOS and Android —

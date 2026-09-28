@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
              x:Class="YourKitchenCo.Views.OrderHistoryPage"
              Title="Order History"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshHistoryCommand}" RefreshColor="#121212">
         <CollectionView ItemsSource="{Binding OrderHistory}" Margin="16, 12">

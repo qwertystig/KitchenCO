@@ -12,7 +12,7 @@
     <Grid RowDefinitions="Auto, *">
         <views:AdminNavStrip Grid.Row="0" ActiveRoute="adminactiveorders" />
 
-        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, *">
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, *">
 
         <!-- Company & Date Filters -->
         <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -98,7 +98,21 @@
             </Button.Triggers>
         </Button>
 
-        <RefreshView Grid.Row="3" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
+        <!-- Bulk status update for the whole current filter — e.g. every order for one company/date at once -->
+        <Button Grid.Row="3"
+                Text="✅  Mark All Filtered As..."
+                Command="{Binding MarkAllFilteredCommand}"
+                Margin="16,0,16,8"
+                BackgroundColor="Transparent"
+                BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                BorderWidth="1"
+                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                FontAttributes="Bold"
+                FontSize="13"
+                HeightRequest="40"
+                CornerRadius="8" />
+
+        <RefreshView Grid.Row="4" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
             <Grid>
 
             <CollectionView ItemsSource="{Binding Orders}" Margin="16,0,16,16" IsVisible="{Binding IsPrepViewActive, Converter={StaticResource InvertedBoolConverter}}">

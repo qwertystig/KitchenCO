@@ -6,7 +6,7 @@
              x:Class="YourKitchenCo.Views.UserDashboardPage"
              x:DataType="viewModel:UserDashboardViewModel"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <Grid>
     <ScrollView>
@@ -89,7 +89,7 @@
                     <TapGestureRecognizer Command="{Binding ChangeDeliveryDayCommand}" />
                 </Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                    <Label Grid.Column="0" Text="📅" FontSize="15" VerticalOptions="Center" />
+                    <Label Grid.Column="0" Text="📅" FontSize="15" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource BrandPop}, Dark={StaticResource BrandPopDark}}" />
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
                         <Label Text="Delivering" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                         <Label Text="{Binding SelectedDeliveryDateLabel}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />

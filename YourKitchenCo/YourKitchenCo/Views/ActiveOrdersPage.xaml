@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:YourKitchenCo.Models"
              x:Class="YourKitchenCo.Views.ActiveOrdersPage"
              Title="Active Orders"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
         <CollectionView ItemsSource="{Binding ActiveOrders}" Margin="16, 12">

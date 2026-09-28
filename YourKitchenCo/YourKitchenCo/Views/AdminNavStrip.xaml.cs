@@ -41,6 +41,7 @@ public partial class AdminNavStrip : ContentView
     private async void OnOverviewClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admindashboard");
     private async void OnActiveOrdersClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminactiveorders");
     private async void OnCompaniesClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admincompanies");
+    private async void OnDiscountsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admindiscounts");
     private async void OnNotificationsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminnotifications");
     private async void OnMenuCatalogClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminmenu");
     private async void OnUserManagementClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminusers");

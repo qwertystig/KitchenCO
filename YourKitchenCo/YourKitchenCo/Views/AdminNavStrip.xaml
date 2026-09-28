@@ -70,6 +70,19 @@
                     </Button.Triggers>
                 </Button>
 
+                <Button Text="Discounts" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
+                        Clicked="OnDiscountsClicked" BackgroundColor="Transparent"
+                        BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" BorderWidth="1"
+                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding ActiveRoute, Source={x:Reference Root}}" Value="admindiscounts">
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                            <Setter Property="BorderColor" Value="Transparent" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
                 <Button Text="Notifications" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
                         Clicked="OnNotificationsClicked" BackgroundColor="Transparent"
                         BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" BorderWidth="1"

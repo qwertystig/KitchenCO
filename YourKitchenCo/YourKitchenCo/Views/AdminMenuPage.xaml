@@ -26,7 +26,7 @@
                 <Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Static">
                         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
-                        <Setter Property="TextColor" Value="White" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Cycle">
                         <Setter Property="BackgroundColor" Value="#22888888" />
@@ -44,7 +44,7 @@
                 <Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Cycle">
                         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
-                        <Setter Property="TextColor" Value="White" />
+                        <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Static">
                         <Setter Property="BackgroundColor" Value="#22888888" />

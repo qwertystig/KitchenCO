@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:views="clr-namespace:YourKitchenCo.Views"
+             x:Class="YourKitchenCo.Views.AdminDiscountsPage"
+             x:DataType="vm:AdminDiscountsViewModel"
+             Title="Discount Codes"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+
+    <Grid RowDefinitions="Auto, *">
+        <views:AdminNavStrip Grid.Row="0" ActiveRoute="admindiscounts" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Add Discount Card -->
+                <Border StrokeShape="RoundRectangle 12"
+                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                        Padding="16"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="14">
+
+                        <Label Text="New Discount Code"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Code" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
+                            <Entry Text="{Binding NewCode}" Placeholder="e.g., WEEKEND20" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Percentage Off" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
+                            <Entry Text="{Binding NewPercentage}" Placeholder="e.g., 20" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Restrict to Company (optional)" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
+                            <Picker ItemsSource="{Binding CompanyOptions}"
+                                    SelectedItem="{Binding SelectedCompanyOption}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Expires (optional, yyyy-mm-dd)" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
+                            <Entry Text="{Binding NewExpires}" Placeholder="e.g., 2026-12-31" />
+                        </VerticalStackLayout>
+
+                        <Button Text="Add Discount"
+                                Command="{Binding AddDiscountCommand}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                Margin="0,8,0,0" />
+
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Text="Active &amp; Past Codes"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                <CollectionView ItemsSource="{Binding Discounts}">
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
+                            <Label Text="🏷️" FontSize="36" HorizontalOptions="Center" Opacity="0.8" />
+                            <Label Text="No discounts yet. Add one above to promote your meals."
+                                   FontSize="14" HorizontalTextAlignment="Center" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Discount">
+                            <Border StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                    Padding="14"
+                                    Margin="0,0,0,12"
+                                    StrokeThickness="0">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                                            <Border StrokeShape="RoundRectangle 6"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                    Padding="8,4">
+                                                <Label Text="{Binding Code}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                                            </Border>
+                                            <Label Text="{Binding Percentage, StringFormat='-{0}% OFF'}" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        </HorizontalStackLayout>
+
+                                        <Button Grid.Column="1"
+                                                Text="{Binding Active, Converter={StaticResource BoolToActiveStatusConverter}}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDiscountsViewModel}}, Path=ToggleDiscountActiveCommand}"
+                                                CommandParameter="{Binding .}"
+                                                FontSize="11" HeightRequest="30" Padding="10,0"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                                TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+
+                                    <Label Text="{Binding CompanyName, StringFormat='{0} only'}"
+                                           FontSize="11"
+                                           TextColor="#888888"
+                                           IsVisible="{Binding CompanyName, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Grid.Column="0" Text="{Binding Expires, StringFormat='Expires: {0:MMM dd, yyyy}'}" FontSize="11" TextColor="#AAAAAA"
+                                               IsVisible="{Binding Expires, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                                        <Button Grid.Column="1"
+                                                Text="Delete"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminDiscountsViewModel}}, Path=DeleteDiscountCommand}"
+                                                CommandParameter="{Binding .}"
+                                                FontSize="11" HeightRequest="28" Padding="10,0"
+                                                BackgroundColor="Transparent"
+                                                BorderColor="#DC2626" BorderWidth="1"
+                                                TextColor="#DC2626" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

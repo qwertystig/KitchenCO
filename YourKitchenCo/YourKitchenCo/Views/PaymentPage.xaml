@@ -5,7 +5,7 @@
              x:Class="YourKitchenCo.Views.PaymentPage"
              x:DataType="vm:PaymentViewModel"
              Title="Payment"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
 
     <Grid>
         <ScrollView>
