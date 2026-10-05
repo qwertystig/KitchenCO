@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="YourKitchenCo.Resources.Styles.Themes.MediterraneanPantryTheme">
+
+    <!--
+        Mediterranean Pantry with Summer Red — from the client's brand
+        guideline deck. Inspired by olive oil, herbs, grains and fresh
+        seasonal ingredients. Deck palette: #D53220 (Summer Red),
+        #C4D29B (Sage Green), #F5E8A6 (Pale Yellow), #363C1E (Dark Forest
+        Green), #507B45 (Mid Green).
+
+        Only overrides the colour keys that actually reach the screen (see
+        BrandThemeService's doc comment) — everything else (grayscale,
+        semantic error/success) falls through to Colors.xaml unchanged.
+    -->
+
+    <!-- Light mode -->
+    <Color x:Key="PageBgLight">#FBF7E7</Color>
+    <Color x:Key="CardBgLight">#FFFFFF</Color>
+    <Color x:Key="PrimaryTextLight">#33351D</Color>
+    <Color x:Key="SecondaryTextLight">#6B6B4F</Color>
+    <Color x:Key="SurfaceBorderLight">#E7E0C4</Color>
+
+    <!-- Dark mode -->
+    <Color x:Key="PageBgDark">#1A1D10</Color>
+    <Color x:Key="CardBgDark">#242816</Color>
+    <Color x:Key="PrimaryTextDark">#F5E8A6</Color>
+    <Color x:Key="SecondaryTextDark">#A9B98A</Color>
+    <Color x:Key="SurfaceBorderDark">#33361F</Color>
+
+    <!-- Accents: Primary drives buttons app-wide + the Shell tab bar; light
+         mode uses the summer red, dark mode flips to a light pale-yellow
+         button (mirroring how the current monochrome theme inverts). -->
+    <Color x:Key="Primary">#D53220</Color>
+    <Color x:Key="PrimaryDark">#F5E8A6</Color>
+    <Color x:Key="PrimaryDarkText">#363C1E</Color>
+
+    <!-- BrandGold: secondary accent (icon tinting, section headers, switch
+         "on" colour) — mid/sage green, distinct from the red CTA colour. -->
+    <Color x:Key="BrandGold">#507B45</Color>
+    <Color x:Key="BrandGoldDark">#C4D29B</Color>
+
+    <!-- Gold: legacy "selected state" key — mirrored to Primary, same as
+         the current theme already does. -->
+    <Color x:Key="Gold">#D53220</Color>
+    <Color x:Key="GoldDark">#F5E8A6</Color>
+
+    <!-- Headline/SubHeadline light-mode text colour -->
+    <Color x:Key="MidnightBlue">#33351D</Color>
+
+    <!-- Chips / pills / status badges — sage-cream, per the deck's pale yellow + sage pairing -->
+    <Color x:Key="ChipBgLight">#F1ECD3</Color>
+    <Color x:Key="ChipBgDark">#2E321D</Color>
+
+    <!-- Muted text -->
+    <Color x:Key="MutedTextLight">#8A8A6E</Color>
+    <Color x:Key="MutedTextDark">#9AA882</Color>
+
+    <!-- Bottom tab bar: dark forest green (the deck's own menu mockup uses a
+         forest-green rail), flipping to the pale yellow in dark mode -->
+    <Color x:Key="TabBarBgLight">#363C1E</Color>
+    <Color x:Key="TabBarBgDark">#F5E8A6</Color>
+    <Color x:Key="TabBarTextLight">#F5E8A6</Color>
+    <Color x:Key="TabBarTextDark">#363C1E</Color>
+    <Color x:Key="TabBarUnselectedLight">#A9B98A</Color>
+    <Color x:Key="TabBarUnselectedDark">#8A8F63</Color>
+
+    <!-- Dashboard header band: forest green with the cream logo on it (light
+         mode), pale yellow with the dark logo on it (dark mode) -->
+    <Color x:Key="HeaderBgLight">#363C1E</Color>
+    <Color x:Key="HeaderBgDark">#F5E8A6</Color>
+    <Color x:Key="HeaderChipBgLight">#D53220</Color>
+    <Color x:Key="HeaderChipBgDark">#363C1E</Color>
+    <FileImageSource x:Key="HeaderLogoLight" File="yourkcodark.png" />
+    <FileImageSource x:Key="HeaderLogoDark" File="yourkcolight.png" />
+
+    <!-- Translucent tints: mid-green and summer-red at ~15% -->
+    <Color x:Key="SubtleFill">#26507B45</Color>
+    <Color x:Key="SubtleFillStrong">#26D53220</Color>
+
+</ResourceDictionary>

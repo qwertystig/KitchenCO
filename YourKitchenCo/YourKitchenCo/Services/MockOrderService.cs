@@ -24,9 +24,20 @@ public class MockOrderService : IOrderService
         _orders = new List<Order>
         {
             // --- Past orders (order history) ---
+            // John gets a few history rows spanning both menu types, one
+            // already rated, so Order History reads as a real order log
+            // rather than a single placeholder row (Reorder only shows on
+            // the Static one — Cycle-menu dishes are day-locked, see
+            // Order.CanReorder).
             new() { OrderNumber = "1001", UserId = "seed-john", CustomerName = "John Doe", Status = "Delivered",
                     ItemName = "Traditional Beef Bobotie", CompanyId = "company-ecogra", LocationId = "loc-ecogra-rosebank",
                     MenuType = MenuType.Cycle, DeliveryDate = today.AddDays(-9), OrderDate = DateTime.Now.AddDays(-11), TotalAmount = 95.00m },
+            new() { OrderNumber = "1009", UserId = "seed-john", CustomerName = "John Doe", Status = "Delivered",
+                    ItemName = "Butternut & Feta Salad", CompanyId = "company-ecogra", LocationId = "loc-ecogra-rosebank",
+                    MenuType = MenuType.Static, DeliveryDate = today.AddDays(-6), OrderDate = DateTime.Now.AddDays(-8), TotalAmount = 65.00m, Rating = 5 },
+            new() { OrderNumber = "1010", UserId = "seed-john", CustomerName = "John Doe", Status = "Delivered",
+                    ItemName = "Chicken Napolitana Penne", CompanyId = "company-ecogra", LocationId = "loc-ecogra-rosebank",
+                    MenuType = MenuType.Static, DeliveryDate = today.AddDays(-3), OrderDate = DateTime.Now.AddDays(-5), TotalAmount = 90.00m },
             new() { OrderNumber = "1002", UserId = "seed-sarah", CustomerName = "Sarah Smith", Status = "Delivered",
                     ItemName = "Fresh Caesar Salad", CompanyId = "company-ecogra", LocationId = "loc-ecogra-rosebank",
                     MenuType = MenuType.Static, DeliveryDate = today.AddDays(-4), OrderDate = DateTime.Now.AddDays(-6), TotalAmount = 65.00m },

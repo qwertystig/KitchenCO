@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
              x:Class="YourKitchenCo.Views.TaxInvoicePage"
              x:DataType="vm:TaxInvoiceViewModel"
-             Title="Tax Invoice"
+             Title="Invoice"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
     <ScrollView>
@@ -12,7 +12,7 @@
 
             <!-- Header -->
             <VerticalStackLayout Spacing="2">
-                <Label Text="SARS Tax Invoice" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                <Label Text="Invoice" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                 <Label Text="{Binding Order.TaxInvoiceNumber}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
             </VerticalStackLayout>
 
@@ -30,6 +30,8 @@
 
                     <VerticalStackLayout Spacing="2">
                         <Label Text="CUSTOMER &amp; DROP-OFF" FontSize="10" FontAttributes="Bold" CharacterSpacing="0.5" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Label Text="{Binding Order.CustomerName}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                         <Label Text="{Binding CustomerCompanyName}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                         <Label Text="{Binding CustomerLocationName}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                         <Label Text="{Binding Order.DeliveryFloor}" FontSize="12" IsVisible="{Binding Order.DeliveryFloor, Converter={StaticResource IsNotNullOrEmptyConverter}}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
@@ -81,13 +83,22 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Share / Save Invoice"
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+<Button Grid.Column="0" Text="Download PDF"
+                    Command="{Binding DownloadInvoicePdfCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    HeightRequest="48" />
+<Button Grid.Column="1" Text="Share as Text"
                     Command="{Binding ShareInvoiceCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                     FontAttributes="Bold"
                     CornerRadius="10"
                     HeightRequest="48" />
+</Grid>
 
         </VerticalStackLayout>
     </ScrollView>

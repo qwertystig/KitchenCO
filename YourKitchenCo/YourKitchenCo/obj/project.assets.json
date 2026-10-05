@@ -27557,11 +27557,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Downloads\\YourKitchenCo_updated (31)\\YourKitchenCo\\YourKitchenCo.csproj",
       "projectName": "YourKitchenCo",
-      "projectPath": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
+      "projectPath": "C:\\Users\\User\\Downloads\\YourKitchenCo_updated (31)\\YourKitchenCo\\YourKitchenCo.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\obj\\",
+      "outputPath": "C:\\Users\\User\\Downloads\\YourKitchenCo_updated (31)\\YourKitchenCo\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [

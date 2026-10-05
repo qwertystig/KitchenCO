@@ -41,12 +41,25 @@ public partial class AdminNavStrip : ContentView
     private async void OnOverviewClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admindashboard");
     private async void OnActiveOrdersClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminactiveorders");
     private async void OnCompaniesClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admincompanies");
-    private async void OnDiscountsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//admindiscounts");
     private async void OnNotificationsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminnotifications");
     private async void OnMenuCatalogClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminmenu");
     private async void OnUserManagementClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminusers");
     private async void OnReportsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminreports");
     private async void OnSettingsClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("//adminsettings");
+
+    /// <summary>
+    /// Opens the customer app as the signed-in admin so they can see what
+    /// their changes (menu, prices, themes, delivery fees...) look like from
+    /// the client's side — without logging out and back in. The customer
+    /// side shows a "Back to Admin" control (dashboard header + Settings)
+    /// for admin accounts only. See AdminCustomerSwitch.
+    /// </summary>
+    private void OnCustomerViewClicked(object sender, EventArgs e)
+    {
+        var services = Handler?.MauiContext?.Services;
+        if (services == null) return;
+        Services.AdminCustomerSwitch.EnterCustomerView(services);
+    }
 
     private void OnLogoutClicked(object sender, EventArgs e)
     {

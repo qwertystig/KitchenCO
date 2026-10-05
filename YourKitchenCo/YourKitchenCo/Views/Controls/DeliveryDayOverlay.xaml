@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:YourKitchenCo.Models"
+             x:Class="YourKitchenCo.Views.Controls.DeliveryDayOverlay"
+             IsVisible="{Binding IsVisible}"
+             InputTransparent="False">
+
+    <!--
+        BindingContext is set by the host page to its DayPicker
+        (DeliveryDayPickerState) property, so every binding in here resolves
+        against that, not the host page's own ViewModel.
+
+        This lives as a plain sibling inside the host page's own root Grid —
+        not a separate Page pushed over it — specifically so it's guaranteed
+        to genuinely composite over real content (see DeliveryDayPickerState's
+        doc comment for why the old modal-page approach didn't reliably show
+        anything behind it on Android).
+
+        Full-screen sheet, not a floating card over a dimmed scrim (reported
+        as "doesn't look too clean" / should be a full screen instead of a
+        pop up). Since this now covers the host page's entire visible area
+        edge-to-edge, there's nothing left behind it to dim — it's a solid,
+        page-coloured panel, same look as SelectDeliveryDayPage (the
+        full-page version of this same picker used right after login).
+    -->
+    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+          RowDefinitions="Auto, *, Auto"
+          Padding="24,0">
+
+        <!-- Header: logo + close button, then title/subtitle — same layout as SelectDeliveryDayPage's full-screen header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="16" Margin="0,20,0,24">
+            <Grid ColumnDefinitions="*, Auto">
+                <Image Grid.Column="0"
+                       Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
+                       HeightRequest="40"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Start" />
+                <Button Grid.Column="1"
+                        Text="✕"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        WidthRequest="32"
+                        HeightRequest="32"
+                        Padding="0"
+                        CornerRadius="16"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                        Command="{Binding CloseCommand}" />
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Which day are you ordering for?"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                <Label Text="This sets the default delivery day for everything you add to your basket."
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- Date grid — fills all remaining vertical space -->
+        <ScrollView Grid.Row="1">
+            <CollectionView ItemsSource="{Binding AvailableDates}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedDate, Mode=TwoWay}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:DeliveryDateOption">
+                        <Border StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                                StrokeShape="RoundRectangle 12"
+                                Padding="14,16"
+                                HeightRequest="66">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" />
+                                                <Setter TargetName="DateLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                <Setter TargetName="DateLabel" Property="Label.TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Label x:Name="DateLabel"
+                                   Text="{Binding DisplayLabel}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <!-- Confirm — pinned to the bottom of the screen, always reachable without scrolling -->
+        <Button Grid.Row="2"
+                Text="Confirm"
+                Command="{Binding ConfirmCommand}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                FontAttributes="Bold"
+                HeightRequest="50"
+                CornerRadius="12"
+                Margin="0,16,0,48" />
+    </Grid>
+</ContentView>

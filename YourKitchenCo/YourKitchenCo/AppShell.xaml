@@ -8,13 +8,28 @@
     Shell.BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
     Shell.ForegroundColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
     Shell.TitleColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-    Shell.TabBarBackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-    Shell.TabBarForegroundColor="{AppThemeBinding Light={StaticResource BrandPop}, Dark={StaticResource BrandPopDark}}"
-    Shell.TabBarUnselectedColor="{AppThemeBinding Light=#9E9E9E, Dark=#6B6B6B}">
+    Shell.TabBarBackgroundColor="{AppThemeBinding Light={StaticResource TabBarBgLight}, Dark={StaticResource TabBarBgDark}}"
+    Shell.TabBarTitleColor="{AppThemeBinding Light={StaticResource TabBarTextLight}, Dark={StaticResource TabBarTextDark}}"
+    Shell.TabBarForegroundColor="{AppThemeBinding Light={StaticResource TabBarTextLight}, Dark={StaticResource TabBarTextDark}}"
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light={StaticResource TabBarUnselectedLight}, Dark={StaticResource TabBarUnselectedDark}}">
 
     <!--
-        Bottom tab navigation. Settings and Help don't have their own tab;
-        both are reachable as a pushed page from Profile > Settings / Help.
+        Bottom tab navigation, replacing the flyout drawer — matching the
+        reference app's design direction. Note on fidelity: the reference
+        uses a floating glass-effect pill (rounded, margins on all sides,
+        translucent blur) positioned above the content. MAUI Shell's native
+        TabBar can't replicate that — it's always a solid, edge-to-edge bar,
+        with no built-in floating/blur support, and reliably faking that
+        with custom platform-specific rendering isn't something I can verify
+        without a live build. This uses Shell's real TabBar instead: fully
+        reliable, monochrome-styled to match the palette, functionally
+        equivalent (persistent bottom nav, active/inactive states) — just
+        not pixel-identical to the floating pill.
+
+        Settings and Help no longer have their own tab (3 tabs matches the
+        reference's non-admin tab count more closely than the previous
+        5-item flyout) — both are still fully reachable as a normal pushed
+        page from Profile > Settings / Profile > Help & Support.
     -->
     <TabBar>
         <Tab Title="Menu" Icon="home.png">
@@ -22,8 +37,13 @@
         </Tab>
 
         <Tab Title="Orders" Icon="orders.png">
+            <!--
+                Single ShellContent now — Active Orders and Order History
+                are both shown from ActiveOrdersPage itself, switched by its
+                own 50/50 toggle instead of Shell's automatic (and
+                unevenly-sized) secondary tab strip. See ActiveOrdersPage.xaml.
+            -->
             <ShellContent Route="activeorders" Title="Active" ContentTemplate="{DataTemplate views:ActiveOrdersPage}" />
-            <ShellContent Route="orderhistory" Title="History" ContentTemplate="{DataTemplate views:OrderHistoryPage}" />
         </Tab>
 
         <Tab Title="Profile" Icon="user.png">

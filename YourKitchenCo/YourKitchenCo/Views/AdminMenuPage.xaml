@@ -29,7 +29,7 @@
                         <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Cycle">
-                        <Setter Property="BackgroundColor" Value="#22888888" />
+                        <Setter Property="BackgroundColor" Value="{StaticResource SubtleFill}" />
                         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </DataTrigger>
                 </Button.Triggers>
@@ -47,7 +47,7 @@
                         <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button" Binding="{Binding CurrentMenuType}" Value="Static">
-                        <Setter Property="BackgroundColor" Value="#22888888" />
+                        <Setter Property="BackgroundColor" Value="{StaticResource SubtleFill}" />
                         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </DataTrigger>
                 </Button.Triggers>
@@ -88,7 +88,7 @@
                 <DataTemplate x:DataType="models:Product">
                     <Border StrokeShape="RoundRectangle 12"
                             BackgroundColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}}"
-                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                            Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                             Padding="12"
                             Margin="0,0,0,12"
                             StrokeThickness="1">
@@ -112,7 +112,7 @@
                             <VerticalStackLayout Grid.Column="2" Grid.Row="0" HorizontalOptions="End" VerticalOptions="Center">
                                 <Label Text="Available" FontSize="10" HorizontalOptions="Center" TextColor="{Binding Category, Converter={StaticResource CycleCategoryColorConverter}, ConverterParameter=Text}" Opacity="0.75" />
                                 <Switch IsToggled="{Binding IsAvailable, Mode=TwoWay}" 
-                                        OnColor="#121212"
+                                        OnColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                         ThumbColor="White" />
                             </VerticalStackLayout>
 
@@ -135,7 +135,7 @@
                                         FontSize="11"
                                         HeightRequest="32"
                                         Padding="12,0"
-                                        BackgroundColor="#C62828"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                                         TextColor="White" />
                             </HorizontalStackLayout>
 
@@ -153,7 +153,7 @@
 
             <!-- Week selector & activation -->
             <VerticalStackLayout Grid.Row="0" Spacing="10" Margin="16,8,16,12">
-                <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="#22121212" Padding="12">
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource SubtleFillStrong}" Padding="12">
                     <Label Text="{Binding ActiveWeekNumber, StringFormat='Currently active for this week: Week {0}'}"
                            FontSize="13" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" FontAttributes="Bold" />
                 </Border>
@@ -181,7 +181,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:CycleMenuItemRow">
                         <Border StrokeShape="RoundRectangle 12"
-                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                                 Padding="12"
                                 Margin="0,0,0,10"
                                 StrokeThickness="0">
@@ -204,7 +204,7 @@
                                         HeightRequest="32"
                                         VerticalOptions="Center"
                                         Padding="12,0"
-                                        BackgroundColor="#22888888"
+                                        BackgroundColor="{StaticResource SubtleFill}"
                                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
                                 <Button Grid.Column="2" Grid.RowSpan="2"
@@ -216,7 +216,7 @@
                                         HeightRequest="32"
                                         VerticalOptions="Center"
                                         Padding="10,0"
-                                        BackgroundColor="#C62828"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                                         TextColor="White" />
                             </Grid>
                         </Border>

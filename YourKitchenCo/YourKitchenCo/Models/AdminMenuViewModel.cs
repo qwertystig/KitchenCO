@@ -117,29 +117,6 @@ public partial class AdminMenuViewModel : ObservableObject
         string category = await AlertService.Instance.ShowPromptAsync("Category", "Enter category (e.g. BURGER BAR):", initialValue: "MISC");
         var categoryUpper = string.IsNullOrWhiteSpace(category) ? "MISC" : category.ToUpperInvariant();
 
-        // A category name that doesn't match anything already in the
-        // catalog is effectively a new category — offer a custom hero
-        // image for it, matching the reference app's "add category" flow,
-        // rather than letting it silently fall back to a generic photo.
-        var isNewCategory = !_allProducts.Any(p => string.Equals(p.Category, categoryUpper, StringComparison.OrdinalIgnoreCase));
-        string? customImageUrl = null;
-        if (isNewCategory)
-        {
-            bool wantsCustomImage = await AlertService.Instance.ShowConfirmAsync(
-                "New Category",
-                $"\"{categoryUpper}\" doesn't exist yet — would you like to set a custom hero image for it? (A generic one is used otherwise.)",
-                "Set Image", "Use Default");
-
-            if (wantsCustomImage)
-            {
-                customImageUrl = await AlertService.Instance.ShowPromptAsync(
-                    "Category Hero Image", "Paste an image URL for this category:");
-
-                if (!string.IsNullOrWhiteSpace(customImageUrl))
-                    JsonProductService.SetCustomCategoryImage(categoryUpper, customImageUrl);
-            }
-        }
-
         string description = await AlertService.Instance.ShowPromptAsync("Description", "Short description shown to customers:", initialValue: "Freshly prepared gourmet selection.");
 
         string ingredients = await AlertService.Instance.ShowPromptAsync("Ingredients", "Comma-separated list, shown on the dish's listing (optional):");
@@ -159,9 +136,10 @@ public partial class AdminMenuViewModel : ObservableObject
             Category = categoryUpper,
             IsAvailable = true,
             Icon = "🍽️",
-            ImageUrl = string.IsNullOrWhiteSpace(customImageUrl)
-                ? "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop&auto=format&q=80"
-                : customImageUrl
+            // Sized to match JsonProductService's dish images (was 800x600 —
+            // far larger than this ever renders at, same unnecessary decode
+            // cost noted in the ANR fix).
+            ImageUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=360&fit=crop&auto=format&q=80"
         };
 
         // Persisted through the shared service, not just this screen's local

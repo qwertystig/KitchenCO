@@ -70,19 +70,6 @@
                     </Button.Triggers>
                 </Button>
 
-                <Button Text="Discounts" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
-                        Clicked="OnDiscountsClicked" BackgroundColor="Transparent"
-                        BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" BorderWidth="1"
-                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding ActiveRoute, Source={x:Reference Root}}" Value="admindiscounts">
-                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
-                            <Setter Property="BorderColor" Value="Transparent" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-
                 <Button Text="Notifications" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
                         Clicked="OnNotificationsClicked" BackgroundColor="Transparent"
                         BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" BorderWidth="1"
@@ -148,14 +135,20 @@
                     </Button.Triggers>
                 </Button>
 
+                <!-- Switch to the customer-facing app as this admin (no re-login) — see OnCustomerViewClicked -->
+                <Button Text="👤 Customer View" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
+                        Clicked="OnCustomerViewClicked"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+
                 <Button Text="Logout" FontSize="12" FontAttributes="Bold" CornerRadius="18" HeightRequest="36" Padding="16,0"
                         Clicked="OnLogoutClicked" BackgroundColor="Transparent"
-                        BorderColor="#DC2626" BorderWidth="1"
-                        TextColor="#DC2626" />
+                        BorderColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" BorderWidth="1"
+                        TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
 
             </HorizontalStackLayout>
         </ScrollView>
 
-        <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2E2E32}" />
+        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
     </VerticalStackLayout>
 </ContentView>

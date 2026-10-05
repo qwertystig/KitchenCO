@@ -14,6 +14,7 @@ namespace YourKitchenCo.ViewModel;
 public partial class AdminUsersViewModel : ObservableObject
 {
     private readonly IUserDirectoryService _userDirectory;
+    private readonly ICompanyDirectoryService _companyDirectory;
     private List<UserAccount> _allUsers = new();
 
     public ObservableCollection<UserAccount> Users { get; } = new();
@@ -32,10 +33,85 @@ public partial class AdminUsersViewModel : ObservableObject
         "Admin"
     };
 
-    public AdminUsersViewModel(IUserDirectoryService userDirectory)
+    public AdminUsersViewModel(IUserDirectoryService userDirectory, ICompanyDirectoryService companyDirectory)
     {
         _userDirectory = userDirectory;
+        _companyDirectory = companyDirectory;
         _ = LoadUsersAsync();
+    }
+
+    /// <summary>
+    /// Admin > Users > "+ Add User": name, email, role, then (for customers)
+    /// company, location and floor/desk — the same fields self-registration
+    /// collects, so the account is immediately usable for ordering.
+    /// </summary>
+    [RelayCommand]
+    private async Task AddUserAsync()
+    {
+        var fullName = await AlertService.Instance.ShowPromptAsync("New User", "Full name:");
+        if (string.IsNullOrWhiteSpace(fullName)) return;
+
+        var email = await AlertService.Instance.ShowPromptAsync("New User", "Email address:", keyboard: Keyboard.Email);
+        if (string.IsNullOrWhiteSpace(email)) return;
+        email = email.Trim().ToLowerInvariant();
+        if (!email.Contains('@'))
+        {
+            await AlertService.Instance.ShowAsync("Invalid Email", "Please enter a valid email address.", "OK");
+            return;
+        }
+        if (await _userDirectory.GetByEmailAsync(email) is not null)
+        {
+            await AlertService.Instance.ShowAsync("Already Registered", $"{email} already has an account.", "OK");
+            return;
+        }
+
+        var role = await AlertService.Instance.ShowActionSheetAsync("Role", "Cancel", "Customer", "Kitchen Staff", "Admin");
+        if (string.IsNullOrEmpty(role) || role == "Cancel") return;
+
+        var user = new UserAccount
+        {
+            FullName = fullName.Trim(),
+            Email = email,
+            Role = role,
+            IsActive = true,
+            Password = "Welcome123" // temporary — they can change it from their profile
+        };
+
+        if (role == "Customer")
+        {
+            var companies = await _companyDirectory.GetCompaniesAsync();
+            if (companies.Count > 0)
+            {
+                var companyChoice = await AlertService.Instance.ShowActionSheetAsync(
+                    "Company", "Skip", companies.Select(c => c.Name).ToArray());
+                var company = companies.FirstOrDefault(c => c.Name == companyChoice);
+                if (company is not null)
+                {
+                    user.CompanyId = company.Id;
+
+                    var locations = await _companyDirectory.GetLocationsAsync(company.Id);
+                    if (locations.Count == 1)
+                    {
+                        user.LocationId = locations[0].Id;
+                    }
+                    else if (locations.Count > 1)
+                    {
+                        var locChoice = await AlertService.Instance.ShowActionSheetAsync(
+                            "Delivery location", "Skip", locations.Select(l => l.Name).ToArray());
+                        user.LocationId = locations.FirstOrDefault(l => l.Name == locChoice)?.Id ?? string.Empty;
+                    }
+
+                    var floor = await AlertService.Instance.ShowPromptAsync("Floor / Desk", "Where should deliveries go? (optional)");
+                    user.DeliveryFloor = floor?.Trim() ?? string.Empty;
+                }
+            }
+        }
+
+        await _userDirectory.AddUserAsync(user);
+        await LoadUsersAsync();
+
+        await AlertService.Instance.ShowAsync("User Added",
+            $"{user.FullName} ({user.Role}) can now sign in with {user.Email} and the temporary password \"Welcome123\".", "OK");
     }
 
     private async Task LoadUsersAsync()

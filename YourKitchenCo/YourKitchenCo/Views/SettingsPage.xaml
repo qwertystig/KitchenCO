@@ -17,14 +17,33 @@
 
             <!-- Signed in as -->
             <Border StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="16, 12">
                 <VerticalStackLayout Spacing="2">
                     <Label Text="Signed in as" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                     <Label Text="{Binding AccountEmail}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                 </VerticalStackLayout>
+            </Border>
+
+            <!-- Admin previewing the customer app — one tap back (hidden for everyone else) -->
+            <Border IsVisible="{Binding IsAdminPreview}"
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                    Padding="16, 12">
+                <Grid ColumnDefinitions="*, Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                        <Label Text="Admin preview" FontAttributes="Bold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label Text="You're viewing the app as a customer" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="Back to Admin" Command="{Binding ReturnToAdminCommand}"
+                            FontSize="12" FontAttributes="Bold" HeightRequest="36" CornerRadius="8" Padding="12,0" VerticalOptions="Center"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                </Grid>
             </Border>
 
             <!-- Context Subtitle -->
@@ -36,9 +55,9 @@
 
             <!-- Notification Settings Card -->
             <Border StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="16, 12">
                 <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
@@ -59,9 +78,9 @@
 
             <!-- Dark Mode Settings Card -->
             <Border StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="16, 12">
                 <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
@@ -80,12 +99,73 @@
                 </Grid>
             </Border>
 
+            <!-- App Theme Settings Card -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                    Padding="16, 14">
+                <VerticalStackLayout Spacing="12">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="App Theme"
+                               FontAttributes="Bold"
+                               FontSize="15"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label Text="Mediterranean Pantry or Ink &amp; Cream — applies across the whole app"
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+
+                        <!-- Mediterranean Pantry -->
+                        <Border Grid.Row="0" Grid.Column="0"
+                                StrokeShape="RoundRectangle 10" StrokeThickness="2" Stroke="Transparent"
+                                Padding="0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectBrandThemeCommand}" CommandParameter="MediterraneanPantry" />
+                            </Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding SelectedBrandTheme}" Value="MediterraneanPantry">
+                                    <Setter Property="Stroke" Value="#D53220" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout Padding="10" Spacing="6">
+                                <BoxView HeightRequest="28" CornerRadius="6" Color="#D53220" />
+                                <Label Text="Mediterranean Pantry" FontSize="11" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Ink & Cream (monochrome) — stored key is still "Current" -->
+                        <Border Grid.Row="0" Grid.Column="1"
+                                StrokeShape="RoundRectangle 10" StrokeThickness="2" Stroke="Transparent"
+                                Padding="0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectBrandThemeCommand}" CommandParameter="Current" />
+                            </Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding SelectedBrandTheme}" Value="Current">
+                                    <Setter Property="Stroke" Value="#121212" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout Padding="10" Spacing="6">
+                                <BoxView HeightRequest="28" CornerRadius="6" Color="#121212" />
+                                <Label Text="Ink &amp; Cream" FontSize="11" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
             <Button Text="Sign Out"
                     Command="{Binding SignOutCommand}"
                     BackgroundColor="Transparent"
-                    TextColor="#C62828"
+                    TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                     FontAttributes="Bold"
-                    BorderColor="#C62828"
+                    BorderColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                     BorderWidth="1"
                     CornerRadius="10"
                     HeightRequest="46"

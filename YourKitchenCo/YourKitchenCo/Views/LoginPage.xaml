@@ -6,24 +6,14 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
-    <ScrollView>
     <VerticalStackLayout Padding="30" VerticalOptions="Center" Spacing="20">
 
-        <!-- Logo Frame Scaling, with the client's brand-blue glow behind it (matches the RN app's login screen) -->
-        <Grid HorizontalOptions="Center" Margin="0,0,0,5">
-            <Ellipse WidthRequest="130" HeightRequest="130"
-                     HorizontalOptions="Center" VerticalOptions="Center"
-                     InputTransparent="True"
-                     Fill="{AppThemeBinding Light={StaticResource BrandPopGlowOuterLight}, Dark={StaticResource BrandPopGlowOuterDark}}" />
-            <Ellipse WidthRequest="78" HeightRequest="78"
-                     HorizontalOptions="Center" VerticalOptions="Center"
-                     InputTransparent="True"
-                     Fill="{AppThemeBinding Light={StaticResource BrandPopGlowInnerLight}, Dark={StaticResource BrandPopGlowInnerDark}}" />
-            <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
-                   HeightRequest="350"
-                   HorizontalOptions="Center"
-                   Aspect="AspectFit" />
-        </Grid>
+        <!-- Logo Frame Scaling -->
+        <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
+               HeightRequest="110"
+               HorizontalOptions="Center"
+               Aspect="AspectFit"
+               Margin="0,0,0,5" />
 
         <!-- Subtitle Context Header -->
         <Label Text="Sign in to continue" 
@@ -37,32 +27,32 @@
 
             <!-- Email Border Entry Element -->
             <Border StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 12" 
-                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     HeightRequest="50">
                 <Entry Placeholder="Email Address (e.g., alex@example.com)" 
                        Keyboard="Email"
                        Text="{Binding Email}"
                        BackgroundColor="Transparent"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                       PlaceholderColor="#888888"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                        Margin="15,0"
                        VerticalOptions="Center" />
             </Border>
 
             <!-- Password Border Entry Element -->
             <Border StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 12" 
-                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     HeightRequest="50">
                 <Entry Placeholder="Password (e.g., ••••••••)" 
                        IsPassword="True"
                        Text="{Binding Password}"
                        BackgroundColor="Transparent"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                       PlaceholderColor="#888888"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                        Margin="15,0"
                        VerticalOptions="Center" />
             </Border>
@@ -114,17 +104,21 @@
                 <Label Text="Don't have an account?" 
                        VerticalOptions="Center"
                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                <!-- Outlined so it reads as a button in every theme, not just coloured text -->
                 <Button Text="Sign Up" 
                         Command="{Binding RegisterCommand}"
                         BackgroundColor="Transparent"
                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        BorderWidth="1.5"
+                        CornerRadius="16"
                         FontAttributes="Bold"
-                        Padding="0"
+                        Padding="14,4"
+                        HeightRequest="34"
                         VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
         </VerticalStackLayout>
 
     </VerticalStackLayout>
-    </ScrollView>
 </ContentPage>

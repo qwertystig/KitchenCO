@@ -19,13 +19,21 @@
                    Margin="16,12,16,4" />
 
         <!-- Role Filter Selector -->
-        <HorizontalStackLayout Grid.Row="1" Spacing="8" Margin="16,0,16,12" VerticalOptions="Center">
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="16,0,16,12">
+        <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
             <Label Text="Role Filter:" VerticalOptions="Center" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
             <Picker ItemsSource="{Binding RoleFilterOptions}"
                     SelectedItem="{Binding SelectedRoleFilter}"
                     WidthRequest="160"
                     Title="Filter Role" />
         </HorizontalStackLayout>
+            <Button Grid.Column="1"
+                    Text="+ Add User"
+                    Command="{Binding AddUserCommand}"
+                    FontSize="12" FontAttributes="Bold" HeightRequest="36" CornerRadius="8" Padding="12,0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+        </Grid>
 
         <!-- User Accounts List -->
         <CollectionView Grid.Row="2"
@@ -34,7 +42,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border StrokeShape="RoundRectangle 12"
-                            BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                             Padding="16"
                             Margin="0,0,0,12"
                             StrokeThickness="0">
@@ -43,13 +51,13 @@
                             <!-- User Info -->
                             <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
                                 <Label Text="{Binding FullName}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                <Label Text="{Binding Email}" FontSize="12" TextColor="#888888" />
+                                <Label Text="{Binding Email}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                             </VerticalStackLayout>
 
                             <!-- Role Badge -->
                             <Border Grid.Column="1" Grid.Row="0"
                                     StrokeShape="RoundRectangle 6"
-                                    BackgroundColor="#22121212"
+                                    BackgroundColor="{StaticResource SubtleFillStrong}"
                                     Padding="8,4"
                                     HorizontalOptions="End"
                                     VerticalOptions="Start">
@@ -58,7 +66,7 @@
 
                             <!-- Dates & Status Text -->
                             <HorizontalStackLayout Grid.Column="0" Grid.Row="1" Spacing="10" Margin="0,8,0,0">
-                                <Label Text="{Binding JoinedDate, StringFormat='Joined: {0:MMM yyyy}'}" FontSize="11" TextColor="#AAAAAA" />
+                                <Label Text="{Binding JoinedDate, StringFormat='Joined: {0:MMM yyyy}'}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                                 <Label Text="{Binding IsActive, Converter={StaticResource InverseBoolConverter}, StringFormat='Status: Suspended'}"
                                        IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}"
                                        FontSize="11" TextColor="#E53935" FontAttributes="Bold" />
@@ -72,7 +80,7 @@
                                         FontSize="12"
                                         HeightRequest="36"
                                         Padding="12,0"
-                                        BackgroundColor="#22888888"
+                                        BackgroundColor="{StaticResource SubtleFill}"
                                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
                                 <Button Text="{Binding IsActive, Converter={StaticResource InverseBoolConverter}, StringFormat='Activate'}"
@@ -92,7 +100,7 @@
                                         FontSize="12"
                                         HeightRequest="36"
                                         Padding="12,0"
-                                        BackgroundColor="#C62828"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                                         TextColor="White" />
                             </HorizontalStackLayout>
 

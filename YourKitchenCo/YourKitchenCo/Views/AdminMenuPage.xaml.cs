@@ -18,16 +18,9 @@ public partial class AdminMenuPage : ContentPage
     {
         base.OnAppearing();
 
-        // Subtle Page Entrance Animation
-        if (Content != null)
-        {
-            Content.Opacity = 0;
-            Content.TranslationY = 15;
-
-            await Task.WhenAll(
-                Content.FadeTo(1, 250, Easing.CubicOut),
-                Content.TranslateTo(0, 0, 250, Easing.CubicOut)
-            );
-        }
+        // Shared entrance animation (PageAnimation.cs) — was its own
+        // hand-rolled copy (250ms) slightly out of step with the 260ms every
+        // other page uses; now consistent with the rest of the app.
+        await PageAnimation.EntranceAsync(Content);
     }
 }

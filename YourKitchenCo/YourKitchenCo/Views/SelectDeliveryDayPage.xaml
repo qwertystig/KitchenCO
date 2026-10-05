@@ -6,29 +6,65 @@
              x:Class="YourKitchenCo.Views.SelectDeliveryDayPage"
              x:DataType="vm:SelectDeliveryDayViewModel"
              Title="Delivery Day"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="20">
+    <!--
+        Full-screen presentation (was a floating rounded card over a dimmed
+        scrim — reported as "doesn't look too clean" / should be a full
+        screen instead of a pop up). Same page, still switched by the
+        already-existing IsChangingDay flag, but now BOTH presentations fill
+        the whole screen edge-to-edge instead of floating a card in the
+        middle:
 
-            <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
-                   HeightRequest="70"
-                   HorizontalOptions="Center"
-                   Aspect="AspectFit"
-                   Margin="0,10,0,0" />
+          - IsChangingDay = True  → reached mid-session (PushModalAsync) over
+            whatever screen the person was on, with a ✕ to back out.
+          - IsChangingDay = False → the mandatory first-run pick, no close
+            button (there's nothing to cancel back to yet).
 
-            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+        Going full-screen also removes the earlier fidelity gap noted here
+        (no cross-platform blur-behind primitive in stock .NET MAUI) rather
+        than just working around it — there's no "behind" left to fake
+        translucency over once this covers the whole page.
+    -->
+    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+          RowDefinitions="Auto, *, Auto"
+          Padding="24,0">
+
+        <!-- Header: logo + close button (popup mode only) + title -->
+        <VerticalStackLayout Grid.Row="0" Spacing="16" Margin="0,20,0,24">
+            <Grid ColumnDefinitions="*, Auto">
+                <Image Grid.Column="0"
+                       Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
+                       HeightRequest="40"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Start" />
+                <Button Grid.Column="1"
+                        Text="✕"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        WidthRequest="32"
+                        HeightRequest="32"
+                        Padding="0"
+                        CornerRadius="16"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                        IsVisible="{Binding IsChangingDay}"
+                        Clicked="OnCloseClicked" />
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
                 <Label Text="Which day are you ordering for?"
-                       FontSize="22"
+                       FontSize="24"
                        FontAttributes="Bold"
-                       HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                 <Label Text="This sets the default delivery day for everything you add to your basket. You can change it any time."
                        FontSize="13"
-                       HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
             </VerticalStackLayout>
+        </VerticalStackLayout>
 
+        <!-- Date grid — fills all remaining vertical space -->
+        <ScrollView Grid.Row="1">
             <CollectionView ItemsSource="{Binding AvailableDates}"
                             SelectionMode="Single"
                             SelectedItem="{Binding SelectedDate, Mode=TwoWay}">
@@ -47,13 +83,20 @@
                                     <VisualStateGroup Name="CommonStates">
                                         <VisualState Name="Normal">
                                             <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}" />
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" />
                                                 <Setter TargetName="DateLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState Name="Selected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                <!--
+                                                    Contrast fix: this used to hardcode TextColor="White",
+                                                    which was invisible in dark mode once the selected
+                                                    background became cream (PrimaryDark). Now it follows
+                                                    the same theme-aware pairing used everywhere else a
+                                                    button/chip swaps to the Primary/PrimaryDark fill.
+                                                -->
                                                 <Setter TargetName="DateLabel" Property="Label.TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                                             </VisualState.Setters>
                                         </VisualState>
@@ -72,16 +115,43 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+        </ScrollView>
 
+        <!-- Actions — pinned to the bottom of the screen, always reachable without scrolling.
+             Bottom margin is deep (48) because Android 15+ draws edge-to-edge and the gesture
+             nav bar was covering the lower part of the button. -->
+        <VerticalStackLayout Grid.Row="2" Spacing="10" Margin="0,16,0,48">
             <Button Text="Confirm"
                     Command="{Binding ConfirmCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
                     FontAttributes="Bold"
                     HeightRequest="50"
-                    CornerRadius="12"
-                    Margin="0,10,0,0" />
+                    CornerRadius="12" />
 
+            <!-- Secondary ways in: skip the pick entirely, or go straight to existing orders -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="Skip for now"
+                        Command="{Binding SkipCommand}"
+                        BackgroundColor="Transparent"
+                        BorderWidth="1.5"
+                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        FontAttributes="Bold"
+                        HeightRequest="46"
+                        CornerRadius="12" />
+                <Button Grid.Column="1"
+                        Text="View my orders"
+                        Command="{Binding ViewOrdersCommand}"
+                        BackgroundColor="Transparent"
+                        BorderWidth="1.5"
+                        BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        FontAttributes="Bold"
+                        HeightRequest="46"
+                        CornerRadius="12" />
+            </Grid>
         </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 </ContentPage>

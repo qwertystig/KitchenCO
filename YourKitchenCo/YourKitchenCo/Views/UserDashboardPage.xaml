@@ -3,27 +3,74 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModel="clr-namespace:YourKitchenCo.ViewModel"
              xmlns:models="clr-namespace:YourKitchenCo.Models"
+             xmlns:controls="clr-namespace:YourKitchenCo.Views.Controls"
              x:Class="YourKitchenCo.Views.UserDashboardPage"
              x:DataType="viewModel:UserDashboardViewModel"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
     <Grid>
-    <ScrollView>
+    <!--
+        The product list used to be a plain ScrollView + nested
+        BindableLayout (non-virtualizing — it instantiated every category's
+        every dish view all at once). That was the root cause of the
+        app-wide freeze/ANR reported right after login: 40+ card views (each
+        with its own labels, converters, gesture recognizers, and a nested
+        FlexLayout for dietary tags) built synchronously on the main thread
+        the instant the dashboard populated. It's now a single grouped,
+        virtualized CollectionView — everything that isn't the product list
+        itself (logo, search, menu toggle, category slider, cutoff banner)
+        lives in its Header, so it still scrolls together as one unit, but
+        only the dish rows actually on/near screen get built.
+    -->
+    <CollectionView ItemsSource="{Binding GroupedProducts}" IsGrouped="True">
+        <CollectionView.Header>
         <VerticalStackLayout>
 
-            <!-- 1. Logo + Checkout Cart -->
-            <Grid ColumnDefinitions="*, Auto" Padding="16,14,16,10" ColumnSpacing="10">
-                <Image Grid.Column="0"
-                       Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
-                       HeightRequest="32"
-                       HorizontalOptions="Start"
+            <!--
+                Themed header band: the logo row and the search/date row sit
+                on HeaderBg (page colour for the current theme; the brand
+                colour for the client's three themes, matching the approved
+                prototype deck), with the logo variant chosen per theme so it
+                always reads against that band (HeaderLogoLight/Dark).
+            -->
+            <VerticalStackLayout BackgroundColor="{AppThemeBinding Light={StaticResource HeaderBgLight}, Dark={StaticResource HeaderBgDark}}"
+                                 Padding="0,0,0,14"
+                                 Margin="0,0,0,12">
+
+            <!-- Admin preview banner — only when an admin is viewing the customer app (AdminCustomerSwitch) -->
+            <Border IsVisible="{Binding IsAdminPreview}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource HeaderChipBgLight}, Dark={StaticResource HeaderChipBgDark}}"
+                    Margin="16,12,16,0"
+                    Padding="12,8">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ReturnToAdminCommand}" />
+                </Border.GestureRecognizers>
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Grid.Column="0" Text="Previewing as a customer" FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                    <Label Grid.Column="1" Text="← Back to Admin" FontSize="12" FontAttributes="Bold" VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                </Grid>
+            </Border>
+
+            <!-- 1. Logo (centered, larger/bolder) + Checkout Cart -->
+            <Grid ColumnDefinitions="42, *, 42" Padding="16,14,16,10">
+                <!-- Column 0 is an invisible spacer matching the cart button's width, so column 1 (the logo) centers on the row rather than in the leftover space next to the cart. -->
+                <BoxView Grid.Column="0" Opacity="0" InputTransparent="True" />
+
+                <Image Grid.Column="1"
+                       Source="{AppThemeBinding Light={StaticResource HeaderLogoLight}, Dark={StaticResource HeaderLogoDark}}"
+                       HeightRequest="46"
+                       HorizontalOptions="Center"
                        Aspect="AspectFit" />
 
-                <Grid Grid.Column="1" WidthRequest="42" HeightRequest="42">
+                <Grid Grid.Column="2" WidthRequest="42" HeightRequest="42">
                     <Border StrokeThickness="0"
                             StrokeShape="RoundRectangle 21"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                            BackgroundColor="{AppThemeBinding Light={StaticResource HeaderChipBgLight}, Dark={StaticResource HeaderChipBgDark}}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding NavigateToCartCommand}" />
                         </Border.GestureRecognizers>
@@ -40,9 +87,9 @@
                             HeightRequest="18"
                             MinimumWidthRequest="18"
                             StrokeThickness="2"
-                            Stroke="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}"
+                            Stroke="{AppThemeBinding Light={StaticResource HeaderBgLight}, Dark={StaticResource HeaderBgDark}}"
                             StrokeShape="RoundRectangle 9"
-                            BackgroundColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
                             InputTransparent="True">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding CartCount}" Value="0">
@@ -59,50 +106,58 @@
                 </Grid>
             </Grid>
 
-            <!-- 2. Search Bar -->
-            <Border Margin="16,0,16,10"
-                    StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                    StrokeShape="RoundRectangle 20"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-                    HeightRequest="42">
-                <SearchBar Placeholder="Search dishes, ingredients..."
-                           HorizontalOptions="Fill"
-                           VerticalOptions="Center"
-                           Text="{Binding SearchText, Mode=TwoWay}"
-                           SearchCommand="{Binding SearchCommand}"
-                           BackgroundColor="Transparent"
-                           CancelButtonColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                           PlaceholderColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           FontSize="14" />
-            </Border>
+            <!-- 2. Search Bar, with a small compact date pill to its right (tap to change delivery day) -->
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" Margin="16,0,16,10">
+                <Border Grid.Column="0"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="42">
+                    <SearchBar Placeholder="Search dishes, ingredients..."
+                               HorizontalOptions="Fill"
+                               VerticalOptions="Center"
+                               Text="{Binding SearchText, Mode=TwoWay}"
+                               SearchCommand="{Binding SearchCommand}"
+                               BackgroundColor="Transparent"
+                               CancelButtonColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                               PlaceholderColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                               FontSize="14" />
+                </Border>
 
-            <!-- 3. Compact Date Display — tap to change delivery day -->
-            <Border Margin="16,0,16,10"
-                    StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                    StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-                    Padding="14,10">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ChangeDeliveryDayCommand}" />
-                </Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                    <Label Grid.Column="0" Text="📅" FontSize="15" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource BrandPop}, Dark={StaticResource BrandPopDark}}" />
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
-                        <Label Text="Delivering" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                        <Label Text="{Binding SelectedDeliveryDateLabel}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                    </VerticalStackLayout>
-                    <Label Grid.Column="2" Text="Change ›" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                </Grid>
-            </Border>
+                <Border Grid.Column="1"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                        HeightRequest="42"
+                        Padding="10,0"
+                        MinimumWidthRequest="72">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ChangeDeliveryDayCommand}" />
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="📅" FontSize="13" VerticalOptions="Center" />
+                        <Label Text="{Binding SelectedDeliveryDateShortLabel}"
+                               FontSize="11"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               LineBreakMode="TailTruncation"
+                               MaximumWidthRequest="56"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
+
+            </VerticalStackLayout>
+            <!-- end of themed header band -->
 
             <!-- 4. Menu Segment Toggle (Main Menu vs Cycling Menu) -->
             <Border Margin="16,0,16,14"
                     StrokeThickness="0"
                     StrokeShape="RoundRectangle 24"
-                    BackgroundColor="{AppThemeBinding Light=#EFEFEF, Dark=#1E1E1E}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
                     Padding="4"
                     HeightRequest="48">
                 <Grid ColumnDefinitions="*, *">
@@ -112,7 +167,7 @@
                             FontSize="13"
                             CornerRadius="20"
                             BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#777777, Dark=#AAAAAA}"
+                            TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                             Command="{Binding SwitchToMainCommand}">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding CurrentMenu}" Value="Main">
@@ -128,7 +183,7 @@
                             FontSize="13"
                             CornerRadius="20"
                             BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light=#777777, Dark=#AAAAAA}"
+                            TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                             Command="{Binding SwitchToCyclingCommand}">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding CurrentMenu}" Value="Weekly">
@@ -139,13 +194,6 @@
                     </Button>
                 </Grid>
             </Border>
-
-            <!-- 5. "Explore Our Menu" Section Label -->
-            <Label Text="Explore Our Menu"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   Margin="16,0,16,10"
-                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
             <!-- 6. Category Slider — plain text, no icons, underline indicator on the active one -->
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,10">
@@ -214,153 +262,147 @@
                     StrokeThickness="1"
                     Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 10"
-                    BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
                     Padding="12,10">
                 <Label Text="Orders close at 9:00 AM, two business days before your delivery date."
                        FontSize="12"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
             </Border>
 
-            <!-- 8. Category Sections — hero banner image per category, then that category's dishes -->
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding GroupedProducts}" Spacing="0">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:CategorySection">
-                        <VerticalStackLayout Spacing="0" Margin="0,0,0,20">
+        </VerticalStackLayout>
+        </CollectionView.Header>
 
-                            <!-- Category hero banner -->
-                            <Border Margin="16,0,16,10"
-                                    HeightRequest="110"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 16">
-                                <Grid>
-                                    <Image Source="{Binding Category.ImageUrl}" Aspect="AspectFill" />
-                                    <BoxView BackgroundColor="#8C000000" />
-                                    <Label Text="{Binding Category.DisplayName}"
-                                           FontSize="22"
-                                           FontAttributes="Bold"
-                                           TextColor="White"
-                                           Margin="16,0,16,12"
-                                           VerticalOptions="End" />
-                                </Grid>
-                            </Border>
+        <!-- Category hero banner — group header for that category's dishes below it -->
+        <CollectionView.GroupHeaderTemplate>
+            <DataTemplate x:DataType="models:CategorySection">
+                <Border Margin="16,10,16,10"
+                        HeightRequest="110"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 16">
+                    <Grid>
+                        <Image Source="{Binding Category.ImageUrl}" Aspect="AspectFill" />
+                        <BoxView BackgroundColor="#8C000000" />
+                        <Label Text="{Binding Category.DisplayName}"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               Margin="16,0,16,12"
+                               VerticalOptions="End" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </CollectionView.GroupHeaderTemplate>
 
-                            <!-- Dishes in this category -->
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Products}" Spacing="10" Padding="16,0">
+        <!-- One dish card per item — Margin replaces the old parent Padding/Spacing now that each card is its own virtualized row instead of a nested BindableLayout entry. -->
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="models:Product">
+                <Border StrokeThickness="1"
+                        StrokeShape="RoundRectangle 16"
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                        Padding="16"
+                        Margin="16,0,16,10">
+
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Light=#12000000, Dark=#40000000}" Offset="0,2" Radius="4" Opacity="0.5" />
+                    </Border.Shadow>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:UserDashboardViewModel}}, Path=NavigateToProductCommand}"
+                                              CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="14">
+
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="{Binding Name}"
+                                   FontAttributes="Bold"
+                                   FontSize="16"
+                                   LineBreakMode="TailTruncation"
+                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                            <Label Text="{Binding Description}"
+                                   IsVisible="{Binding Description, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                                   FontSize="13"
+                                   LineBreakMode="TailTruncation"
+                                   MaxLines="2"
+                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+
+                            <Label IsVisible="{Binding HasIngredients}"
+                                   FontSize="12"
+                                   LineBreakMode="TailTruncation"
+                                   MaxLines="1">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Ingredients: " FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Span Text="{Binding Ingredients}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+                            <FlexLayout IsVisible="{Binding HasDietaryTags}"
+                                        BindableLayout.ItemsSource="{Binding DietaryTags}"
+                                        Wrap="Wrap"
+                                        Direction="Row"
+                                        JustifyContent="Start"
+                                        Margin="0,2,0,0">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Product">
+                                    <DataTemplate x:DataType="x:String">
                                         <Border StrokeThickness="1"
-                                                StrokeShape="RoundRectangle 16"
+                                                StrokeShape="RoundRectangle 6"
                                                 Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-                                                Padding="16">
-
-                                            <Border.Shadow>
-                                                <Shadow Brush="{AppThemeBinding Light=#12000000, Dark=#40000000}" Offset="0,2" Radius="4" Opacity="0.5" />
-                                            </Border.Shadow>
-
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:UserDashboardViewModel}}, Path=NavigateToProductCommand}"
-                                                                      CommandParameter="{Binding .}" />
-                                            </Border.GestureRecognizers>
-
-                                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="14">
-
-                                                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                                    <Label Text="{Binding Name}"
-                                                           FontAttributes="Bold"
-                                                           FontSize="16"
-                                                           LineBreakMode="TailTruncation"
-                                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-
-                                                    <Label Text="{Binding Description}"
-                                                           IsVisible="{Binding Description, Converter={StaticResource IsNotNullOrEmptyConverter}}"
-                                                           FontSize="13"
-                                                           LineBreakMode="TailTruncation"
-                                                           MaxLines="2"
-                                                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-
-                                                    <Label IsVisible="{Binding HasIngredients}"
-                                                           FontSize="12"
-                                                           LineBreakMode="TailTruncation"
-                                                           MaxLines="1">
-                                                        <Label.FormattedText>
-                                                            <FormattedString>
-                                                                <Span Text="Ingredients: " FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                                                                <Span Text="{Binding Ingredients}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                                                            </FormattedString>
-                                                        </Label.FormattedText>
-                                                    </Label>
-
-                                                    <FlexLayout IsVisible="{Binding HasDietaryTags}"
-                                                                BindableLayout.ItemsSource="{Binding DietaryTags}"
-                                                                Wrap="Wrap"
-                                                                Direction="Row"
-                                                                JustifyContent="Start"
-                                                                Margin="0,2,0,0">
-                                                        <BindableLayout.ItemTemplate>
-                                                            <DataTemplate x:DataType="x:String">
-                                                                <Border StrokeThickness="1"
-                                                                        StrokeShape="RoundRectangle 6"
-                                                                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                                                                        BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
-                                                                        Padding="8,3"
-                                                                        Margin="0,0,6,6">
-                                                                    <Label Text="{Binding .}"
-                                                                           FontSize="11"
-                                                                           FontAttributes="Bold"
-                                                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                                                </Border>
-                                                            </DataTemplate>
-                                                        </BindableLayout.ItemTemplate>
-                                                    </FlexLayout>
-                                                </VerticalStackLayout>
-
-                                                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End" VerticalOptions="Center" MinimumWidthRequest="78">
-                                                    <Label Text="{Binding BasePrice, StringFormat='R {0:F2}'}"
-                                                           FontAttributes="Bold"
-                                                           FontSize="16"
-                                                           HorizontalOptions="End"
-                                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-
-                                                    <Label Text="{Binding LargePrice, StringFormat='Large R {0:F2}'}"
-                                                           IsVisible="{Binding LargePrice, Converter={StaticResource IsNotNullOrEmptyConverter}}"
-                                                           FontSize="10"
-                                                           FontAttributes="Bold"
-                                                           HorizontalOptions="End"
-                                                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                                                           Margin="0,0,0,4" />
-
-                                                    <Button Text="+"
-                                                            FontAttributes="Bold"
-                                                            FontSize="20"
-                                                            HeightRequest="40"
-                                                            WidthRequest="40"
-                                                            CornerRadius="20"
-                                                            Padding="0"
-                                                            HorizontalOptions="End"
-                                                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                                                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
-                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:UserDashboardViewModel}}, Path=NavigateToProductCommand}"
-                                                            CommandParameter="{Binding .}" />
-                                                </VerticalStackLayout>
-                                            </Grid>
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                                                Padding="8,3"
+                                                Margin="0,0,6,6">
+                                            <Label Text="{Binding .}"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                         </Border>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
+                            </FlexLayout>
                         </VerticalStackLayout>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
 
-        </VerticalStackLayout>
-    </ScrollView>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End" VerticalOptions="Center" MinimumWidthRequest="78">
+                            <Label Text="{Binding BasePrice, StringFormat='R {0:F2}'}"
+                                   FontAttributes="Bold"
+                                   FontSize="16"
+                                   HorizontalOptions="End"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+
+                            <Label Text="{Binding LargePrice, StringFormat='Large R {0:F2}'}"
+                                   IsVisible="{Binding LargePrice, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="End"
+                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                   Margin="0,0,0,4" />
+
+                            <Button Text="+"
+                                    FontAttributes="Bold"
+                                    FontSize="20"
+                                    HeightRequest="40"
+                                    WidthRequest="40"
+                                    CornerRadius="20"
+                                    Padding="0"
+                                    HorizontalOptions="End"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:UserDashboardViewModel}}, Path=NavigateToProductCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
 
         <!-- Floating cart bar — only shown once something's in the basket, sits above the bottom nav -->
         <Border StrokeThickness="1"
                 Stroke="{AppThemeBinding Light=#66FFFFFF, Dark=#66000000}"
                 StrokeShape="RoundRectangle 20"
-                BackgroundColor="{AppThemeBinding Light=#121212, Dark=#F7F2E8}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                 Padding="16,12"
                 Margin="16,0,16,16"
                 VerticalOptions="End"
@@ -374,25 +416,28 @@
 
             <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                 <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" StrokeThickness="0" StrokeShape="RoundRectangle 15"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#121212}">
+                        BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}">
                     <Label Text="{Binding CartCount}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
-                           TextColor="{AppThemeBinding Light=#121212, Dark=#F7F2E8}" />
+                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                 </Border>
 
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
                     <Label Text="{Binding CartTotal, StringFormat='R {0:F2}'}" FontSize="15" FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=White, Dark=#121212}" />
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     <Label Text="{Binding SelectedDeliveryDateLabel}" FontSize="10" FontAttributes="Bold" LineBreakMode="TailTruncation"
                            TextColor="{AppThemeBinding Light=#A6FFFFFF, Dark=#A6121212}" />
                 </VerticalStackLayout>
 
                 <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
                     <Label Text="Review Order" FontSize="13" FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=White, Dark=#121212}" />
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                     <Label Text="→" FontSize="15" FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light=White, Dark=#121212}" />
+                           TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
                 </HorizontalStackLayout>
             </Grid>
         </Border>
+
+        <!-- Change-delivery-day overlay — topmost, hidden until DayPicker.Open() is called. -->
+        <controls:DeliveryDayOverlay BindingContext="{Binding DayPicker}" />
     </Grid>
 </ContentPage>

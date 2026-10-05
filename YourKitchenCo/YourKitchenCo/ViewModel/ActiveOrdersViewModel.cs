@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,7 +8,11 @@ using YourKitchenCo.Services;
 
 namespace YourKitchenCo.ViewModel;
 
-/// <summary>The logged-in user's own upcoming orders (DeliveryDate >= today).</summary>
+/// <summary>
+/// The logged-in user's own upcoming orders (DeliveryDate >= today),
+/// grouped per delivery date, each as a collapsible card whose expanded
+/// state carries the full tracking detail (see ActiveOrderItem).
+/// </summary>
 public partial class ActiveOrdersViewModel : ObservableObject
 {
     private readonly IOrderService _orderService;
@@ -16,10 +21,8 @@ public partial class ActiveOrdersViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBusy;
 
-    [ObservableProperty]
-    private Order? _nextOrder;
-
-    public ObservableCollection<Order> ActiveOrders { get; } = new();
+    /// <summary>Soonest date first; within a date, in the order the service returned them.</summary>
+    public ObservableCollection<OrderDateGroup> GroupedOrders { get; } = new();
 
     public ActiveOrdersViewModel(IOrderService orderService, ISessionService session)
     {
@@ -37,13 +40,31 @@ public partial class ActiveOrdersViewModel : ObservableObject
 
         var orders = await _orderService.GetActiveOrdersForUserAsync(_session.CurrentUser!.Id);
 
-        ActiveOrders.Clear();
-        foreach (var order in orders)
-            ActiveOrders.Add(order);
+        // Keep whichever cards the person had open across a refresh, so a
+        // pull-to-refresh doesn't snap everything shut on them.
+        var previouslyExpanded = GroupedOrders
+            .SelectMany(g => g)
+            .Where(i => i.IsExpanded)
+            .Select(i => i.Order.Id)
+            .ToHashSet();
 
-        // Already sorted soonest-first by the service — the delivery
-        // tracker shows progress for whichever order is coming up next.
-        NextOrder = ActiveOrders.Count > 0 ? ActiveOrders[0] : null;
+        var groups = orders
+            .GroupBy(o => o.DeliveryDate)
+            .OrderBy(g => g.Key)
+            .Select(g => new OrderDateGroup(
+                g.Key,
+                g.Select(o => new ActiveOrderItem(o, previouslyExpanded.Contains(o.Id)))))
+            .ToList();
+
+        // First load: open the very next order so the tracker is visible
+        // straight away without a tap, the way the old "delivery progress"
+        // header was.
+        if (previouslyExpanded.Count == 0 && groups.Count > 0 && groups[0].Count > 0)
+            groups[0][0].IsExpanded = true;
+
+        GroupedOrders.Clear();
+        foreach (var group in groups)
+            GroupedOrders.Add(group);
 
         IsBusy = false;
     }

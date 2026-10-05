@@ -31,6 +31,17 @@ public partial class AdminDashboardViewModel : ObservableObject
     [ObservableProperty]
     private int _customerCount;
 
+    /// <summary>Sum of every order ever placed (delivered or upcoming), incl. delivery fees.</summary>
+    [ObservableProperty]
+    private decimal _totalRevenue;
+
+    /// <summary>Orders placed since the 1st of the current month.</summary>
+    [ObservableProperty]
+    private decimal _monthToDateRevenue;
+
+    [ObservableProperty]
+    private string _monthToDateLabel = "Month to Date";
+
     [ObservableProperty]
     private bool _isBusy;
 
@@ -73,6 +84,16 @@ public partial class AdminDashboardViewModel : ObservableObject
 
             var users = await _userDirectory.GetUsersAsync();
             CustomerCount = users.Count(u => u.Role == "Customer");
+
+            // Revenue tiles (replaced the company/customer counts, per client
+            // feedback): all-time, and month-to-date by order date. Delivery
+            // fee is only recorded on the first order of a checkout batch, so
+            // summing TotalAmount + DeliveryFee per order doesn't double-count it.
+            var allOrders = await _orderService.GetAllOrdersAsync();
+            TotalRevenue = allOrders.Sum(o => o.TotalAmount + o.DeliveryFee);
+            var monthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            MonthToDateRevenue = allOrders.Where(o => o.OrderDate >= monthStart).Sum(o => o.TotalAmount + o.DeliveryFee);
+            MonthToDateLabel = $"Month to Date ({monthStart:MMMM})";
 
             var rows = new List<AdminOrderRow>();
             foreach (var order in activeOrders.OrderBy(o => o.DeliveryDate))

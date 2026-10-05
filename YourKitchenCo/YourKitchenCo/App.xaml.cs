@@ -15,6 +15,13 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        // Restore the person's chosen brand colour theme (Settings > App
+        // Theme) before any page is constructed, so every StaticResource /
+        // AppThemeBinding lookup during startup resolves against the right
+        // palette from the very first frame. persist:false — we're just
+        // re-applying what was already saved, not making a new choice.
+        BrandThemeService.Apply(BrandThemeService.SavedTheme, persist: false);
+
         // Wired here (not via constructor injection in every ViewModel) —
         // see AlertService's own doc comment for why.
         AlertService.Instance = serviceProvider.GetRequiredService<IAlertService>();

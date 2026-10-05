@@ -34,22 +34,15 @@
                 <!-- Custom date range, shown only when "Custom Range" is picked -->
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12" IsVisible="{Binding IsCustomRangeVisible}">
                     <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Text="From" FontSize="11" TextColor="#888888" />
+                        <Label Text="From" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                         <DatePicker Date="{Binding CustomStartDate}" Format="dd MMM yyyy" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="2">
-                        <Label Text="To" FontSize="11" TextColor="#888888" />
+                        <Label Text="To" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                         <DatePicker Date="{Binding CustomEndDate}" Format="dd MMM yyyy" />
                     </VerticalStackLayout>
                 </Grid>
 
-                <Button Text="Export Report"
-                        Command="{Binding ExportReportCommand}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
-                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
-                        FontAttributes="Bold"
-                        CornerRadius="8"
-                        HeightRequest="42" />
             </VerticalStackLayout>
 
             <!-- KPI Metric Summary Cards -->
@@ -57,44 +50,44 @@
 
                 <Border Grid.Row="0" Grid.Column="0"
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         Padding="16"
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Total Sales" FontSize="11" TextColor="#888888" FontAttributes="Bold" />
+                        <Label Text="Total Sales" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
                         <Label Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border Grid.Row="0" Grid.Column="1"
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         Padding="16"
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Orders Completed" FontSize="11" TextColor="#888888" FontAttributes="Bold" />
+                        <Label Text="Orders Completed" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
                         <Label Text="{Binding TotalOrders}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border Grid.Row="1" Grid.Column="0"
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         Padding="16"
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Avg. Order Value" FontSize="11" TextColor="#888888" FontAttributes="Bold" />
+                        <Label Text="Avg. Order Value" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
                         <Label Text="{Binding AverageOrderValue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border Grid.Row="1" Grid.Column="1"
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         Padding="16"
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Top Item" FontSize="11" TextColor="#888888" FontAttributes="Bold" />
+                        <Label Text="Top Item" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
                         <Label Text="{Binding TopSellingItem}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
@@ -107,7 +100,7 @@
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
             <Border StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="12"
                     StrokeThickness="0">
                 <GraphicsView Drawable="{Binding BarChart}" HeightRequest="200" />
@@ -120,7 +113,7 @@
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
             <Border StrokeShape="RoundRectangle 12"
-                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="12"
                     StrokeThickness="0">
                 <Grid ColumnDefinitions="*, *">
@@ -140,28 +133,175 @@
             </Border>
 
             <!-- Top Selling Items Breakdown -->
-            <Label Text="Top Menu Performers" 
-                   FontSize="18" 
-                   FontAttributes="Bold" 
-                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+            <!-- Downloads: every report below as Excel (current filters apply) -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                    Padding="14">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Download as Excel" FontSize="16" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    <Label Text="Each report opens the share sheet as a .xlsx (Save to Files, Drive, email, print). Filters above apply."
+                           FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                    <Button Text="📊 Export All Reports (one workbook)"
+                            Command="{Binding ExportAllReportsExcelCommand}"
+                            FontSize="13" FontAttributes="Bold" HeightRequest="42" CornerRadius="8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                    <FlexLayout Wrap="Wrap" Direction="Row" JustifyContent="Start" AlignItems="Center">
+                        <Button Text="Top 10" Command="{Binding ExportReportExcelCommand}" CommandParameter="Top Performers" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="Bottom 10" Command="{Binding ExportReportExcelCommand}" CommandParameter="Bottom Performers" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="By Company" Command="{Binding ExportReportExcelCommand}" CommandParameter="Revenue by Company" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="By Category" Command="{Binding ExportReportExcelCommand}" CommandParameter="Revenue by Category" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="By Delivery Day" Command="{Binding ExportReportExcelCommand}" CommandParameter="Orders by Delivery Day" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="Top Customers" Command="{Binding ExportReportExcelCommand}" CommandParameter="Top Customers" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="Subsidy Costs" Command="{Binding ExportReportExcelCommand}" CommandParameter="Company Benefit Costs" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="All Orders" Command="{Binding ExportReportExcelCommand}" CommandParameter="All Orders" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Button Text="Disputes" Command="{Binding ExportReportExcelCommand}" CommandParameter="Disputes" FontSize="11" HeightRequest="30" Padding="10,0" Margin="0,0,8,8" BackgroundColor="{StaticResource SubtleFill}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
 
-            <CollectionView ItemsSource="{Binding TopSellingItems}">
+            <!-- Top 10 best performers -->
+            <Label Text="Top 10 Best Performers" FontSize="18" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+            <CollectionView ItemsSource="{Binding TopPerformers}" HorizontalOptions="Fill">
+                <CollectionView.EmptyView>
+                    <Label Text="No sales in this range." FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border StrokeShape="RoundRectangle 10"
-                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-                                Padding="14"
-                                Margin="0,0,0,10"
-                                StrokeThickness="0">
+                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="12" Margin="0,0,0,8" StrokeThickness="0">
                             <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
-                                <Label Grid.Column="0" Text="{Binding ItemName}" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" />
-                                <Label Grid.Column="1" Text="{Binding UnitsSold, StringFormat='{0} sold'}" FontSize="12" TextColor="#888888" VerticalOptions="Center" />
-                                <Label Grid.Column="2" Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontAttributes="Bold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" VerticalOptions="Center" />
+                                <Label Grid.Column="0" Text="{Binding ItemName}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Grid.Column="1" Text="{Binding UnitsSold, StringFormat='{0} sold'}" FontSize="12" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                <Label Grid.Column="2" Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <!-- Bottom 10 worst performers (menu dishes with no sales come first) -->
+            <Label Text="Bottom 10 Worst Performers" FontSize="18" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+            <CollectionView ItemsSource="{Binding BottomPerformers}" HorizontalOptions="Fill">
+                <CollectionView.EmptyView>
+                    <Label Text="Nothing to show for this range." FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="12" Margin="0,0,0,8" StrokeThickness="0">
+                            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="12">
+                                <Label Grid.Column="0" Text="{Binding ItemName}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label Grid.Column="1" Text="{Binding UnitsSold, StringFormat='{0} sold'}" FontSize="12" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                <Label Grid.Column="2" Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontAttributes="Bold" FontSize="13" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- More reports (collapsible) -->
+            <Border StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                    StrokeShape="RoundRectangle 12"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                    Padding="0">
+                <VerticalStackLayout>
+                    <Grid ColumnDefinitions="*, Auto" Padding="14,12">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleExtraReportsCommand}" />
+                        </Grid.GestureRecognizers>
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="More Reports" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="Revenue by company · by category · demand by delivery day · top customers · subsidy &amp; discount costs" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="1" Text="▸" FontSize="18" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsExtraReportsExpanded}" Value="True">
+                                    <Setter Property="Text" Value="▾" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+
+                    <VerticalStackLayout IsVisible="{Binding IsExtraReportsExpanded}" Padding="14,0,14,14" Spacing="14">
+
+                        <Label Text="Revenue by Company" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <CollectionView ItemsSource="{Binding RevenueByCompany}" HorizontalOptions="Fill">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" Padding="0,4">
+                                        <Label Grid.Column="0" Text="{Binding Name}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Count, StringFormat='{0} orders'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Label Text="Revenue by Category" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <CollectionView ItemsSource="{Binding RevenueByCategory}" HorizontalOptions="Fill">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" Padding="0,4">
+                                        <Label Grid.Column="0" Text="{Binding Name}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Count, StringFormat='{0} orders'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Label Text="Demand by Delivery Day" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <CollectionView ItemsSource="{Binding OrdersByDeliveryDay}" HorizontalOptions="Fill">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" Padding="0,4">
+                                        <Label Grid.Column="0" Text="{Binding Name}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Count, StringFormat='{0} meals'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Label Text="Top Customers" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <CollectionView ItemsSource="{Binding TopCustomers}" HorizontalOptions="Fill">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" Padding="0,4">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="0">
+                                            <Label Text="{Binding Name}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="{Binding Detail}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Count, StringFormat='{0} orders'}" FontSize="12" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        <Label Grid.Column="2" Text="{Binding Amount, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Label Text="Subsidy &amp; Discount Costs per Company" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <CollectionView ItemsSource="{Binding CompanyBenefitCosts}" HorizontalOptions="Fill">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10" Padding="0,4">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="0">
+                                            <Label Text="{Binding Name}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="{Binding Detail}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='R{0:F2}'}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Disputed Orders — only shows when there's something to see -->
             <Label Text="Disputed Orders" 

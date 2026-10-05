@@ -165,8 +165,11 @@ public partial class CartPageViewModel : ObservableObject
         var user = _session.CurrentUser;
         var companyId = user?.CompanyId;
 
-        // Delivery fee depends on the customer's location distance, independent of subsidy.
-        await RecalculateDeliveryFeeAsync(user?.LocationId);
+        // Delivery fee: the company's own delivery setting first (free / flat
+        // fee, set by admin), falling back to the distance tier for the
+        // customer's location.
+        var companyForDelivery = string.IsNullOrWhiteSpace(companyId) ? null : await _companyDirectory.GetCompanyAsync(companyId);
+        await RecalculateDeliveryFeeAsync(user?.LocationId, companyForDelivery);
 
         if (string.IsNullOrWhiteSpace(companyId))
         {
@@ -195,9 +198,36 @@ public partial class CartPageViewModel : ObservableObject
         SubsidyLabel = $"{company.Name} covers R{company.MealSubsidyAmount:F2} per meal (incl. VAT)";
     }
 
-    private async Task RecalculateDeliveryFeeAsync(string? locationId)
+    private async Task RecalculateDeliveryFeeAsync(string? locationId, Company? company)
     {
-        if (string.IsNullOrWhiteSpace(locationId) || CartItems.Count == 0)
+        if (CartItems.Count == 0)
+        {
+            DeliveryFee = 0;
+            DeliveryFeeLabel = string.Empty;
+            IsOutsideDeliveryRange = false;
+            return;
+        }
+
+        // Company-level override (Admin > Companies > Delivery) wins over the
+        // distance tier — free or a flat amount applies regardless of location.
+        if (company?.DeliveryFeeMode == DeliveryFeeMode.Free)
+        {
+            DeliveryFee = 0;
+            IsOutsideDeliveryRange = false;
+            DeliveryFeeLabel = $"Delivery: Free (covered by {company.Name})";
+            return;
+        }
+        if (company?.DeliveryFeeMode == DeliveryFeeMode.Flat)
+        {
+            DeliveryFee = Math.Max(0, company.FlatDeliveryFee);
+            IsOutsideDeliveryRange = false;
+            DeliveryFeeLabel = DeliveryFee == 0
+                ? $"Delivery: Free (covered by {company.Name})"
+                : $"Delivery (flat rate for {company.Name}): R{DeliveryFee:F2}";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(locationId))
         {
             DeliveryFee = 0;
             DeliveryFeeLabel = string.Empty;

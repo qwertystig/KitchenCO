@@ -10,6 +10,7 @@ using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using YourKitchenCo.Models;
 using YourKitchenCo.Services;
+using YourKitchenCo.Services.Export;
 
 namespace YourKitchenCo.ViewModel;
 
@@ -152,49 +153,6 @@ public partial class AdminActiveOrdersViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Sets every order in the current company/date filter to one status in
-    /// one go — Ingrid's "select all orders or individual or per company to
-    /// change status of delivery" request. Individual per-order updates
-    /// still go through UpdateStatusAsync above; this is the batch version,
-    /// scoped to whatever's currently filtered (so "all of Ecogra's Tuesday
-    /// order" is just filter-then-mark-all, without needing a separate
-    /// selection UI).
-    /// </summary>
-    [RelayCommand]
-    private async Task MarkAllFilteredAsync()
-    {
-        if (Orders.Count == 0)
-        {
-            await AlertService.Instance.ShowAsync("No Orders", "There are no orders matching the current filters.", "OK");
-            return;
-        }
-
-        string action = await AlertService.Instance.ShowActionSheetAsync(
-            $"Mark all {Orders.Count} filtered order(s) as...", "Cancel", "Received", "Preparing", "Out for Delivery", "Delivered");
-
-        if (string.IsNullOrEmpty(action) || action == "Cancel") return;
-
-        bool confirmed = await AlertService.Instance.ShowConfirmAsync(
-            "Confirm Bulk Update",
-            $"Set all {Orders.Count} order(s) for {SelectedCompanyFilter} / {SelectedDateFilter} to \"{action}\"?",
-            "Confirm", "Cancel");
-        if (!confirmed) return;
-
-        IsBusy = true;
-        int count = Orders.Count;
-        foreach (var row in Orders)
-        {
-            row.Order.Status = action;
-            await _orderService.UpdateOrderStatusAsync(row.Order.Id, action);
-        }
-        IsBusy = false;
-
-        ApplyFilter();
-
-        await AlertService.Instance.ShowAsync("Updated", $"{count} order(s) marked as {action}.", "OK");
-    }
-
-    /// <summary>
     /// Builds a plain-text order sheet for whatever's currently filtered
     /// (by company and/or date) and hands it to the OS share sheet, where
     /// "Print" is one of the standard options on both iOS and Android —
@@ -267,5 +225,147 @@ public partial class AdminActiveOrdersViewModel : ObservableObject
             Text = sb.ToString(),
             Title = "Kitchen Prep Sheet"
         });
+    }
+
+    // ===================== Production sheet / delivery notes / invoices =====================
+    // All three use the orders behind the current Company + Date filters (the
+    // same rows the screen is showing), so "today's production sheet" is just
+    // the Date filter set to today.
+
+    private string FilterLine() => $"Company: {SelectedCompanyFilter}    Date: {SelectedDateFilter}";
+    private string FileStamp() => (SelectedDateFilter == "All Dates" ? "all-dates" : SelectedDateFilter.Replace(", ", "_").Replace(" ", "")) + "_" + (SelectedCompanyFilter == "All Companies" ? "all" : SelectedCompanyFilter.Replace(" ", ""));
+
+    private async Task<bool> EnsureRowsAsync()
+    {
+        if (Orders.Count > 0) return true;
+        await AlertService.Instance.ShowAsync("Nothing to Export", "There are no orders matching the current filters.", "OK");
+        return false;
+    }
+
+    /// <summary>
+    /// Production sheet = what the kitchen preps from: (1) totals per dish,
+    /// (2) every order line per delivery date → company/location → person
+    /// with quantity, notes and allergy flags — i.e. the Order Report and the
+    /// Delivery Notes together on one document, in the order it's worked.
+    /// </summary>
+    [RelayCommand]
+    private async Task DownloadProductionSheetPdfAsync()
+    {
+        if (!await EnsureRowsAsync()) return;
+
+        var pdf = new SimplePdfWriter();
+        pdf.Heading("YOUR KITCHEN CO. - PRODUCTION SHEET", 16, 2);
+        pdf.Text(FilterLine(), 10);
+        pdf.Text($"Generated {DateTime.Now:dddd, dd MMM yyyy HH:mm}", 9, 10);
+
+        pdf.SubHeading("1. PREP TOTALS (make this many of each)", 12, 4);
+        foreach (var item in PrepSummary)
+            pdf.Mono($"  {item.TotalQuantity,3} x  {item.DishName}", 10);
+        pdf.Mono($"  Total meals: {PrepSummary.Sum(p => p.TotalQuantity)}   Distinct dishes: {PrepSummary.Count}", 9, 12);
+
+        pdf.SubHeading("2. DELIVERY NOTES (labelling - one line per order)", 12, 4);
+        WriteDeliveryNotes(pdf);
+
+        await ExportService.SharePdfAsync($"Production_Sheet_{FileStamp()}", pdf, "Production Sheet");
+    }
+
+    [RelayCommand]
+    private async Task DownloadProductionSheetExcelAsync()
+    {
+        if (!await EnsureRowsAsync()) return;
+
+        var xlsx = new SimpleXlsxWriter();
+
+        var totals = xlsx.AddSheet("Prep Totals").Widths(36, 10);
+        totals.Header("Dish", "Quantity");
+        foreach (var item in PrepSummary) totals.Row(item.DishName, item.TotalQuantity);
+        totals.Blank();
+        totals.Row("Total meals", PrepSummary.Sum(p => p.TotalQuantity));
+
+        var orders = xlsx.AddSheet("Order Report").Widths(16, 22, 24, 30, 36, 8, 12, 18, 16, 14, 30, 30);
+        orders.Header("Delivery Date", "Company", "Location", "Customer", "Dish", "Qty", "Order #", "Ordered", "Floor / Desk", "Status", "Notes", "Allergy");
+        foreach (var r in Orders.OrderBy(r => r.Order.DeliveryDate).ThenBy(r => r.CompanyName).ThenBy(r => r.Order.CustomerName))
+        {
+            var (dish, qty) = r.Order.ParseItemNameAndQuantity();
+            orders.Row(r.Order.DeliveryDate.ToString("ddd dd MMM yyyy"), r.CompanyName, r.LocationName, r.Order.CustomerName, dish, qty, r.Order.OrderNumber,
+                       r.Order.OrderDate.ToString("dd MMM yyyy HH:mm"), r.Order.DeliveryFloor, r.Order.Status, r.Order.SummaryText, r.Order.AllergyNotes);
+        }
+
+        // Labels sheet: one row per unit so it can be mail-merged straight onto label stationery.
+        var labels = xlsx.AddSheet("Labels").Widths(30, 36, 22, 24, 16, 30);
+        labels.Header("Customer", "Dish", "Company", "Location", "Delivery", "Allergy");
+        foreach (var r in Orders.OrderBy(r => r.Order.DeliveryDate).ThenBy(r => r.CompanyName).ThenBy(r => r.Order.CustomerName))
+        {
+            var (dish, qty) = r.Order.ParseItemNameAndQuantity();
+            for (var i = 0; i < qty; i++)
+                labels.Row(r.Order.CustomerName, dish, r.CompanyName, r.LocationName, r.Order.DeliveryDate.ToString("ddd dd MMM"), r.Order.AllergyNotes);
+        }
+
+        await ExportService.ShareXlsxAsync($"Production_Sheet_{FileStamp()}", xlsx, "Production Sheet");
+    }
+
+    [RelayCommand]
+    private async Task DownloadDeliveryNotesPdfAsync()
+    {
+        if (!await EnsureRowsAsync()) return;
+
+        var pdf = new SimplePdfWriter();
+        pdf.Heading("YOUR KITCHEN CO. - DELIVERY NOTES", 16, 2);
+        pdf.Text(FilterLine(), 10);
+        pdf.Text($"Generated {DateTime.Now:dddd, dd MMM yyyy HH:mm}", 9, 10);
+        WriteDeliveryNotes(pdf);
+        await ExportService.SharePdfAsync($"Delivery_Notes_{FileStamp()}", pdf, "Delivery Notes");
+    }
+
+    private void WriteDeliveryNotes(SimplePdfWriter pdf)
+    {
+        var labelCount = 0;
+        foreach (var byDate in Orders.GroupBy(r => r.Order.DeliveryDate).OrderBy(g => g.Key))
+        {
+            pdf.SubHeading($"DELIVERY: {byDate.Key:dddd, dd MMMM yyyy}", 11, 2);
+            foreach (var byCompany in byDate.GroupBy(r => r.CompanyName + " | " + r.LocationName).OrderBy(g => g.Key))
+            {
+                var first = byCompany.First();
+                pdf.Text($"{first.CompanyName} - {first.LocationName}", 10, 2);
+                foreach (var byPerson in byCompany.GroupBy(r => r.Order.CustomerName).OrderBy(g => g.Key))
+                {
+                    var floor = byPerson.Select(r => r.Order.DeliveryFloor).FirstOrDefault(f => !string.IsNullOrWhiteSpace(f));
+                    pdf.Mono($"  {byPerson.Key}{(string.IsNullOrWhiteSpace(floor) ? string.Empty : $"  ({floor})")}", 10);
+                    foreach (var r in byPerson.OrderBy(r => r.Order.ItemName))
+                    {
+                        var (dish, qty) = r.Order.ParseItemNameAndQuantity();
+                        labelCount += qty;
+                        pdf.Mono($"     [ ] {qty} x {dish}   #{r.Order.OrderNumber}", 9);
+                        if (r.Order.HasAllergyNotes) pdf.Mono($"         !! ALLERGY: {r.Order.AllergyNotes}", 9);
+                        if (!string.IsNullOrWhiteSpace(r.Order.SummaryText)) pdf.Mono($"         Note: {r.Order.SummaryText}", 9);
+                    }
+                }
+                pdf.Blank(4);
+            }
+        }
+        pdf.Rule(64);
+        pdf.Mono($"Labels: {labelCount}   People: {Orders.Select(r => r.Order.CustomerName).Distinct().Count()}   Order lines: {Orders.Count}", 9);
+    }
+
+    /// <summary>
+    /// Every invoice for the filtered orders, one per page, built by the same
+    /// InvoiceDocument the customer's invoice screen uses — so the printed
+    /// copy matches what the client sees on their phone.
+    /// </summary>
+    [RelayCommand]
+    private async Task DownloadInvoicesPdfAsync()
+    {
+        if (!await EnsureRowsAsync()) return;
+
+        var pdf = new SimplePdfWriter();
+        var first = true;
+        foreach (var r in Orders.OrderBy(r => r.Order.DeliveryDate).ThenBy(r => r.CompanyName).ThenBy(r => r.Order.CustomerName))
+        {
+            var doc = await InvoiceDocument.LoadAsync(r.Order, _companyDirectory);
+            doc.WriteTo(pdf, pageBreakBefore: !first);
+            first = false;
+        }
+
+        await ExportService.SharePdfAsync($"Invoices_{FileStamp()}", pdf, "Invoices");
     }
 }

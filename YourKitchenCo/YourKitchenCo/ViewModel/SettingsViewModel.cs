@@ -27,6 +27,14 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDarkModeEnabled;
 
+    // Plain string, not an enum — matches this project's existing "mode"
+    // convention (see StringEqualsConverter / MultiValueEqualsConverter) so
+    // the 4 theme swatches in SettingsPage.xaml can highlight the selected
+    // one with a DataTrigger, and so it round-trips through Preferences
+    // (BrandThemeService) with no extra parsing.
+    [ObservableProperty]
+    private string _selectedBrandTheme = BrandThemeService.Current;
+
     public SettingsViewModel(ISessionService session)
     {
         _session = session;
@@ -35,6 +43,7 @@ public partial class SettingsViewModel : ObservableObject
         // Real, persisted device preferences — not just UI-only toggles.
         IsNotificationsEnabled = Preferences.Default.Get(NotificationsPrefKey, true);
         IsDarkModeEnabled = Preferences.Default.Get(DarkModePrefKey, Application.Current?.RequestedTheme == AppTheme.Dark);
+        SelectedBrandTheme = BrandThemeService.SavedTheme;
 
         _isLoading = false;
     }
@@ -54,6 +63,47 @@ public partial class SettingsViewModel : ObservableObject
 
         if (Application.Current is not null)
             Application.Current.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
+    }
+
+    /// <summary>Admin previewing the customer app — Settings shows a "Back to Admin" card.</summary>
+    public bool IsAdminPreview => AdminCustomerSwitch.IsAdminSession(_session) && Shell.Current is not AdminShell;
+
+    [RelayCommand]
+    private void ReturnToAdmin() => AdminCustomerSwitch.ReturnToAdmin();
+
+    [RelayCommand]
+    private async Task SelectBrandThemeAsync(string theme)
+    {
+        if (string.IsNullOrEmpty(theme) || theme == SelectedBrandTheme) return;
+
+        // {StaticResource}/{AppThemeBinding} colours only resolve once, when
+        // a page is built — unlike the dark-mode toggle above, applying a
+        // new brand theme can't just flip a live binding. The whole visible
+        // Shell has to be rebuilt so every page re-resolves its colours
+        // against the new palette, which briefly resets navigation back to
+        // the shell's default tab — hence the heads-up before doing it.
+        bool confirm = await AlertService.Instance.ShowConfirmAsync(
+            "Change App Theme",
+            "This refreshes the app to apply the new colour theme, then brings you back here.",
+            "Apply", "Cancel");
+        if (!confirm) return;
+
+        SelectedBrandTheme = theme;
+        BrandThemeService.Apply(theme);
+
+        bool isAdmin = Shell.Current is AdminShell;
+        Application.Current!.MainPage = isAdmin ? new AdminShell() : new AppShell();
+
+        try
+        {
+            await Shell.Current.GoToAsync(isAdmin ? "//adminsettings" : nameof(SettingsPage));
+        }
+        catch
+        {
+            // Non-fatal — the new theme is already applied and persisted
+            // either way; worst case they land on the default tab instead
+            // of back here on Settings.
+        }
     }
 
     [RelayCommand]

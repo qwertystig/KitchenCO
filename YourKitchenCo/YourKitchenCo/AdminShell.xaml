@@ -38,10 +38,6 @@
         <ShellContent ContentTemplate="{DataTemplate views:AdminCompaniesPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Discounts" Route="admindiscounts">
-        <ShellContent ContentTemplate="{DataTemplate views:AdminDiscountsPage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Notifications" Route="adminnotifications">
         <ShellContent ContentTemplate="{DataTemplate views:AdminNotificationsPage}" />
     </FlyoutItem>

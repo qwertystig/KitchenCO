@@ -4,6 +4,18 @@
         <name>YourKitchenCo</name>
     </assembly>
     <members>
+        <member name="M:YourKitchenCo.AppShell.OnNavigated(Microsoft.Maui.Controls.ShellNavigatedEventArgs)">
+            <summary>
+            Tapping a bottom tab should land on that tab's root screen and close
+            whatever was open before — not resurrect a product page / cart /
+            settings page that was pushed on some other tab the last time it was
+            visited (Shell's default is to keep each tab's stack exactly as it was
+            left). So whenever the selected tab changes, every *other* tab's stack
+            is popped back to its root. Runs after the switch has happened, so if
+            a pop can't be applied for any reason the tab change itself is
+            unaffected — this only ever tidies up, never blocks navigation.
+            </summary>
+        </member>
         <member name="T:YourKitchenCo.Converters.CycleCategoryColorConverter">
              <summary>
              Card/badge background + text for a category. Previously cycled every
@@ -195,16 +207,51 @@
         <member name="P:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminMenuViewModel.DeleteCycleItemAsync(YourKitchenCo.ViewModel.CycleMenuItemRow)"/>.</summary>
         </member>
+        <member name="T:YourKitchenCo.ViewModel.ActiveOrderItem">
+            <summary>
+            One row on the Active Orders screen: the Order itself plus the
+            expanded/collapsed state of its card. Order is a plain model with no
+            change notification, so the toggle lives here rather than on it —
+            tapping the card header flips IsExpanded and the tracking details
+            (4-stage timeline, delivery info, notes, totals) show or hide.
+            </summary>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrderItem.Chevron">
+            <summary>"▾" when open, "▸" when closed — the chevron on the card header.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrderItem.DeliveryLine">
+            <summary>Delivery floor/location line, or a neutral fallback when the order has none recorded.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrderItem.IsExpanded">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.ActiveOrderItem._isExpanded"/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.ActiveOrderItem.OnIsExpandedChanged(System.Boolean)">
+            <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.ActiveOrderItem.IsExpanded"/> just changed.</summary>
+            <param name="value">The new property value that was set.</param>
+            <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.ActiveOrderItem.IsExpanded"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ActiveOrderItem.toggleCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ActiveOrderItem.ToggleCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrderItem.ToggleCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ActiveOrderItem.Toggle"/>.</summary>
+        </member>
         <member name="T:YourKitchenCo.ViewModel.ActiveOrdersViewModel">
-            <summary>The logged-in user's own upcoming orders (DeliveryDate >= today).</summary>
+            <summary>
+            The logged-in user's own upcoming orders (DeliveryDate >= today),
+            grouped per delivery date, each as a collapsible card whose expanded
+            state carries the full tracking detail (see ActiveOrderItem).
+            </summary>
             <inheritdoc/>
             <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.GroupedOrders">
+            <summary>Soonest date first; within a date, in the order the service returned them.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.IsBusy">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel._isBusy"/>
-        </member>
-        <member name="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.NextOrder">
-            <inheritdoc cref="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel._nextOrder"/>
         </member>
         <member name="F:YourKitchenCo.ViewModel.ActiveOrdersViewModel.refreshOrdersCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ActiveOrdersViewModel.RefreshOrdersCommand"/>.</summary>
@@ -213,6 +260,10 @@
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ActiveOrdersViewModel.RefreshOrdersAsync"/>.</summary>
         </member>
         <member name="T:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel">
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
@@ -231,6 +282,21 @@
         </member>
         <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync">
             <summary>Same idea as PrintOrderSheetAsync, but for the aggregated kitchen prep list instead of individual orders.</summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfAsync">
+            <summary>
+            Production sheet = what the kitchen preps from: (1) totals per dish,
+            (2) every order line per delivery date → company/location → person
+            with quantity, notes and allergy flags — i.e. the Order Report and the
+            Delivery Notes together on one document, in the order it's worked.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadInvoicesPdfAsync">
+            <summary>
+            Every invoice for the filtered orders, one per page, built by the same
+            InvoiceDocument the customer's invoice screen uses — so the printed
+            copy matches what the client sees on their phone.
+            </summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.IsBusy">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel._isBusy"/>
@@ -284,6 +350,30 @@
         <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync"/>.</summary>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.downloadProductionSheetPdfCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.downloadProductionSheetExcelCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetExcelCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetExcelCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetExcelAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.downloadDeliveryNotesPdfCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadDeliveryNotesPdfCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadDeliveryNotesPdfCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadDeliveryNotesPdfAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.downloadInvoicesPdfCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadInvoicesPdfCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadInvoicesPdfCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadInvoicesPdfAsync"/>.</summary>
+        </member>
         <member name="T:YourKitchenCo.ViewModel.AdminCompaniesViewModel">
             <inheritdoc/>
             <inheritdoc/>
@@ -294,13 +384,19 @@
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
         </member>
-        <member name="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsAsync(YourKitchenCo.ViewModel.CompanyRow)">
+        <member name="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDeliveryFeeAsync(YourKitchenCo.ViewModel.CompanyRow)">
             <summary>
             Subsidy (per-meal ZAR the company covers) and discount (percentage
             or flat ZAR off the order total, a separate lever — a company can
             have either, both, or neither) — combined into one flow since
             there was previously no admin UI for subsidy at all, only seed data.
+            </summary>
+            <summary>
+            Admin > Companies > Delivery: choose how this company's orders are
+            charged for delivery — the default distance tiers, a flat fee, or
+            free. Applied at checkout in CartPageViewModel.RecalculateDeliveryFeeAsync.
             </summary>
         </member>
         <member name="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDomainsAsync(YourKitchenCo.ViewModel.CompanyRow)">
@@ -338,6 +434,12 @@
         <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ToggleCompanyActiveCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ToggleCompanyActiveAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.manageDeliveryFeeCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDeliveryFeeCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDeliveryFeeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageDeliveryFeeAsync(YourKitchenCo.ViewModel.CompanyRow)"/>.</summary>
+        </member>
         <member name="F:YourKitchenCo.ViewModel.AdminCompaniesViewModel.manageFinancialsCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminCompaniesViewModel.ManageFinancialsCommand"/>.</summary>
         </member>
@@ -370,6 +472,12 @@
             <inheritdoc/>
             <inheritdoc/>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._totalRevenue">
+            <summary>Sum of every order ever placed (delivered or upcoming), incl. delivery fees.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._monthToDateRevenue">
+            <summary>Orders placed since the 1st of the current month.</summary>
+        </member>
         <member name="M:YourKitchenCo.ViewModel.AdminDashboardViewModel.BulkUpdateStatusAsync">
             <summary>
             Sends the same status update to every currently-filtered order at
@@ -389,6 +497,15 @@
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.CustomerCount">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._customerCount"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.TotalRevenue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._totalRevenue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MonthToDateRevenue">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._monthToDateRevenue"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.MonthToDateLabel">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._monthToDateLabel"/>
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminDashboardViewModel.IsBusy">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminDashboardViewModel._isBusy"/>
@@ -464,10 +581,18 @@
         <member name="T:YourKitchenCo.ViewModel.AdminOrderRow">
             <summary>Order plus resolved company/location names, for the admin active-orders grid.</summary>
         </member>
+        <member name="T:YourKitchenCo.ViewModel.NameValueRow">
+            <summary>Generic "name · count · amount" row used by the extra reports.</summary>
+        </member>
         <member name="T:YourKitchenCo.ViewModel.AdminReportsViewModel">
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel._filteredOrders">
+            <summary>The orders behind the current filters — shared by the metrics, the Order Report and the Delivery Notes.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedTimeframe">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._selectedTimeframe"/>
@@ -511,6 +636,9 @@
         <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.HasDisputes">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._hasDisputes"/>
         </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.IsExtraReportsExpanded">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminReportsViewModel._isExtraReportsExpanded"/>
+        </member>
         <member name="M:YourKitchenCo.ViewModel.AdminReportsViewModel.OnSelectedTimeframeChanged(System.String)">
             <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedTimeframe"/> just changed.</summary>
             <param name="value">The new property value that was set.</param>
@@ -536,22 +664,42 @@
             <param name="value">The new property value that was set.</param>
             <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.SelectedCategoryFilter"/> is changed.</remarks>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.toggleExtraReportsCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ToggleExtraReportsCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ToggleExtraReportsCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ToggleExtraReports"/>.</summary>
+        </member>
         <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.resolveDisputeCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeCommand"/>.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ResolveDisputeAsync(YourKitchenCo.Models.Order)"/>.</summary>
         </member>
-        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.exportReportCommand">
-            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportCommand"/>.</summary>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.exportReportExcelCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportExcelCommand"/>.</summary>
         </member>
-        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportAsync"/>.</summary>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportExcelCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportReportExcelAsync(System.String)"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminReportsViewModel.exportAllReportsExcelCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportAllReportsExcelCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportAllReportsExcelCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminReportsViewModel.ExportAllReportsExcelAsync"/>.</summary>
         </member>
         <member name="T:YourKitchenCo.ViewModel.AdminUsersViewModel">
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminUsersViewModel.AddUserAsync">
+            <summary>
+            Admin > Users > "+ Add User": name, email, role, then (for customers)
+            company, location and floor/desk — the same fields self-registration
+            collects, so the account is immediately usable for ordering.
+            </summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SearchQuery">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.AdminUsersViewModel._searchQuery"/>
@@ -568,6 +716,12 @@
             <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SelectedRoleFilter"/> just changed.</summary>
             <param name="value">The new property value that was set.</param>
             <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.SelectedRoleFilter"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminUsersViewModel.addUserCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.AddUserCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminUsersViewModel.AddUserCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminUsersViewModel.AddUserAsync"/>.</summary>
         </member>
         <member name="F:YourKitchenCo.ViewModel.AdminUsersViewModel.toggleUserStatusCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminUsersViewModel.ToggleUserStatusCommand"/>.</summary>
@@ -645,6 +799,58 @@
         <!-- Badly formed XML comment ignored for member "T:YourKitchenCo.ViewModel.CompanyRow" -->
         <member name="T:YourKitchenCo.ViewModel.CycleMenuItemRow">
             <summary>One editable dish within the cycle menu admin screen.</summary>
+        </member>
+        <member name="T:YourKitchenCo.ViewModel.DeliveryDayPickerState">
+             <summary>
+             Shared "which day am I ordering for" picker state, shown as an in-page
+             overlay (see Views/Controls/DeliveryDayOverlay.xaml) rather than a
+             separate modal page.
+            
+             Why: this used to be SelectDeliveryDayPage, pushed on top of the current
+             screen via Shell.Current.Navigation.PushModalAsync, with the new page's
+             own background set to a translucent scrim so the screen underneath would
+             show through, dimmed. Field testing showed that doesn't actually work on
+             Android — the modal came up over a solid white background instead of the
+             dimmed menu. Pushing a new Page is not guaranteed to keep the previous
+             page composited underneath it; an overlay that lives inside the SAME
+             page's own visual tree (a Grid sibling, toggled by IsVisible) has no such
+             dependency, since the real page content is — genuinely, not
+             hypothetically — still right there underneath it.
+            
+             Used by UserDashboardViewModel and ProductDetailViewModel, the two places
+             that offer "change delivery day" without leaving the current screen.
+             SelectDeliveryDayPage/SelectDeliveryDayViewModel are still used for the
+             one case that's genuinely a full page (navigation, not an overlay): the
+             mandatory first pick right after login/registration, before there's
+             anything "behind" it to preserve. Both now share the same full-screen
+             visual design (was a floating rounded card over a dimmed scrim — reported
+             as not looking clean, so both were redone to fill the whole screen
+             edge-to-edge instead of floating in the middle of it).
+             </summary>
+            <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.DeliveryDayPickerState.Open">
+            <summary>Opens the overlay, loading the current orderable date window fresh each time.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.IsVisible">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.DeliveryDayPickerState._isVisible"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.SelectedDate">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.DeliveryDayPickerState._selectedDate"/>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.DeliveryDayPickerState.confirmCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.ConfirmCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.ConfirmCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.DeliveryDayPickerState.Confirm"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.DeliveryDayPickerState.closeCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.CloseCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.DeliveryDayPickerState.CloseCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.DeliveryDayPickerState.Close"/>.</summary>
         </member>
         <member name="T:YourKitchenCo.ViewModel.HelpViewModel">
             <inheritdoc/>
@@ -834,6 +1040,30 @@
         <member name="T:YourKitchenCo.ViewModel.ProductDetailViewModel">
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.DayPicker">
+            <summary>
+            The post-add-to-basket "order for a different day" prompt, shown as an
+            in-page overlay (see Views/Controls/DeliveryDayOverlay.xaml) rather
+            than a modal page — see DeliveryDayPickerState's doc comment for why.
+            This only changes the session's default delivery day for whatever
+            gets added to the basket next; it doesn't touch SelectedDeliveryDate
+            above, which is this specific item's already-chosen day.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.ProductDetailViewModel.ReturnToMenuAsync">
+            <summary>
+            Back to the Menu tab's root — absolute route, so it lands on the main
+            menu no matter how deep the stack is, rather than just one page up.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.ProductDetailViewModel.ToggleOption(YourKitchenCo.Models.Option)">
+            <summary>
+            Tapping an option's label (not just the small checkbox) toggles it —
+            bigger tap target for the multi-select Sides / Extras lists. The
+            existing IsSelected change handler takes care of totals.
+            </summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.ProductDetailViewModel.selectedProduct"/>
@@ -857,6 +1087,12 @@
             <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct"/> just changed.</summary>
             <param name="value">The new property value that was set.</param>
             <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.SelectedProduct"/> is changed.</remarks>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.ProductDetailViewModel.toggleOptionCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.ToggleOptionCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.ProductDetailViewModel.ToggleOptionCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.ProductDetailViewModel.ToggleOption(YourKitchenCo.Models.Option)"/>.</summary>
         </member>
         <member name="F:YourKitchenCo.ViewModel.ProductDetailViewModel.addToCartCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.ProductDetailViewModel.AddToCartCommand"/>.</summary>
@@ -980,6 +1216,19 @@
         <member name="T:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel">
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SkipAsync">
+            <summary>
+            "Skip for now" — go into the app without actively choosing. The
+            earliest orderable day (already preselected) becomes the default so
+            the dashboard still has a date to show; they can change it from the
+            date pill at any time.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ViewOrdersAsync">
+            <summary>"View my orders" — same as Skip, but lands on the Orders tab instead of the menu.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SelectedDate">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel._selectedDate"/>
@@ -993,9 +1242,26 @@
         <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ConfirmCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ConfirmAsync"/>.</summary>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.skipCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SkipCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SkipCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.SkipAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.viewOrdersCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ViewOrdersCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ViewOrdersCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SelectDeliveryDayViewModel.ViewOrdersAsync"/>.</summary>
+        </member>
         <member name="T:YourKitchenCo.ViewModel.SettingsViewModel">
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.IsAdminPreview">
+            <summary>Admin previewing the customer app — Settings shows a "Back to Admin" card.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.AccountEmail">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._accountEmail"/>
@@ -1005,6 +1271,9 @@
         </member>
         <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.IsDarkModeEnabled">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._isDarkModeEnabled"/>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.SelectedBrandTheme">
+            <inheritdoc cref="F:YourKitchenCo.ViewModel.SettingsViewModel._selectedBrandTheme"/>
         </member>
         <member name="M:YourKitchenCo.ViewModel.SettingsViewModel.OnIsNotificationsEnabledChanged(System.Boolean)">
             <summary>Executes the logic for when <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsNotificationsEnabled"/> just changed.</summary>
@@ -1016,6 +1285,18 @@
             <param name="value">The new property value that was set.</param>
             <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.IsDarkModeEnabled"/> is changed.</remarks>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.SettingsViewModel.returnToAdminCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.ReturnToAdminCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.ReturnToAdminCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SettingsViewModel.ReturnToAdmin"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.SettingsViewModel.selectBrandThemeCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.SelectBrandThemeCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.SettingsViewModel.SelectBrandThemeCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand`1"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.SettingsViewModel.SelectBrandThemeAsync(System.String)"/>.</summary>
+        </member>
         <member name="F:YourKitchenCo.ViewModel.SettingsViewModel.signOutCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.SettingsViewModel.SignOutCommand"/>.</summary>
         </member>
@@ -1025,6 +1306,10 @@
         <member name="T:YourKitchenCo.ViewModel.TaxInvoiceViewModel">
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.TaxInvoiceViewModel.DownloadInvoicePdfAsync">
+            <summary>Downloads this invoice as a PDF (via the system share sheet: Save to Files / Drive / email / print).</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.Order">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel._order"/>
@@ -1041,6 +1326,12 @@
         <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.ShareInvoiceCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.TaxInvoiceViewModel.ShareInvoiceAsync"/>.</summary>
         </member>
+        <member name="F:YourKitchenCo.ViewModel.TaxInvoiceViewModel.downloadInvoicePdfCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.DownloadInvoicePdfCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.TaxInvoiceViewModel.DownloadInvoicePdfCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.TaxInvoiceViewModel.DownloadInvoicePdfAsync"/>.</summary>
+        </member>
         <member name="T:YourKitchenCo.ViewModel.UserDashboardViewModel">
             <inheritdoc/>
             <inheritdoc/>
@@ -1050,9 +1341,23 @@
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
         </member>
-        <member name="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayAsync">
-            <summary>Opens the full date picker — used by the compact date display so the person can change day without leaving the dashboard.</summary>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.DayPicker">
+            <summary>
+            "Change delivery day" shown as an in-page overlay (see
+            Views/Controls/DeliveryDayOverlay.xaml) rather than a modal page — see
+            DeliveryDayPickerState's doc comment for why.
+            </summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel._selectedDeliveryDateShortLabel">
+            <summary>Short "dd MMM" form for the compact header pill next to the search bar — the full "dddd, dd MMM" label is still used everywhere else (e.g. the floating cart bar).</summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDay">
+            <summary>Opens the date-picker overlay — used by the compact date display so the person can change day without leaving the dashboard.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.IsAdminPreview">
+            <summary>True when an admin is previewing the customer app (see AdminCustomerSwitch) — shows the "Back to Admin" chip.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.CartCount">
             <inheritdoc cref="F:YourKitchenCo.ViewModel.UserDashboardViewModel._cartCount"/>
@@ -1100,7 +1405,13 @@
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayCommand"/>.</summary>
         </member>
         <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayCommand">
-            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDayAsync"/>.</summary>
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ChangeDeliveryDay"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.UserDashboardViewModel.returnToAdminCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ReturnToAdminCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.UserDashboardViewModel.ReturnToAdminCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.UserDashboardViewModel.ReturnToAdmin"/>.</summary>
         </member>
         <member name="T:YourKitchenCo.Models.CartItem">
             <inheritdoc/>
@@ -1117,7 +1428,17 @@
             <remarks>This method is invoked right after the value of <see cref="P:YourKitchenCo.Models.CartItem.Quantity"/> is changed.</remarks>
         </member>
         <member name="T:YourKitchenCo.Models.CategorySection">
-            <summary>One category's hero banner + its dishes, for the sectioned dashboard list.</summary>
+            <summary>
+            One category's hero banner + its dishes, for the sectioned dashboard list.
+            Implements IEnumerable&lt;Product&gt; so it can serve directly as a
+            CollectionView group — CollectionView's IsGrouped="True" requires each
+            group object in the ItemsSource to itself be enumerable over its items.
+            This is what lets the dashboard's product list be a virtualized, grouped
+            CollectionView instead of a non-virtualizing BindableLayout (the latter
+            instantiated every category's every dish view all at once, synchronously,
+            on the main thread — the root cause of the app-wide freeze/ANR reported
+            after login).
+            </summary>
         </member>
         <member name="P:YourKitchenCo.Models.Company.MealSubsidyAmount">
             <summary>Per-meal subsidy the company covers, VAT-inclusive. Applied per cart item at checkout.</summary>
@@ -1138,6 +1459,17 @@
             convenience, not a requirement, so nobody gets locked out of
             registering just because their company hasn't set this up yet.
             </summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.DeliveryFeeMode">
+            <summary>
+            How delivery is charged for this company's orders. Default is the
+            distance-tier table in DeliveryFeeCalculator (by the location's
+            distance from the kitchen); an admin can instead set a flat fee for
+            the company, or make delivery free for them entirely.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.Company.FlatDeliveryFee">
+            <summary>Only used when DeliveryFeeMode is Flat.</summary>
         </member>
         <member name="T:YourKitchenCo.Models.CycleMenuDay">
             <summary>One day's rotating menu — five categories, as they appear in cycleMenu.json.</summary>
@@ -1179,8 +1511,36 @@
             (reorder lookup, kitchen prep aggregation).
             </summary>
         </member>
+        <member name="T:YourKitchenCo.Models.OrderDateGroup">
+            <summary>
+            One delivery date's worth of active orders — a CollectionView group
+            (IsGrouped="True" needs each group to be enumerable over its own rows,
+            the same way CategorySection works for the dashboard's menu).
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.OrderDateGroup.DateLabel">
+            <summary>"Today", "Tomorrow", or "Thursday, 02 Oct".</summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.OrderDateGroup.Summary">
+            <summary>"2 orders · R318.00" for the group header's right-hand side.</summary>
+        </member>
         <member name="T:YourKitchenCo.Models.PrepSummaryItem">
             <summary>One dish's total quantity needed across all filtered orders — the kitchen's bulk prep list, matching the reference app's AggregatedPrepItem.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.AdminCustomerSwitch">
+            <summary>
+            Lets an admin flip between the admin UI (AdminShell) and the customer UI
+            (AppShell) in the same signed-in session, to preview their changes as a
+            client would see them. Both directions just swap MainPage — the same
+            thing LoginViewModel does after sign-in — so nothing about the session
+            or the DI-held services changes.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.AdminCustomerSwitch.EnterCustomerView(System.IServiceProvider)">
+            <summary>Admin → customer app. Ensures a default ordering day exists so the dashboard has a date to show.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.AdminCustomerSwitch.ReturnToAdmin">
+            <summary>Customer app → admin dashboard.</summary>
         </member>
         <member name="T:YourKitchenCo.Services.AlertService">
              <summary>
@@ -1194,6 +1554,49 @@
              pragmatic exception to the DI-everywhere pattern used elsewhere in the
              app, scoped specifically to this cross-cutting UI concern.
              </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.BrandThemeService">
+             <summary>
+             Switches between the two app-wide brand colour themes: Mediterranean
+             Pantry (from the client's brand guideline deck) and Ink &amp; Cream (the
+             monochrome look, i.e. no override at all). Summer Harvest and Berry &amp;
+             Cream were retired at the client's request.
+            
+             How it works: Colors.xaml defines every colour key the app's XAML binds
+             to via {StaticResource}/{AppThemeBinding}. Picking a theme here merges a
+             small override ResourceDictionary (Resources/Styles/Themes/*.xaml) on
+             top of Colors.xaml in Application.Resources.MergedDictionaries, which
+             only re-defines the handful of keys that actually carry brand colour
+             (page/card backgrounds, primary text, the Primary/BrandGold/Gold accent
+             keys, etc.) — anything it doesn't mention (grayscale, semantic
+             error/success colors, ...) simply falls through to Colors.xaml unchanged.
+            
+             IMPORTANT LIMITATION: {StaticResource} and {AppThemeBinding} are resolved
+             once, when a page/control is constructed — not re-evaluated live. Calling
+             Apply() alone updates the dictionary, but any page already on screen keeps
+             showing its old, already-resolved colours. To actually repaint the app,
+             the caller must rebuild the visible Shell afterwards (see
+             SettingsViewModel.SelectBrandThemeAsync, which does this the same way
+             LoginViewModel/SelectDeliveryDayViewModel already rebuild it elsewhere in
+             this project: Application.Current.MainPage = new AppShell()/AdminShell()).
+             </summary>
+        </member>
+        <member name="F:YourKitchenCo.Services.BrandThemeService.Current">
+            <summary>
+            The monochrome near-black-on-cream look — "Ink &amp; Cream" in the UI.
+            The stored key stays "Current" so existing saved preferences keep working.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Services.BrandThemeService.SavedTheme">
+            <summary>The last-applied theme, persisted across launches.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.BrandThemeService.Apply(System.String,System.Boolean)">
+            <summary>
+            Merges the given theme's colour overrides into Application.Resources
+            (removing whichever one was merged before), and persists the choice
+            unless <paramref name="persist"/> is false (used on cold start, where
+            we're restoring the saved choice rather than making a new one).
+            </summary>
         </member>
         <member name="T:YourKitchenCo.Services.CycleMenuService">
              <summary>
@@ -1232,6 +1635,65 @@
              charging a made-up fee.
              </summary>
         </member>
+        <member name="T:YourKitchenCo.Services.Export.ExportService">
+            <summary>
+            "Download" on a phone means: write the file to the app's cache folder and
+            hand it to the system share sheet, which is where Save to Files / Drive /
+            email / print / WhatsApp all live. Same mechanism the invoice and kitchen
+            sheets already use for text, just with a file instead.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.Export.ExportService.DateStamp(System.DateOnly)">
+            <summary>"Production Sheet 2026-10-02" style stamp for file names.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.Export.InvoiceDocument">
+            <summary>
+            The ONE definition of what an invoice says. The customer's invoice
+            screen (share text + PDF download) and the admin's "invoices for the
+            day" PDF both come from here, so what the client sees on their phone
+            and what the kitchen prints are the same document line for line.
+            </summary>
+        </member>
+        <member name="P:YourKitchenCo.Services.Export.InvoiceDocument.MealSubtotal">
+            <summary>Backs the subtotal out of the stored components (Order only stores the final total).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.Export.InvoiceDocument.ToText">
+            <summary>Plain-text rendering — used for the share-as-text option and as the body of the PDF.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.Export.InvoiceDocument.WriteTo(YourKitchenCo.Services.Export.SimplePdfWriter,System.Boolean)">
+            <summary>Appends this invoice to a PDF (one invoice per page when batching — see <paramref name="pageBreakBefore"/>).</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.Export.SimplePdfWriter">
+             <summary>
+             Minimal, dependency-free PDF writer for text documents (production
+             sheets, delivery notes, invoices). Writes a plain PDF 1.4 with the three
+             standard base-14 fonts (Helvetica, Helvetica-Bold, Courier), A4 pages,
+             automatic page breaks, and a correct xref table — nothing else. It
+             exists because the app has no PDF library and adding one couldn't be
+             verified here; this exact byte layout was validated with qpdf/poppler
+             before being ported.
+            
+             Text is limited to the WinAnsi (Latin-1) range: common typographic
+             characters (— – × · • …) are mapped to ASCII equivalents and anything
+             else becomes '?'.
+             </summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.Export.SimplePdfWriter.PageBreak">
+            <summary>Forces the next line onto a new page (no-op at the very top of a page).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Services.Export.SimplePdfWriter.MonoBlock(System.String,System.Double)">
+            <summary>Adds a block of text, one line per newline — handy for feeding an existing text report straight in.</summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.Export.SimpleXlsxWriter">
+            <summary>
+            Minimal, dependency-free .xlsx writer: a real Office Open XML workbook
+            (one or more sheets, bold header rows, numeric cells kept numeric,
+            column widths) built with the BCL's ZipArchive — no NuGet package. The
+            exact part layout was validated with openpyxl and LibreOffice before
+            being ported here. Strings are written inline (no shared-strings part)
+            to keep it to five small XML parts.
+            </summary>
+        </member>
         <member name="M:YourKitchenCo.Services.IAlertService.ShowAsync(System.String,System.String,System.String)">
             <summary>Single-button informational alert. Mirrors Page.DisplayAlert(title, message, cancel).</summary>
         </member>
@@ -1251,6 +1713,15 @@
             <summary>
             Bottom-sheet style option picker. Mirrors Page.DisplayActionSheet(title, cancel, destruction, buttons).
             Returns the tapped option's text, or null if cancelled.
+            </summary>
+        </member>
+        <member name="T:YourKitchenCo.Services.IBrandThemeDictionary">
+            <summary>
+            Marker interface implemented by every brand colour-override
+            ResourceDictionary (Resources/Styles/Themes/*.xaml) so
+            <see cref="T:YourKitchenCo.Services.BrandThemeService"/> can find and remove whichever one is
+            currently merged into Application.Resources before merging in a new one,
+            without having to track that state anywhere else.
             </summary>
         </member>
         <member name="M:YourKitchenCo.Services.ICycleMenuService.GetCycleWeekNumber(System.DateOnly)">
@@ -1386,20 +1857,13 @@
             category (e.g. an actual ramen bowl emoji, not a generic bowl).
             </summary>
         </member>
-        <member name="F:YourKitchenCo.Services.JsonProductService.CustomCategoryImages">
+        <member name="M:YourKitchenCo.Services.JsonProductService.StaticCategoryImageUrl(System.String)">
             <summary>
             Real photography per static-menu category — non-copyright, sourced
             from Unsplash (Unsplash License: free for commercial use, no
             attribution required — see https://unsplash.com/license). Each URL
             points at a specific photo's stable CDN address, not a search/random
             endpoint, so the same image loads every time.
-            </summary>
-            <summary>
-            Admin-set hero image for a category not covered by the hardcoded
-            mapping below — e.g. a brand new category created via "Add Menu
-            Item" with a category name that didn't exist before. Checked first;
-            falls through to the switch below for every category that already
-            has a curated photo.
             </summary>
         </member>
         <member name="F:YourKitchenCo.Services.JsonProductService.ItemPhotoIds">
@@ -1462,6 +1926,15 @@
             called directly from LoginViewModel.
             </summary>
         </member>
+        <member name="F:YourKitchenCo.Views.ActiveOrdersPage.SelectedTabProperty">
+            <summary>
+            Which of the two sections below is showing — "Active" or "History".
+            Bound by the toggle buttons and both RefreshView triggers via
+            {Binding SelectedTab, Source={x:Reference Root}}, the same
+            BindableProperty + x:Reference pattern AdminNavStrip uses for its
+            own active-route highlighting.
+            </summary>
+        </member>
         <member name="P:YourKitchenCo.Views.AdminNavStrip.ActiveRoute">
             <summary>
             The route of the page currently hosting this strip — e.g.
@@ -1469,6 +1942,15 @@
             matching tab highlights. Set once per page, not automatically
             derived, since a ContentView embedded in a page has no reliable way
             to know its own host's route from the inside.
+            </summary>
+        </member>
+        <member name="M:YourKitchenCo.Views.AdminNavStrip.OnCustomerViewClicked(System.Object,System.EventArgs)">
+            <summary>
+            Opens the customer app as the signed-in admin so they can see what
+            their changes (menu, prices, themes, delivery fees...) look like from
+            the client's side — without logging out and back in. The customer
+            side shows a "Back to Admin" control (dashboard header + Settings)
+            for admin accounts only. See AdminCustomerSwitch.
             </summary>
         </member>
         <member name="T:YourKitchenCo.Views.PageAnimation">
@@ -1480,6 +1962,16 @@
         </member>
         <member name="P:YourKitchenCo.Views.Popups.AppAlertPage.ResultTask">
             <summary>Index of the button that was tapped (0 = first/primary button).</summary>
+        </member>
+        <member name="M:YourKitchenCo.Views.SelectDeliveryDayPage.OnCloseClicked(System.Object,System.EventArgs)">
+            <summary>Close ("✕") tapped — only visible/reachable in the popup (mid-session) presentation.</summary>
+        </member>
+        <member name="M:YourKitchenCo.Views.SelectDeliveryDayPage.OnBackButtonPressed">
+            <summary>
+            Hardware/gesture back while shown as a popup should dismiss it the
+            same way the ✕ does, rather than falling through to whatever the
+            platform default for a modal page happens to be.
+            </summary>
         </member>
         <member name="T:YourKitchenCo.Resource">
             <summary>
@@ -1637,8 +2129,8 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsSelected">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsSelected" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.NextOrder">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "NextOrder" generated properties.</summary>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsExpanded">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsExpanded" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedCompanyFilter">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedCompanyFilter" generated properties.</summary>
@@ -1661,6 +2153,15 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomerCount">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomerCount" generated properties.</summary>
         </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.MonthToDateRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "MonthToDateRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.MonthToDateLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "MonthToDateLabel" generated properties.</summary>
+        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Title">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Title" generated properties.</summary>
         </member>
@@ -1682,9 +2183,6 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.CustomEndDate">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "CustomEndDate" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalRevenue">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
-        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.TotalOrders">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "TotalOrders" generated properties.</summary>
         </member>
@@ -1705,6 +2203,9 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.HasDisputes">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "HasDisputes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsExtraReportsExpanded">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsExtraReportsExpanded" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedRoleFilter">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedRoleFilter" generated properties.</summary>
@@ -1738,6 +2239,12 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsOrderingOpen">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsOrderingOpen" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsVisible">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsVisible" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Email">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Email" generated properties.</summary>
@@ -1832,9 +2339,6 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedLocation">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedLocation" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedDate">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
-        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsChangingDay">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsChangingDay" generated properties.</summary>
         </member>
@@ -1846,6 +2350,9 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.IsDarkModeEnabled">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "IsDarkModeEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.SelectedBrandTheme">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "SelectedBrandTheme" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangingArgs.Order">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangingEventArgs"/> instance for all "Order" generated properties.</summary>
@@ -1889,8 +2396,8 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsSelected">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsSelected" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.NextOrder">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "NextOrder" generated properties.</summary>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsExpanded">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsExpanded" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedCompanyFilter">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedCompanyFilter" generated properties.</summary>
@@ -1913,6 +2420,15 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomerCount">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomerCount" generated properties.</summary>
         </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.MonthToDateRevenue">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "MonthToDateRevenue" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.MonthToDateLabel">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "MonthToDateLabel" generated properties.</summary>
+        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Title">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Title" generated properties.</summary>
         </member>
@@ -1934,9 +2450,6 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.CustomEndDate">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "CustomEndDate" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalRevenue">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalRevenue" generated properties.</summary>
-        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.TotalOrders">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "TotalOrders" generated properties.</summary>
         </member>
@@ -1957,6 +2470,9 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.HasDisputes">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "HasDisputes" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsExtraReportsExpanded">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsExtraReportsExpanded" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedRoleFilter">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedRoleFilter" generated properties.</summary>
@@ -1990,6 +2506,12 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsOrderingOpen">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsOrderingOpen" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsVisible">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsVisible" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedDate">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Email">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Email" generated properties.</summary>
@@ -2084,9 +2606,6 @@
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedLocation">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedLocation" generated properties.</summary>
         </member>
-        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedDate">
-            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedDate" generated properties.</summary>
-        </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsChangingDay">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsChangingDay" generated properties.</summary>
         </member>
@@ -2098,6 +2617,9 @@
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.IsDarkModeEnabled">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "IsDarkModeEnabled" generated properties.</summary>
+        </member>
+        <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.SelectedBrandTheme">
+            <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "SelectedBrandTheme" generated properties.</summary>
         </member>
         <member name="F:CommunityToolkit.Mvvm.ComponentModel.__Internals.__KnownINotifyPropertyChangedArgs.Order">
             <summary>The cached <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance for all "Order" generated properties.</summary>

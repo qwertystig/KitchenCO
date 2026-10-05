@@ -24,4 +24,41 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(Views.SettingsPage), typeof(Views.SettingsPage));
         Routing.RegisterRoute(nameof(Views.HelpPage), typeof(Views.HelpPage));
     }
+
+    /// <summary>
+    /// Tapping a bottom tab should land on that tab's root screen and close
+    /// whatever was open before — not resurrect a product page / cart /
+    /// settings page that was pushed on some other tab the last time it was
+    /// visited (Shell's default is to keep each tab's stack exactly as it was
+    /// left). So whenever the selected tab changes, every *other* tab's stack
+    /// is popped back to its root. Runs after the switch has happened, so if
+    /// a pop can't be applied for any reason the tab change itself is
+    /// unaffected — this only ever tidies up, never blocks navigation.
+    /// </summary>
+    protected override async void OnNavigated(ShellNavigatedEventArgs args)
+    {
+        base.OnNavigated(args);
+
+        if (args.Source != ShellNavigationSource.ShellSectionChanged) return;
+
+        var tabBar = CurrentItem;
+        var activeTab = tabBar?.CurrentItem;
+        if (tabBar is null || activeTab is null) return;
+
+        foreach (var tab in tabBar.Items)
+        {
+            if (ReferenceEquals(tab, activeTab)) continue;
+
+            try
+            {
+                if (tab.Navigation.NavigationStack.Count > 1)
+                    await tab.Navigation.PopToRootAsync(animated: false);
+            }
+            catch
+            {
+                // Best effort — leave that tab's stack as-is rather than
+                // interrupt the navigation that just completed.
+            }
+        }
+    }
 }

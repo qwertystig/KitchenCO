@@ -33,10 +33,10 @@ public partial class PaymentViewModel : ObservableObject, IQueryAttributable
     private decimal _deliveryFee;
 
     [ObservableProperty]
-    private string _selectedMethod = "Card";
+    private string _selectedMethod = "PayFast"; // PayFast is the only method offered in the UI for now
 
     [ObservableProperty]
-    private bool _isCardSelected = true;
+    private bool _isCardSelected = false;
 
     [ObservableProperty]
     private string _cardNumber = string.Empty;

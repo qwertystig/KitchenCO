@@ -30,6 +30,24 @@ public class Company
     /// </summary>
     public List<string> WhitelistedDomains { get; set; } = new();
 
+    /// <summary>
+    /// How delivery is charged for this company's orders. Default is the
+    /// distance-tier table in DeliveryFeeCalculator (by the location's
+    /// distance from the kitchen); an admin can instead set a flat fee for
+    /// the company, or make delivery free for them entirely.
+    /// </summary>
+    public DeliveryFeeMode DeliveryFeeMode { get; set; } = DeliveryFeeMode.DistanceTier;
+
+    /// <summary>Only used when DeliveryFeeMode is Flat.</summary>
+    public decimal FlatDeliveryFee { get; set; }
+
+    public string DeliveryFeeSummary => DeliveryFeeMode switch
+    {
+        DeliveryFeeMode.Free => "Free delivery",
+        DeliveryFeeMode.Flat => $"R{FlatDeliveryFee:F2} flat delivery",
+        _ => "Delivery by distance tier"
+    };
+
     public string FinancialsSummary
     {
         get
@@ -48,4 +66,11 @@ public enum DiscountType
     None,
     Percentage,
     FixedZar
+}
+
+public enum DeliveryFeeMode
+{
+    DistanceTier,
+    Flat,
+    Free
 }

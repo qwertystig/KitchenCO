@@ -4,200 +4,526 @@
              xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
              xmlns:models="clr-namespace:YourKitchenCo.Models"
              x:Class="YourKitchenCo.Views.ActiveOrdersPage"
-             Title="Active Orders"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
+             x:Name="Root"
+             Title="Orders"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
-    <RefreshView IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
-        <CollectionView ItemsSource="{Binding ActiveOrders}" Margin="16, 12">
+    <!--
+        Active Orders and Order History used to be two separate pages, moved
+        between via .NET MAUI Shell's automatic secondary tab strip (created
+        because the "Orders" Tab had two ShellContent entries). That strip
+        isn't reliably stylable — sizing its tabs evenly isn't something
+        Shell exposes control over — so it's replaced here with the same
+        50/50 segmented toggle already used elsewhere in the app (the
+        dashboard's Main Menu/Cycling Menu switch, the admin Menu Catalog's
+        Static/Cycle switch): a Grid of two equal columns, active state
+        driven by the SelectedTab property below via the same
+        BindableProperty + x:Reference pattern AdminNavStrip uses for its
+        route highlighting.
 
-            <CollectionView.Header>
-                <Grid IsVisible="{Binding NextOrder, Converter={StaticResource IsNotNullOrEmptyConverter}}">
-                    <Border StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                            StrokeShape="RoundRectangle 20"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-                            Padding="16"
-                            Margin="0,0,0,16"
-                            BindingContext="{Binding NextOrder}"
-                            x:DataType="models:Order">
+        Both sections below are the exact same markup the two old pages had
+        — Order History keeps its own OrderHistoryViewModel as its
+        BindingContext (set in the code-behind), so none of its bindings,
+        commands, or the RelativeSource lookups inside its DataTemplate
+        needed to change.
+    -->
 
-                    <VerticalStackLayout Spacing="16">
+    <Grid RowDefinitions="Auto, *">
 
-                        <!-- Header -->
-                        <Grid ColumnDefinitions="*, Auto">
-                            <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                <Label Text="DELIVERY PROGRESS" FontSize="10" FontAttributes="Bold" CharacterSpacing="0.5"
-                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                                <Label Text="{Binding DeliveryDate, StringFormat='{0:dddd, dd MMM}'}" FontSize="15" FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                            </VerticalStackLayout>
-                            <Border Grid.Column="1" StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                                    StrokeShape="RoundRectangle 8" Padding="8,4" VerticalOptions="Start">
-                                <Label Text="{Binding OrderNumber, StringFormat='Order #{0}'}" FontSize="10" FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                            </Border>
-                        </Grid>
+        <!-- Active Orders / Order History — 50/50 segmented toggle -->
+        <Border Grid.Row="0"
+                Margin="16,12,16,8"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 24"
+                BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                Padding="4"
+                HeightRequest="48">
+            <Grid ColumnDefinitions="*, *">
+                <Button Grid.Column="0"
+                        Text="Active Orders"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="20"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
+                        Clicked="OnActiveTabClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SelectedTab, Source={x:Reference Root}}" Value="Active">
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
 
-                        <!-- Stage 1: Received -->
-                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto">
-                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
-                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}">
-                                <Label Text="1" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
-                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1:Text}" />
-                            </Border>
-                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
-                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}" />
-                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
-                                <Label Text="Order Received" FontSize="14" FontAttributes="Bold"
+                <Button Grid.Column="1"
+                        Text="Order History"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="20"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
+                        Clicked="OnHistoryTabClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding SelectedTab, Source={x:Reference Root}}" Value="History">
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+
+            <!-- ================= ACTIVE ORDERS (BindingContext = page's own ActiveOrdersViewModel) =================
+                 Grouped per delivery date; each order is a collapsible card. Tap the card's header row to
+                 open/close the tracking details (4-stage timeline, delivery info, notes, totals).
+
+                 LAYOUT NOTE: there is deliberately NO Margin on the CollectionView. The previous version had
+                 Margin="16,12" on the CollectionView itself, inside the RefreshView — on Android that
+                 combination is what shifts the whole list right and clips the cards on the right edge
+                 (the "start on the left and cut off" report). The dashboard's list, which never had a
+                 CollectionView margin and renders fine, is the pattern followed here: spacing lives on
+                 each card/header instead. Same change applied to the Order History list below.
+            -->
+            <RefreshView x:Name="ActiveSection" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}"
+                         RefreshColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                         HorizontalOptions="Fill" VerticalOptions="Fill">
+                <RefreshView.Triggers>
+                    <DataTrigger TargetType="RefreshView" Binding="{Binding SelectedTab, Source={x:Reference Root}}" Value="History">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                </RefreshView.Triggers>
+
+                <CollectionView ItemsSource="{Binding GroupedOrders}" IsGrouped="True" HorizontalOptions="Fill">
+
+                    <!-- Date group header -->
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="*, Auto" Margin="16,14,16,8">
+                                <Label Grid.Column="0" Text="{Binding DateLabel}" FontSize="15" FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                <Label Text="Your order has been confirmed and booked into the kitchen schedule." FontSize="12"
+                                <Label Grid.Column="1" Text="{Binding Summary}" FontSize="12" FontAttributes="Bold" VerticalOptions="End"
                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                            </VerticalStackLayout>
-                        </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
 
-                        <!-- Stage 2: Preparing -->
-                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
-                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
-                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}">
-                                <Label Text="2" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
-                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2:Text}" />
+                    <!-- NO ACTIVE ORDERS WATERMARK / EMPTY VIEW -->
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="14" Padding="30">
+                            <Border StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 40"
+                                    BackgroundColor="{StaticResource SubtleFill}"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    HorizontalOptions="Center">
+                                <Label Text="🍳" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.8" />
                             </Border>
-                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
-                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}" />
-                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
-                                <Label Text="Kitchen Preparing" FontSize="14" FontAttributes="Bold"
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="No Active Orders" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                <Label Text="Our culinary team is preparing your meal fresh this morning." FontSize="12"
+                                <Label Text="Your live kitchen orders will appear here in real-time as soon as you place them."
+                                       FontSize="13" HorizontalTextAlignment="Center" MaximumWidthRequest="280"
                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                             </VerticalStackLayout>
-                        </Grid>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
 
-                        <!-- Stage 3: Out for Delivery -->
-                        <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
-                            <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
-                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}">
-                                <Label Text="3" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
-                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3:Text}" />
+                    <!-- COLLAPSIBLE ORDER CARD (BindingContext = ActiveOrderItem) -->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                    StrokeShape="RoundRectangle 16"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                                    Padding="0"
+                                    Margin="16,0,16,10"
+                                    HorizontalOptions="Fill">
+
+                                <Border.Shadow>
+                                    <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
+                                </Border.Shadow>
+
+                                <VerticalStackLayout>
+
+                                    <!-- Header row — always visible; tap anywhere on it to expand/collapse -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="12" Padding="14" HorizontalOptions="Fill">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding ToggleCommand}" />
+                                        </Grid.GestureRecognizers>
+
+                                        <Border Grid.Column="0"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 12"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                                                WidthRequest="44" HeightRequest="44" VerticalOptions="Center">
+                                            <Label Text="🔥" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                            <Label Text="{Binding Order.ItemName}" FontAttributes="Bold" FontSize="15" LineBreakMode="TailTruncation"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        </VerticalStackLayout>
+
+                                        <Border Grid.Column="2"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 12"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                                                Padding="10,4" VerticalOptions="Center">
+                                            <Label Text="{Binding Order.Status}" FontSize="11" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        </Border>
+
+                                        <Label Grid.Column="3" Text="{Binding Chevron}" FontSize="18" VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                    </Grid>
+
+                                    <!-- Tracking details — only when expanded -->
+                                    <VerticalStackLayout IsVisible="{Binding IsExpanded}" Padding="14,0,14,16" Spacing="16">
+
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
+
+                                        <Label Text="DELIVERY PROGRESS" FontSize="10" FontAttributes="Bold" CharacterSpacing="0.5"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+
+                                    <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto">
+                                        <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}">
+                                            <Label Text="1" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   TextColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1:Text}" />
+                                        </Border>
+                                        <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                                 Color="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=1}" />
+                                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                            <Label Text="Order Received" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="Confirmed and booked into the kitchen schedule." FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
+                                        <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}">
+                                            <Label Text="2" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   TextColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2:Text}" />
+                                        </Border>
+                                        <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                                 Color="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=2}" />
+                                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                            <Label Text="Kitchen Preparing" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="Being prepared fresh on the morning of delivery." FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="36, *" RowDefinitions="Auto, Auto" Margin="0,-16,0,0">
+                                        <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}">
+                                            <Label Text="3" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   TextColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3:Text}" />
+                                        </Border>
+                                        <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
+                                                 Color="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}" />
+                                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
+                                            <Label Text="Out for Delivery" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="En route in insulated carriers to your location." FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="36, *"  Margin="0,-16,0,0">
+                                        <Border Grid.Column="0" Grid.Row="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
+                                                BackgroundColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4}">
+                                            <Label Text="4" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   TextColor="{Binding Order.Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4:Text}" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,0">
+                                            <Label Text="Delivered" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                            <Label Text="Arrives at your delivery location, ready to enjoy." FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
+
+                                        <VerticalStackLayout Spacing="8">
+
+                                    <Grid ColumnDefinitions="110, *" >
+                                        <Label Grid.Column="0" Text="Delivery date" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Order.DeliveryDate, StringFormat='{0:dddd, dd MMMM yyyy}'}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="110, *" >
+                                        <Label Grid.Column="0" Text="Location" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding DeliveryLine}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="110, *" >
+                                        <Label Grid.Column="0" Text="Placed on" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Order.OrderDate, StringFormat='{0:dd MMM yyyy, HH:mm}'}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="110, *" >
+                                        <Label Grid.Column="0" Text="Order total" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Order.TotalAmount, StringFormat='R{0:F2}'}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="110, *" IsVisible="{Binding HasNotes}">
+                                        <Label Grid.Column="0" Text="Notes" FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Order.SummaryText}" FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </Grid>
+                                        </VerticalStackLayout>
+
+                                        <!-- Allergy alert — only when the order carries one -->
+                                        <Border IsVisible="{Binding Order.HasAllergyNotes}"
+                                                StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="12,8"
+                                                BackgroundColor="#1AF59E0B">
+                                            <Label FontSize="12" TextColor="#B45309">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Allergy note: " FontAttributes="Bold" />
+                                                        <Span Text="{Binding Order.AllergyNotes}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Border>
+
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
                             </Border>
-                            <BoxView Grid.Column="0" Grid.Row="1" WidthRequest="2" VerticalOptions="Fill" Margin="0,4"
-                                     Color="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=3}" />
-                            <VerticalStackLayout Grid.Column="1" Grid.Row="0" Spacing="2" Margin="12,0,0,18">
-                                <Label Text="Out for Delivery" FontSize="14" FontAttributes="Bold"
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <!-- ================= ORDER HISTORY (BindingContext = injected OrderHistoryViewModel, set in code-behind) ================= -->
+            <RefreshView x:Name="HistorySection" IsVisible="False" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshHistoryCommand}" HorizontalOptions="Fill" VerticalOptions="Fill" RefreshColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                <RefreshView.Triggers>
+                    <DataTrigger TargetType="RefreshView" Binding="{Binding SelectedTab, Source={x:Reference Root}}" Value="History">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </RefreshView.Triggers>
+
+                <CollectionView ItemsSource="{Binding OrderHistory}" HorizontalOptions="Fill">
+
+                    <!-- NO ORDER HISTORY WATERMARK / EMPTY VIEW -->
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="14" Padding="30">
+
+                            <!-- Watermark Icon Badge -->
+                            <Border StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 40"
+                                    BackgroundColor="{AppThemeBinding Light=#10000000, Dark=#15FFFFFF}"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    HorizontalOptions="Center">
+                                <Label Text="📜"
+                                       FontSize="36"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Opacity="0.8" />
+                            </Border>
+
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="No Order History"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                <Label Text="Your order is en route in insulated carriers to your delivery location." FontSize="12"
-                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+
+                                <Label Text="Your past orders and receipt details will be archived here for easy reordering."
+                                       FontSize="13"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                       MaximumWidthRequest="280" />
                             </VerticalStackLayout>
-                        </Grid>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
 
-                        <!-- Stage 4: Delivered -->
-                        <Grid ColumnDefinitions="36, *">
-                            <Border Grid.Column="0" WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14"
-                                    BackgroundColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4}">
-                                <Label Text="4" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
-                                       TextColor="{Binding Stage, Converter={StaticResource StageNodeColorConverter}, ConverterParameter=4:Text}" />
+                    <!-- ORDER HISTORY CARD TEMPLATE -->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                    StrokeShape="RoundRectangle 16"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
+                                    Padding="16, 14"
+                                    Margin="16,0,16,10"
+                                    HorizontalOptions="Fill">
+
+                                <Border.Shadow>
+                                    <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.6" />
+                                </Border.Shadow>
+
+                                <!--
+                                    BUG FIX: a Border can only have one direct child. This
+                                    used to have three — the Grid below, plus the rating row
+                                    and the "Report an Issue" row as separate siblings after
+                                    it — so only the LAST one (the Report-an-Issue row) ever
+                                    actually became the Border's content; everything else
+                                    silently never rendered. That's exactly what was reported:
+                                    "the containers... just start on the left and cut off",
+                                    with only the Report an Issue button visible. Fixed by
+                                    making all three rows children of ONE Grid, with
+                                    Grid.Row/Grid.ColumnSpan on the ones that need to span the
+                                    full card width.
+                                -->
+                                <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="14" HorizontalOptions="Fill">
+
+                                    <Border Grid.Row="0" Grid.Column="0"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                                            WidthRequest="44"
+                                            HeightRequest="44"
+                                            VerticalOptions="Center">
+                                        <Label Text="📦" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                        <Label Text="{Binding ItemName}"
+                                               FontAttributes="Bold"
+                                               FontSize="15"
+                                               LineBreakMode="TailTruncation"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Label Text="🗓️" FontSize="11" VerticalOptions="Center"/>
+                                            <Label Text="{Binding OrderDate, StringFormat='{0:dd MMM yyyy}'}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Spacing="6">
+                                        <Border StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 12"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}"
+                                                Padding="10,4"
+                                                HorizontalOptions="End">
+                                            <Label Text="{Binding Status}"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        </Border>
+
+                                        <Label Text="{Binding TotalAmount, StringFormat='R{0:F2}', FallbackValue='R0.00'}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="End"
+                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </VerticalStackLayout>
+
+                                <!-- Rating (tap a star to rate — tapping the current rating again clears it) -->
+                                <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Spacing="4" Margin="58,10,0,0">
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=1}" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=RateStarCommand}" CommandParameter="{Binding Id, StringFormat='{}{0}|1'}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=2}" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=RateStarCommand}" CommandParameter="{Binding Id, StringFormat='{}{0}|2'}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=3}" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=RateStarCommand}" CommandParameter="{Binding Id, StringFormat='{}{0}|3'}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=4}" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=RateStarCommand}" CommandParameter="{Binding Id, StringFormat='{}{0}|4'}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingStarConverter}, ConverterParameter=5}" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=RateStarCommand}" CommandParameter="{Binding Id, StringFormat='{}{0}|5'}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                    <!-- Reorder — static menu only; a cycle-menu dish is locked to one day and likely isn't even on the menu anymore -->
+                                    <Button Text="Reorder"
+                                            IsVisible="{Binding CanReorder}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=ReorderCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="11"
+                                            FontAttributes="Bold"
+                                            HeightRequest="30"
+                                            Padding="12,0"
+                                            Margin="10,0,0,0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                            TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+
+                                    <Button Text="Invoice"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=ViewInvoiceCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="11"
+                                            FontAttributes="Bold"
+                                            HeightRequest="30"
+                                            Padding="12,0"
+                                            Margin="8,0,0,0"
+                                            BackgroundColor="Transparent"
+                                            BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                            BorderWidth="1"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                </HorizontalStackLayout>
+
+                                <!-- Report an issue / dispute status -->
+                                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ColumnDefinitions="*, Auto" Margin="58,8,0,0">
+                                    <Button Grid.Column="0"
+                                            Text="Report an Issue"
+                                            IsVisible="{Binding HasDispute, Converter={StaticResource InvertedBoolConverter}}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrderHistoryViewModel}}, Path=ReportDisputeCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="11"
+                                            HeightRequest="28"
+                                            Padding="10,0"
+                                            HorizontalOptions="Start"
+                                            BackgroundColor="Transparent"
+                                            BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                                            BorderWidth="1"
+                                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+
+                                    <Border Grid.Column="0"
+                                            IsVisible="{Binding HasDispute}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 6"
+                                            BackgroundColor="#1AF59E0B"
+                                            Padding="8,3"
+                                            HorizontalOptions="Start">
+                                        <Label FontSize="10" FontAttributes="Bold" TextColor="#B45309">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="{}{0}: {1}">
+                                                    <Binding Path="DisputeTicketRef" />
+                                                    <Binding Path="DisputeStatus" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+                                    </Border>
+                                </Grid>
+
+                                </Grid>
                             </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="12,0,0,0">
-                                <Label Text="Delivered" FontSize="14" FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                <Label Text="Arrives securely at your delivery location, ready to enjoy." FontSize="12"
-                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                            </VerticalStackLayout>
-                        </Grid>
-
-                    </VerticalStackLayout>
-                    </Border>
-                </Grid>
-            </CollectionView.Header>
-
-            <!-- NO ACTIVE ORDERS WATERMARK / EMPTY VIEW -->
-            <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="14" Padding="30">
-
-                    <!-- Watermark Icon Badge -->
-                    <Border StrokeThickness="0"
-                            StrokeShape="RoundRectangle 40"
-                            BackgroundColor="{AppThemeBinding Light=#10000000, Dark=#15FFFFFF}"
-                            WidthRequest="80"
-                            HeightRequest="80"
-                            HorizontalOptions="Center">
-                        <Label Text="🍳" 
-                               FontSize="36" 
-                               HorizontalOptions="Center" 
-                               VerticalOptions="Center" 
-                               Opacity="0.8" />
-                    </Border>
-
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="No Active Orders" 
-                               FontSize="18" 
-                               FontAttributes="Bold" 
-                               HorizontalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-
-                        <Label Text="Your live kitchen orders will appear here in real-time as soon as you place them." 
-                               FontSize="13" 
-                               HorizontalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
-                               MaximumWidthRequest="280" />
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-
-            <!-- ACTIVE ORDER CARD TEMPLATE -->
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#252525}"
-                            StrokeShape="RoundRectangle 16"
-                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
-                            Padding="16"
-                            Margin="0,0,0,12">
-
-                        <Border.Shadow>
-                            <Shadow Brush="{AppThemeBinding Light=#0F000000, Dark=#35000000}" Offset="0,3" Radius="5" Opacity="0.5"/>
-                        </Border.Shadow>
-
-                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="14" VerticalOptions="Center">
-
-                            <Border Grid.Column="0" 
-                                    StrokeThickness="0" 
-                                    StrokeShape="RoundRectangle 12" 
-                                    BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
-                                    WidthRequest="44" 
-                                    HeightRequest="44"
-                                    VerticalOptions="Center">
-                                <Label Text="🔥" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
-                            </Border>
-
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
-                                <Label Text="{Binding ItemName}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="15" 
-                                       LineBreakMode="TailTruncation"
-                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-
-                                <Label Text="{Binding OrderId, StringFormat='Order #{0}'}" 
-                                       FontSize="12" 
-                                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
-                            </VerticalStackLayout>
-
-                            <Border Grid.Column="2" 
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 12"
-                                    BackgroundColor="{AppThemeBinding Light=#EFE9DC, Dark=#242426}"
-                                    Padding="10,4"
-                                    VerticalOptions="Center">
-                                <Label Text="{Binding Status}" 
-                                       FontSize="11" 
-                                       FontAttributes="Bold" 
-                                       TextColor="#121212" />
-                            </Border>
-
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </RefreshView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+        </Grid>
+    </Grid>
 </ContentPage>

@@ -4,11 +4,13 @@
              xmlns:vm="clr-namespace:YourKitchenCo.ViewModel"
              xmlns:models="clr-namespace:YourKitchenCo.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:YourKitchenCo.Views.Controls"
              x:Class="YourKitchenCo.Views.ProductDetailPage"
              x:DataType="vm:ProductDetailViewModel"
              Title="{Binding SelectedProduct.Name}"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
@@ -61,14 +63,21 @@
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroupList>
                                         <VisualStateGroup Name="CommonStates">
+                                            <!-- Text colours are set per state: the selected chip fills with the accent colour, so its
+                                                 text must flip to the on-accent colour or it disappears into the fill (dark on dark in
+                                                 the current theme, dark on red in Summer Harvest). -->
                                             <VisualState Name="Normal">
                                                 <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" />
+                                                    <Setter TargetName="DayLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                                    <Setter TargetName="MealLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                             <VisualState Name="Selected">
                                                 <VisualState.Setters>
                                                     <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
+                                                    <Setter TargetName="DayLabel" Property="Label.TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                                                    <Setter TargetName="MealLabel" Property="Label.TextColor" Value="{AppThemeBinding Light=#E6FFFFFF, Dark={StaticResource PrimaryDarkText}}" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -76,14 +85,17 @@
                                 </VisualStateManager.VisualStateGroups>
 
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding DisplayLabel}"
+                                    <Label x:Name="DayLabel"
+                                           Text="{Binding DisplayLabel}"
                                            FontSize="12"
                                            FontAttributes="Bold"
                                            HorizontalTextAlignment="Center"
-                                           LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding CycleMenu.MainMeal}"
+                                           LineBreakMode="TailTruncation"
+                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    <Label x:Name="MealLabel"
+                                           Text="{Binding CycleMenu.MainMeal}"
                                            FontSize="10"
-                                           TextColor="Gray"
+                                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                                            HorizontalTextAlignment="Center"
                                            LineBreakMode="TailTruncation"
                                            IsVisible="{Binding CycleMenu, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
@@ -106,7 +118,8 @@
                             <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" />
 
                             <!-- SINGLE-SELECT UI (Radio Buttons) -->
-                            <StackLayout BindableLayout.ItemsSource="{Binding Options}" IsVisible="False">
+                            <!-- SingleSelectOptions is empty for multi-select groups, so no hidden RadioButtons get created for them (see CustomizationGroup.cs) -->
+                            <StackLayout BindableLayout.ItemsSource="{Binding SingleSelectOptions}" IsVisible="False">
                                 <StackLayout.Triggers>
                                     <DataTrigger TargetType="StackLayout" Binding="{Binding IsMultiSelect}" Value="False">
                                         <Setter Property="IsVisible" Value="True" />
@@ -155,7 +168,7 @@
                             </StackLayout>
 
                             <!-- MULTI-SELECT UI (CheckBoxes) -->
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Options}" IsVisible="False">
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding MultiSelectOptions}" IsVisible="False">
                                 <VerticalStackLayout.Triggers>
                                     <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsMultiSelect}" Value="True">
                                         <Setter Property="IsVisible" Value="True" />
@@ -171,6 +184,10 @@
                                             <Label Text="{Binding DisplayName}" 
                                                    VerticalOptions="Center" 
                                                    FontSize="14">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductDetailViewModel}}, Path=ToggleOptionCommand}"
+                                                                          CommandParameter="{Binding .}" />
+                                                </Label.GestureRecognizers>
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
                                                         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}" />
@@ -192,54 +209,29 @@
 
             <Line Stroke="LightGray" StrokeThickness="1" />
 
-            <!-- Special Requests -->
+            <!-- Special requests & allergy notes — one box (was two). Anything
+                 mentioning an allergy is still surfaced as a chef alert on the
+                 order/invoice (see ProductDetailViewModel.AddToCart). -->
             <VerticalStackLayout Spacing="5">
-                <Label Text="Special Requests" FontAttributes="Bold" FontSize="16" />
+                <Label Text="Special Requests &amp; Allergy Notes" FontAttributes="Bold" FontSize="16" />
+                <Label Text="Preferences, or anything the chef must know — e.g. no onions, severe nut allergy."
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
 
                 <Editor Text="{Binding SpecialRequests, Mode=TwoWay}"
-                        Placeholder="e.g., No onions, sauce on the side..."
-                        HeightRequest="70"
+                        Placeholder="e.g., No onions, sauce on the side, peanut allergy..."
+                        HeightRequest="90"
                         AutoSize="Disabled">
                     <VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState x:Name="Normal">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Focused">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#EFE9DC, Dark=#242426}" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
-                </Editor>
-            </VerticalStackLayout>
-
-            <!-- Allergy Notes — kept visually distinct since this is a chef safety
-                 alert, not a general preference; flagged separately on the tax
-                 invoice and counted separately in the kitchen's prep summary. -->
-            <VerticalStackLayout Spacing="5">
-                <HorizontalStackLayout Spacing="6">
-                    <Label Text="⚠️" FontSize="14" VerticalOptions="Center" />
-                    <Label Text="Allergy Notes (Chef Alert)" FontAttributes="Bold" FontSize="16" TextColor="#B45309" />
-                </HorizontalStackLayout>
-
-                <Editor Text="{Binding AllergyNotes, Mode=TwoWay}"
-                        Placeholder="e.g., Severe peanut allergy — chef alert only"
-                        HeightRequest="60"
-                        AutoSize="Disabled">
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#1AF59E0B" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Focused">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#33F59E0B" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ChipBgLight}, Dark={StaticResource ChipBgDark}}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -257,4 +249,8 @@
 
         </VerticalStackLayout>
     </ScrollView>
+
+    <!-- "Order for a different day" overlay, shown after Add to Basket — topmost, hidden until DayPicker.Open() is called. -->
+    <controls:DeliveryDayOverlay BindingContext="{Binding DayPicker}" />
+    </Grid>
 </ContentPage>

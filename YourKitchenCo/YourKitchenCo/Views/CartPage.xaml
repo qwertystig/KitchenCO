@@ -6,7 +6,7 @@
              x:Class="YourKitchenCo.Views.CartPage"
              x:DataType="vm:CartPageViewModel"
              Title="Your Basket"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Cream}, Dark={StaticResource PageBgDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
     <Grid RowDefinitions="*, Auto">
 
@@ -29,7 +29,7 @@
                 <DataTemplate x:DataType="models:CartItem">
                     <Border StrokeThickness="0"
                             StrokeShape="RoundRectangle 10"
-                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                             Margin="0,0,0,12">
                         <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8" Padding="15">
 
@@ -72,7 +72,7 @@
                                         CornerRadius="16"
                                         Padding="0"
                                         FontSize="16" FontAttributes="Bold"
-                                        BackgroundColor="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                                         TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartPageViewModel}}, Path=DecreaseQuantityCommand}"
                                         CommandParameter="{Binding .}" />
@@ -119,7 +119,7 @@
         <Border Grid.Row="1" 
                 StrokeThickness="0"
                 StrokeShape="RoundRectangle 15,15,0,0"
-                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                 IsVisible="{Binding HasItems}">
             <VerticalStackLayout Spacing="15" Padding="20">
 
@@ -152,7 +152,7 @@
                            TextColor="Gray">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding IsOutsideDeliveryRange}" Value="True">
-                                <Setter Property="TextColor" Value="#C62828" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
                                 <Setter Property="FontAttributes" Value="Bold" />
                             </DataTrigger>
                         </Label.Triggers>
@@ -165,7 +165,7 @@
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"/>
                 </Grid>
 
-                <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" IsVisible="{Binding SubsidyLabel, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
+                <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" IsVisible="{Binding SubsidyLabel, Converter={StaticResource IsNotNullOrEmptyConverter}}" />
 
                 <Grid ColumnDefinitions="*, Auto">
                     <Label Text="You Pay:" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>

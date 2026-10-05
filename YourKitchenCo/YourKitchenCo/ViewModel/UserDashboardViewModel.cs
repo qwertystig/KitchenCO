@@ -19,6 +19,13 @@ public partial class UserDashboardViewModel : ObservableObject
     private readonly ICartService _cartService;
     private readonly ISessionService _session;
 
+    /// <summary>
+    /// "Change delivery day" shown as an in-page overlay (see
+    /// Views/Controls/DeliveryDayOverlay.xaml) rather than a modal page — see
+    /// DeliveryDayPickerState's doc comment for why.
+    /// </summary>
+    public DeliveryDayPickerState DayPicker { get; }
+
     private List<Product> _masterProductList = new();
 
     private string _activeCategory = string.Empty;
@@ -68,15 +75,29 @@ public partial class UserDashboardViewModel : ObservableObject
         set => SetProperty(ref _selectedDeliveryDateLabel, value);
     }
 
+    /// <summary>Short "dd MMM" form for the compact header pill next to the search bar — the full "dddd, dd MMM" label is still used everywhere else (e.g. the floating cart bar).</summary>
+    private string _selectedDeliveryDateShortLabel = string.Empty;
+    public string SelectedDeliveryDateShortLabel
+    {
+        get => _selectedDeliveryDateShortLabel;
+        set => SetProperty(ref _selectedDeliveryDateShortLabel, value);
+    }
+
     public ObservableCollection<Product> Products { get; } = new();
     public ObservableCollection<CategoryChip> Categories { get; } = new();
     public ObservableCollection<CategorySection> GroupedProducts { get; } = new();
 
-    public UserDashboardViewModel(IProductService productService, ICartService cartService, ISessionService session)
+    public UserDashboardViewModel(IProductService productService, ICartService cartService, ISessionService session, IOrderSchedulingService schedulingService)
     {
         _productService = productService;
         _cartService = cartService;
         _session = session;
+
+        // Widest window (10 weekdays / 2 weeks) so this one picker covers
+        // both the static menu's ordering window and the cycle menu's —
+        // matches the window SelectDeliveryDayViewModel used for the same
+        // picker before it became this in-page overlay.
+        DayPicker = new DeliveryDayPickerState(schedulingService, session, windowDays: 10, onConfirmed: UpdateSelectedDateLabel);
 
         if (_cartService?.Items != null)
         {
@@ -103,6 +124,10 @@ public partial class UserDashboardViewModel : ObservableObject
         SelectedDeliveryDateLabel = _session.SelectedOrderingDate.HasValue
             ? _session.SelectedOrderingDate.Value.ToString("dddd, dd MMM")
             : "Choose a delivery day";
+
+        SelectedDeliveryDateShortLabel = _session.SelectedOrderingDate.HasValue
+            ? _session.SelectedOrderingDate.Value.ToString("dd MMM")
+            : "Set date";
     }
 
     [RelayCommand]
@@ -160,15 +185,15 @@ public partial class UserDashboardViewModel : ObservableObject
         await Shell.Current.GoToAsync(nameof(CartPage));
     }
 
-    /// <summary>Opens the full date picker — used by the compact date display so the person can change day without leaving the dashboard.</summary>
+    /// <summary>Opens the date-picker overlay — used by the compact date display so the person can change day without leaving the dashboard.</summary>
     [RelayCommand]
-    private async Task ChangeDeliveryDayAsync()
-    {
-        var services = Shell.Current?.Handler?.MauiContext?.Services;
-        var selectDayPage = services?.GetRequiredService<SelectDeliveryDayPage>();
-        if (selectDayPage != null)
-            await Shell.Current!.Navigation.PushAsync(selectDayPage);
-    }
+    private void ChangeDeliveryDay() => DayPicker.Open();
+
+    /// <summary>True when an admin is previewing the customer app (see AdminCustomerSwitch) — shows the "Back to Admin" chip.</summary>
+    public bool IsAdminPreview => AdminCustomerSwitch.IsAdminSession(_session);
+
+    [RelayCommand]
+    private void ReturnToAdmin() => AdminCustomerSwitch.ReturnToAdmin();
 
     public async Task LoadDataAsync()
     {

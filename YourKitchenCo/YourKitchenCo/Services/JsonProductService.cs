@@ -154,19 +154,41 @@ public class JsonProductService : IProductService
                     });
                 }
 
-                // Category-level add-ons (extras, sauces, sides) — a fresh
-                // set of Option instances per product so each product's
-                // selections are independent.
+                // Category-level add-ons — split into "Sides" (wedges,
+                // salads, slaws...) and "Extras & Sauces" (sauces, extra
+                // patties/fillets) so it's clear more than one side can be
+                // added. Both are multi-select. A fresh set of Option
+                // instances per product so each product's selections are
+                // independent.
                 if (addOnOptions.Count > 0)
                 {
-                    product.CustomizationGroups.Add(new CustomizationGroup
+                    static bool IsExtraOrSauce(string name) =>
+                        name.Contains("sauce", StringComparison.OrdinalIgnoreCase)
+                        || name.StartsWith("extra", StringComparison.OrdinalIgnoreCase)
+                        || name.Contains("dressing", StringComparison.OrdinalIgnoreCase);
+
+                    var sides = addOnOptions.Where(a => !IsExtraOrSauce(a.Name)).ToList();
+                    var extras = addOnOptions.Where(a => IsExtraOrSauce(a.Name)).ToList();
+
+                    if (sides.Count > 0)
                     {
-                        Title = "Add-Ons",
-                        IsMultiSelect = true,
-                        Options = addOnOptions
-                            .Select(a => new Option { Name = a.Name, AdditionalPrice = a.Price })
-                            .ToList()
-                    });
+                        product.CustomizationGroups.Add(new CustomizationGroup
+                        {
+                            Title = "Sides (choose as many as you like)",
+                            IsMultiSelect = true,
+                            Options = sides.Select(a => new Option { Name = a.Name, AdditionalPrice = a.Price }).ToList()
+                        });
+                    }
+
+                    if (extras.Count > 0)
+                    {
+                        product.CustomizationGroups.Add(new CustomizationGroup
+                        {
+                            Title = "Extras & Sauces",
+                            IsMultiSelect = true,
+                            Options = extras.Select(a => new Option { Name = a.Name, AdditionalPrice = a.Price }).ToList()
+                        });
+                    }
                 }
 
                 products.Add(product);
@@ -263,26 +285,8 @@ public class JsonProductService : IProductService
     /// points at a specific photo's stable CDN address, not a search/random
     /// endpoint, so the same image loads every time.
     /// </summary>
-    /// <summary>
-    /// Admin-set hero image for a category not covered by the hardcoded
-    /// mapping below — e.g. a brand new category created via "Add Menu
-    /// Item" with a category name that didn't exist before. Checked first;
-    /// falls through to the switch below for every category that already
-    /// has a curated photo.
-    /// </summary>
-    private static readonly Dictionary<string, string> CustomCategoryImages = new(StringComparer.OrdinalIgnoreCase);
-
-    public static void SetCustomCategoryImage(string categoryName, string imageUrl)
-    {
-        if (string.IsNullOrWhiteSpace(categoryName)) return;
-        CustomCategoryImages[categoryName] = imageUrl;
-    }
-
     private static string StaticCategoryImageUrl(string categoryName)
     {
-        if (CustomCategoryImages.TryGetValue(categoryName, out var customUrl))
-            return customUrl;
-
         var photoId = categoryName.ToUpperInvariant() switch
         {
             "SALAD BAR" => "1512621776951-a57141f2eefd",
@@ -301,7 +305,7 @@ public class JsonProductService : IProductService
             _ => "1512621776951-a57141f2eefd" // fallback: salad bowl
         };
 
-        return $"https://images.unsplash.com/photo-{photoId}?w=800&h=600&fit=crop&auto=format&q=80";
+        return $"https://images.unsplash.com/photo-{photoId}?w=500&h=360&fit=crop&auto=format&q=80";
     }
 
     /// <summary>
@@ -331,7 +335,7 @@ public class JsonProductService : IProductService
     private static string StaticItemImageUrl(string categoryName, string itemName, string categoryFallbackUrl)
     {
         if (ItemPhotoIds.TryGetValue(itemName, out var photoId))
-            return $"https://images.unsplash.com/photo-{photoId}?w=800&h=600&fit=crop&auto=format&q=80";
+            return $"https://images.unsplash.com/photo-{photoId}?w=500&h=360&fit=crop&auto=format&q=80";
 
         return categoryFallbackUrl;
     }
@@ -347,7 +351,7 @@ public class JsonProductService : IProductService
             _ => "1512621776951-a57141f2eefd"
         };
 
-        return $"https://images.unsplash.com/photo-{photoId}?w=800&h=600&fit=crop&auto=format&q=80";
+        return $"https://images.unsplash.com/photo-{photoId}?w=500&h=360&fit=crop&auto=format&q=80";
     }
 
     public async Task<Product> AddStaticProductAsync(Product product)

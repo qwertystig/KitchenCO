@@ -1,3 +1,4 @@
+using System;
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -46,12 +47,45 @@ public partial class ProductDetailViewModel : ObservableObject
 
     public ObservableCollection<CustomizationGroup> CustomizationGroups { get; set; } = new();
 
+    /// <summary>
+    /// The post-add-to-basket "order for a different day" prompt, shown as an
+    /// in-page overlay (see Views/Controls/DeliveryDayOverlay.xaml) rather
+    /// than a modal page — see DeliveryDayPickerState's doc comment for why.
+    /// This only changes the session's default delivery day for whatever
+    /// gets added to the basket next; it doesn't touch SelectedDeliveryDate
+    /// above, which is this specific item's already-chosen day.
+    /// </summary>
+    public DeliveryDayPickerState DayPicker { get; }
+
     public ProductDetailViewModel(ICartService cartService, IOrderSchedulingService schedulingService, ICycleMenuService cycleMenuService, ISessionService session)
     {
         _cartService = cartService;
         _schedulingService = schedulingService;
         _cycleMenuService = cycleMenuService;
         _session = session;
+
+        // Once they've picked the day, take them straight back to the main
+        // menu (same place "Continue with <day>" lands) instead of leaving
+        // them on this product page with the item already in the basket.
+        DayPicker = new DeliveryDayPickerState(schedulingService, session, windowDays: 10,
+            onConfirmed: () => _ = ReturnToMenuAsync());
+    }
+
+    /// <summary>
+    /// Back to the Menu tab's root — absolute route, so it lands on the main
+    /// menu no matter how deep the stack is, rather than just one page up.
+    /// </summary>
+    private static async Task ReturnToMenuAsync()
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("//userdashboard");
+        }
+        catch
+        {
+            // Fallback: one page up (this page is only ever pushed from the menu).
+            await Shell.Current.GoToAsync("..");
+        }
     }
 
     partial void OnSelectedProductChanged(Product value)
@@ -181,6 +215,18 @@ public partial class ProductDetailViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Tapping an option's label (not just the small checkbox) toggles it —
+    /// bigger tap target for the multi-select Sides / Extras lists. The
+    /// existing IsSelected change handler takes care of totals.
+    /// </summary>
+    [RelayCommand]
+    private void ToggleOption(Option? option)
+    {
+        if (option is null) return;
+        option.IsSelected = !option.IsSelected;
+    }
+
     private void RecalculateTotal()
     {
         decimal newTotal = SelectedProduct?.BasePrice ?? 0;
@@ -246,7 +292,10 @@ public partial class ProductDetailViewModel : ObservableObject
             SelectedOptions = cartOptionsSnapshot,
             FinalPrice = TotalPrice,
             SpecialRequests = SpecialRequests,
-            AllergyNotes = AllergyNotes,
+            // One notes box now (was two). If the notes mention an allergy,
+            // the whole note is also carried as the chef alert so the
+            // kitchen / invoice flagging still fires.
+            AllergyNotes = MentionsAllergy(SpecialRequests) ? SpecialRequests : string.Empty,
             DeliveryDate = SelectedDeliveryDate.Date,
             MenuType = SelectedProduct.MenuType
         };
@@ -256,24 +305,40 @@ public partial class ProductDetailViewModel : ObservableObject
         // The core of the requested flow: after adding an item, ask whether
         // they want to keep ordering for the same day or switch days for
         // whatever they add next — rather than silently assuming either way.
-        bool changeDay = await AlertService.Instance.ShowConfirmAsync(
-            "Added to Basket",
-            $"{SelectedProduct.Name} has been added for {SelectedDeliveryDate.DisplayLabel}.",
-            "Order for a different day",
-            $"Continue with {SelectedDeliveryDate.Date:dddd}");
+        const string checkoutChoice = "Continue to checkout";
+        const string changeDayChoice = "Order for a different day";
+        string keepGoingChoice = $"Keep ordering for {SelectedDeliveryDate.Date:dddd}";
 
-        if (changeDay)
+        // Three-way choice, so it's an action sheet rather than a yes/no alert.
+        // "Keep ordering" is the cancel slot: it's also what the back gesture does.
+        string choice = await AlertService.Instance.ShowActionSheetAsync(
+            $"Added to Basket\n{SelectedProduct.Name} for {SelectedDeliveryDate.DisplayLabel}",
+            keepGoingChoice,
+            checkoutChoice, changeDayChoice);
+
+        if (choice == checkoutChoice)
         {
-            var services = Shell.Current.Handler?.MauiContext?.Services;
-            var selectDayPage = services?.GetRequiredService<SelectDeliveryDayPage>();
-            if (selectDayPage != null)
-            {
-                await Shell.Current.Navigation.PushAsync(selectDayPage);
-                return; // stay here — don't also pop back to the menu underneath
-            }
+            await Shell.Current.GoToAsync(nameof(CartPage));
+            return;
         }
 
-        // Keep ordering for the same day — head back to the menu screen.
-        await Shell.Current.GoToAsync("..");
+        if (choice == changeDayChoice)
+        {
+            // The overlay's onConfirmed (see constructor) returns to the menu
+            // once a day is chosen; ✕ leaves them here to keep browsing.
+            DayPicker.Open();
+            return;
+        }
+
+        // Keep ordering for the same day — head back to the main menu.
+        await ReturnToMenuAsync();
     }
+
+    private static bool MentionsAllergy(string? notes) =>
+        !string.IsNullOrWhiteSpace(notes)
+        && (notes.Contains("allerg", StringComparison.OrdinalIgnoreCase)
+            || notes.Contains("intoleran", StringComparison.OrdinalIgnoreCase)
+            || notes.Contains("anaphyla", StringComparison.OrdinalIgnoreCase)
+            || notes.Contains("coeliac", StringComparison.OrdinalIgnoreCase)
+            || notes.Contains("celiac", StringComparison.OrdinalIgnoreCase));
 }

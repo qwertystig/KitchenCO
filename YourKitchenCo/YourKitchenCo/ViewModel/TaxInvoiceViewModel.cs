@@ -6,6 +6,7 @@ using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using YourKitchenCo.Models;
 using YourKitchenCo.Services;
+using YourKitchenCo.Services.Export;
 
 namespace YourKitchenCo.ViewModel;
 
@@ -49,40 +50,36 @@ public partial class TaxInvoiceViewModel : ObservableObject, IQueryAttributable
         }
     }
 
+    private async Task<InvoiceDocument?> BuildDocumentAsync()
+    {
+        if (Order is null) return null;
+        // Single source of truth shared with the admin "invoices for the day"
+        // batch, so the customer's copy and the printed copy match exactly.
+        return await InvoiceDocument.LoadAsync(Order, _companyDirectory);
+    }
+
     [RelayCommand]
     private async Task ShareInvoiceAsync()
     {
-        if (Order is null) return;
-
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("YOUR KITCHEN CO. (PTY) LTD");
-        sb.AppendLine("SARS Compliant Tax Invoice");
-        sb.AppendLine($"Invoice: {Order.TaxInvoiceNumber}");
-        sb.AppendLine("VAT Reg No: 4910298412");
-        sb.AppendLine("Corporate Culinary Hub, Sandton, 2196");
-        sb.AppendLine();
-        sb.AppendLine($"Customer: {CustomerCompanyName}");
-        sb.AppendLine($"Delivery: {CustomerLocationName}");
-        sb.AppendLine($"Delivery Date: {Order.DeliveryDate:dddd, dd MMM yyyy}");
-        sb.AppendLine();
-        sb.AppendLine("LINE ITEMS");
-        sb.AppendLine($"  {Order.ItemName} — R{MealSubtotal:F2}");
-        sb.AppendLine();
-        sb.AppendLine($"Meal Subtotal:          R {MealSubtotal:F2}");
-        if (Order.SubsidyAmount > 0)
-            sb.AppendLine($"Company Subsidy:       -R {Order.SubsidyAmount:F2}");
-        if (Order.DiscountAmount > 0)
-            sb.AppendLine($"Corporate Discount:    -R {Order.DiscountAmount:F2}");
-        sb.AppendLine($"Delivery Fee:           R {Order.DeliveryFee:F2}");
-        sb.AppendLine("--------------------------------");
-        sb.AppendLine($"Total Paid (ZAR):       R {Order.TotalAmount:F2}");
-        sb.AppendLine();
-        sb.AppendLine("VAT: Not applicable (zero-rated corporate catering).");
+        var doc = await BuildDocumentAsync();
+        if (doc is null) return;
 
         await Share.Default.RequestAsync(new ShareTextRequest
         {
-            Text = sb.ToString(),
-            Title = $"Tax Invoice {Order.TaxInvoiceNumber}"
+            Text = doc.ToText(),
+            Title = $"Invoice {Order!.TaxInvoiceNumber}"
         });
+    }
+
+    /// <summary>Downloads this invoice as a PDF (via the system share sheet: Save to Files / Drive / email / print).</summary>
+    [RelayCommand]
+    private async Task DownloadInvoicePdfAsync()
+    {
+        var doc = await BuildDocumentAsync();
+        if (doc is null) return;
+
+        var pdf = new SimplePdfWriter();
+        doc.WriteTo(pdf);
+        await ExportService.SharePdfAsync($"Invoice_{Order!.TaxInvoiceNumber}", pdf, $"Invoice {Order.TaxInvoiceNumber}");
     }
 }

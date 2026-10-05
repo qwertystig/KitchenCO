@@ -12,7 +12,7 @@
     <Grid RowDefinitions="Auto, *">
         <views:AdminNavStrip Grid.Row="0" ActiveRoute="adminactiveorders" />
 
-        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, *">
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, *">
 
         <!-- Company & Date Filters -->
         <ScrollView Grid.Row="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -77,45 +77,48 @@
             </Button>
         </Grid>
 
-        <!-- Print — Orders sheet or Prep sheet, whichever view is active -->
-        <Button Grid.Row="2"
-                Margin="16,0,16,8"
-                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}"
-                FontAttributes="Bold"
-                FontSize="13"
-                HeightRequest="40"
-                CornerRadius="8">
-            <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="False">
-                    <Setter Property="Text" Value="🖨️  Print Order Sheet" />
-                    <Setter Property="Command" Value="{Binding PrintOrderSheetCommand}" />
-                </DataTrigger>
-                <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="True">
-                    <Setter Property="Text" Value="🖨️  Print Prep Sheet" />
-                    <Setter Property="Command" Value="{Binding PrintPrepSheetCommand}" />
-                </DataTrigger>
-            </Button.Triggers>
-        </Button>
+        <!-- Downloads — everything the kitchen prints, for the orders in the current filters.
+             PDF/Excel go through the system share sheet (Save to Files / Drive / email / print). -->
+        <VerticalStackLayout Grid.Row="2" Margin="16,0,16,8" Spacing="8">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                <Button Grid.Column="0" Text="📄 Production Sheet (PDF)" Command="{Binding DownloadProductionSheetPdfCommand}"
+                        FontSize="12" FontAttributes="Bold" HeightRequest="40" CornerRadius="8"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                <Button Grid.Column="1" Text="📊 Production Sheet (Excel)" Command="{Binding DownloadProductionSheetExcelCommand}"
+                        FontSize="12" FontAttributes="Bold" HeightRequest="40" CornerRadius="8"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+            </Grid>
+            <Grid ColumnDefinitions="*, *, Auto" ColumnSpacing="8">
+                <Button Grid.Column="0" Text="🏷️ Delivery Notes (PDF)" Command="{Binding DownloadDeliveryNotesPdfCommand}"
+                        FontSize="12" FontAttributes="Bold" HeightRequest="40" CornerRadius="8"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                <Button Grid.Column="1" Text="🧾 Invoices (PDF)" Command="{Binding DownloadInvoicesPdfCommand}"
+                        FontSize="12" FontAttributes="Bold" HeightRequest="40" CornerRadius="8"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}"
+                        TextColor="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+                <!-- Quick text share of whichever view is active (the old print button) -->
+                <Button Grid.Column="2" Text="🖨️" FontSize="14" HeightRequest="40" WidthRequest="44" CornerRadius="8" Padding="0"
+                        BackgroundColor="{StaticResource SubtleFill}"
+                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="False">
+                            <Setter Property="Command" Value="{Binding PrintOrderSheetCommand}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsPrepViewActive}" Value="True">
+                            <Setter Property="Command" Value="{Binding PrintPrepSheetCommand}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </VerticalStackLayout>
 
-        <!-- Bulk status update for the whole current filter — e.g. every order for one company/date at once -->
-        <Button Grid.Row="3"
-                Text="✅  Mark All Filtered As..."
-                Command="{Binding MarkAllFilteredCommand}"
-                Margin="16,0,16,8"
-                BackgroundColor="Transparent"
-                BorderColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                BorderWidth="1"
-                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                FontAttributes="Bold"
-                FontSize="13"
-                HeightRequest="40"
-                CornerRadius="8" />
-
-        <RefreshView Grid.Row="4" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="#121212">
+        <RefreshView Grid.Row="3" IsRefreshing="{Binding IsBusy}" Command="{Binding RefreshOrdersCommand}" RefreshColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
             <Grid>
 
-            <CollectionView ItemsSource="{Binding Orders}" Margin="16,0,16,16" IsVisible="{Binding IsPrepViewActive, Converter={StaticResource InvertedBoolConverter}}">
+            <CollectionView ItemsSource="{Binding Orders}" HorizontalOptions="Fill" IsVisible="{Binding IsPrepViewActive, Converter={StaticResource InvertedBoolConverter}}">
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
@@ -128,21 +131,21 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:AdminOrderRow">
                         <Border StrokeShape="RoundRectangle 12"
-                                BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                                 Padding="16"
-                                Margin="0,0,0,12"
+                                Margin="16,0,16,12"
                                 StrokeThickness="0">
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="4">
 
                                 <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
                                     <Label Text="{Binding CompanyName}" FontAttributes="Bold" FontSize="15"
                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                    <Label Text="{Binding LocationName}" FontSize="12" TextColor="#888888" />
+                                    <Label Text="{Binding LocationName}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                                 </VerticalStackLayout>
 
                                 <Border Grid.Column="1" Grid.Row="0"
                                         StrokeShape="RoundRectangle 6"
-                                        BackgroundColor="#22121212"
+                                        BackgroundColor="{StaticResource SubtleFillStrong}"
                                         Padding="8,4"
                                         HorizontalOptions="End"
                                         VerticalOptions="Start">
@@ -155,8 +158,8 @@
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
                                 <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Spacing="10">
-                                    <Label Text="{Binding DeliveryDateLabel}" FontSize="11" TextColor="#AAAAAA" />
-                                    <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontSize="11" TextColor="#AAAAAA" />
+                                    <Label Text="{Binding DeliveryDateLabel}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
+                                    <Label Text="{Binding Order.OrderNumber, StringFormat='Order #{0}'}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                                     <Label Text="{Binding Order.TotalAmount, StringFormat='R{0:F2}'}" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                                 </HorizontalStackLayout>
 
@@ -188,7 +191,7 @@
                                         HeightRequest="36"
                                         VerticalOptions="Center"
                                         Padding="12,0"
-                                        BackgroundColor="#22888888"
+                                        BackgroundColor="{StaticResource SubtleFill}"
                                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             </Grid>
                         </Border>
@@ -197,7 +200,7 @@
             </CollectionView>
 
             <!-- Kitchen Prep Summary — same filtered orders, aggregated by dish -->
-            <CollectionView ItemsSource="{Binding PrepSummary}" Margin="16,0,16,16" IsVisible="{Binding IsPrepViewActive}">
+            <CollectionView ItemsSource="{Binding PrepSummary}" HorizontalOptions="Fill" IsVisible="{Binding IsPrepViewActive}">
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="30">
@@ -210,7 +213,7 @@
                 <CollectionView.Header>
                     <Label Text="Total quantity needed per dish, across all matching orders — for bulk kitchen prep, not individual plating."
                            FontSize="12"
-                           Margin="0,0,0,10"
+                           Margin="16,0,16,10"
                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                 </CollectionView.Header>
 
@@ -221,7 +224,7 @@
                                 Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                                 StrokeThickness="1"
                                 Padding="14"
-                                Margin="0,0,0,8">
+                                Margin="16,0,16,8">
                             <Grid ColumnDefinitions="Auto, *">
                                 <Border Grid.Column="0"
                                         WidthRequest="44" HeightRequest="44"

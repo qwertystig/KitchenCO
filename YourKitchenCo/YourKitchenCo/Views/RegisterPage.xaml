@@ -6,11 +6,11 @@
 
     <!-- ScrollView ensures users on smaller devices can comfortably scroll the form fields -->
     <ScrollView>
-        <VerticalStackLayout Padding="30" VerticalOptions="Center" Spacing="20">
+        <VerticalStackLayout Padding="30,30,30,56" VerticalOptions="Center" Spacing="20">
 
             <!-- Dynamic Brand Logo Frame -->
             <Image Source="{AppThemeBinding Light=yourkcolight.png, Dark=yourkcodark.png}"
-                   HeightRequest="250"
+                   HeightRequest="90"
                    HorizontalOptions="Center"
                    Aspect="AspectFit"
                    Margin="0,10,0,0" />
@@ -33,73 +33,73 @@
 
                 <!-- Full Name -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50">
                     <Entry Placeholder="Full Name (e.g., John Doe)" 
                            Text="{Binding FullName}" 
                            Keyboard="Text"
                            BackgroundColor="Transparent"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           PlaceholderColor="#888888"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                            Margin="15,0"
                            VerticalOptions="Center" />
                 </Border>
 
                 <!-- Email Address -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50">
                     <Entry Placeholder="Email Address (e.g., john.doe@example.com)" 
                            Keyboard="Email" 
                            Text="{Binding Email}" 
                            BackgroundColor="Transparent"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           PlaceholderColor="#888888"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                            Margin="15,0"
                            VerticalOptions="Center" />
                 </Border>
 
                 <!-- Password -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50">
                     <Entry Placeholder="Password (min. 8 characters)" 
                            IsPassword="True" 
                            Text="{Binding Password}" 
                            BackgroundColor="Transparent"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           PlaceholderColor="#888888"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                            Margin="15,0"
                            VerticalOptions="Center" />
                 </Border>
 
                 <!-- Confirm Password -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50">
                     <Entry Placeholder="Confirm Password (match your password)" 
                            IsPassword="True" 
                            Text="{Binding ConfirmPassword}" 
                            BackgroundColor="Transparent"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           PlaceholderColor="#888888"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}"
                            Margin="15,0"
                            VerticalOptions="Center" />
                 </Border>
 
                 <!-- Company -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50">
                     <Picker Title="Select your company"
                             ItemsSource="{Binding Companies}"
@@ -119,9 +119,9 @@
 
                 <!-- Location -->
                 <Border StrokeThickness="1" 
-                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" 
+                        Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" 
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource CardBgDark}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                         HeightRequest="50"
                         IsEnabled="{Binding SelectedCompany, Converter={StaticResource IsNotNullOrEmptyConverter}}">
                     <Picker Title="Select your delivery location"

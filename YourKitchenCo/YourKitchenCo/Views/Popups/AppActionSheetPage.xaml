@@ -6,12 +6,15 @@
              Shell.NavBarIsVisible="False"
              Shell.FlyoutBehavior="Disabled">
 
+    <!-- Bottom padding is deliberately deep (52): on Android 15+ the app draws
+         edge-to-edge, so the gesture nav bar overlays the bottom of this sheet
+         and was covering the last option / Cancel. -->
     <Grid VerticalOptions="End">
         <Border x:Name="CardBorder"
                 StrokeShape="RoundRectangle 22,22,0,0"
                 StrokeThickness="0"
                 BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
-                Padding="20,22"
+                Padding="20,22,20,52"
                 VerticalOptions="End"
                 Opacity="0"
                 TranslationY="40">

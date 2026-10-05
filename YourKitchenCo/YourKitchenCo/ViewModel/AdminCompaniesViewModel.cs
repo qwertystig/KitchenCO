@@ -109,6 +109,59 @@ public partial class AdminCompaniesViewModel : ObservableObject
     /// have either, both, or neither) — combined into one flow since
     /// there was previously no admin UI for subsidy at all, only seed data.
     /// </summary>
+    /// <summary>
+    /// Admin > Companies > Delivery: choose how this company's orders are
+    /// charged for delivery — the default distance tiers, a flat fee, or
+    /// free. Applied at checkout in CartPageViewModel.RecalculateDeliveryFeeAsync.
+    /// </summary>
+    [RelayCommand]
+    private async Task ManageDeliveryFeeAsync(CompanyRow row)
+    {
+        if (row == null || Application.Current?.MainPage == null) return;
+
+        string choice = await AlertService.Instance.ShowActionSheetAsync(
+            $"Delivery fee for {row.Company.Name}\nCurrently: {row.Company.DeliveryFeeSummary}",
+            "Cancel",
+            "Free delivery", "Set a flat fee", "Use distance tiers (default)");
+
+        if (string.IsNullOrEmpty(choice) || choice == "Cancel") return;
+
+        switch (choice)
+        {
+            case "Free delivery":
+                row.Company.DeliveryFeeMode = DeliveryFeeMode.Free;
+                row.Company.FlatDeliveryFee = 0;
+                break;
+
+            case "Set a flat fee":
+                string feeStr = await AlertService.Instance.ShowPromptAsync(
+                    "Flat Delivery Fee",
+                    "Amount charged per checkout, in Rand (0 makes delivery free):",
+                    initialValue: row.Company.FlatDeliveryFee > 0 ? row.Company.FlatDeliveryFee.ToString("F2") : "",
+                    keyboard: Keyboard.Numeric);
+                if (feeStr is null) return; // cancelled
+                if (!decimal.TryParse(feeStr, out var fee) || fee < 0)
+                {
+                    await AlertService.Instance.ShowAsync("Invalid Amount", "Please enter a number of 0 or more.", "OK");
+                    return;
+                }
+                row.Company.DeliveryFeeMode = fee == 0 ? DeliveryFeeMode.Free : DeliveryFeeMode.Flat;
+                row.Company.FlatDeliveryFee = fee;
+                break;
+
+            default: // "Use distance tiers (default)"
+                row.Company.DeliveryFeeMode = DeliveryFeeMode.DistanceTier;
+                row.Company.FlatDeliveryFee = 0;
+                break;
+        }
+
+        await _companyDirectory.UpdateCompanyAsync(row.Company);
+        await LoadCompaniesAsync();
+
+        await AlertService.Instance.ShowAsync("Delivery Updated",
+            $"{row.Company.Name}: {row.Company.DeliveryFeeSummary}.", "OK");
+    }
+
     [RelayCommand]
     private async Task ManageFinancialsAsync(CompanyRow row)
     {
