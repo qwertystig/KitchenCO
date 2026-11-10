@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj": {}
+    "C:\\Users\\User\\Downloads\\Kitchen\\KitchenCO\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj": {
+    "C:\\Users\\User\\Downloads\\Kitchen\\KitchenCO\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Downloads\\Kitchen\\KitchenCO\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
         "projectName": "YourKitchenCo",
-        "projectPath": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
+        "projectPath": "C:\\Users\\User\\Downloads\\Kitchen\\KitchenCO\\YourKitchenCo\\YourKitchenCo\\YourKitchenCo.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Downloads\\Kitchen\\YourKitchenCo\\YourKitchenCo\\obj\\",
+        "outputPath": "C:\\Users\\User\\Downloads\\Kitchen\\KitchenCO\\YourKitchenCo\\YourKitchenCo\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -91,7 +91,7 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.20, )",
+              "version": "[9.0.22, )",
               "autoReferenced": true
             }
           },
@@ -128,7 +128,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-ios": {
           "framework": "net9.0-ios26.5",
@@ -153,7 +153,7 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.20, )",
+              "version": "[9.0.22, )",
               "autoReferenced": true
             }
           },
@@ -186,7 +186,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-maccatalyst": {
           "framework": "net9.0-maccatalyst26.5",
@@ -211,7 +211,7 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.20, )",
+              "version": "[9.0.22, )",
               "autoReferenced": true
             }
           },
@@ -245,7 +245,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-windows10.0.19041.0": {
           "framework": "net9.0-windows10.0.19041",
@@ -293,7 +293,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.403\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
