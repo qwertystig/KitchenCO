@@ -33,7 +33,7 @@
                             <Label Text="💰" FontSize="16"/>
                             <Label Text="Today's Deliveries Revenue" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
                         </HorizontalStackLayout>
-                        <Label Text="{Binding TodaysRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding TodaysRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -52,7 +52,7 @@
                             <Label Text="🔥" FontSize="16"/>
                             <Label Text="Active Orders" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
                         </HorizontalStackLayout>
-                        <Label Text="{Binding ActiveOrderCount}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding ActiveOrderCount}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -71,7 +71,7 @@
                             <Label Text="💰" FontSize="16"/>
                             <Label Text="Total Revenue (all time)" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
                         </HorizontalStackLayout>
-                        <Label Text="{Binding TotalRevenue, StringFormat='R{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding TotalRevenue, StringFormat='R{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -90,14 +90,14 @@
                             <Label Text="📈" FontSize="16"/>
                             <Label Text="{Binding MonthToDateLabel}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"/>
                         </HorizontalStackLayout>
-                        <Label Text="{Binding MonthToDateRevenue, StringFormat='R{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding MonthToDateRevenue, StringFormat='R{0:N2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
 
             <!-- 2. LIVE QUEUE HEADER -->
             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <Label Grid.Column="0" 
+                <Label FontFamily="{StaticResource HeadingFont}" Grid.Column="0" 
                        Text="Upcoming Deliveries" 
                        FontSize="18" 
                        FontAttributes="Bold" 

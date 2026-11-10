@@ -622,6 +622,37 @@ Validated as before (35 XAML, all keys resolve, 120 C# files balanced, every bou
 - **Customer View for admins**: a "👤 Customer View" button on the admin nav strip opens the customer app as the signed-in admin — no logout/login — so they can check their menu, price, delivery-fee and theme changes from the client's side. While previewing, the customer dashboard shows a "Previewing as a customer · ← Back to Admin" banner at the top of the header, and Settings has a "Back to Admin" card; both are hidden for real customers. Implemented in `Services/AdminCustomerSwitch.cs` by swapping `MainPage` between `AppShell` and `AdminShell`, exactly as sign-in already does, so the session and all services stay as they are. A default ordering day is set on the way in so the dashboard has a date to work with.
 - **Themes**: Summer Harvest and Berry & Cream are removed (files deleted, service and Settings swatches trimmed). Two remain: **Mediterranean Pantry** and the monochrome one, now named **Ink & Cream** (the stored preference key stays `Current`, so nothing saved on devices breaks; anyone who had one of the retired themes saved falls back to Ink & Cream).
 
+## Brand typography, new logo, shorter day names, smaller date chips
+
+- **Day names** on both delivery-day pickers and the product page's date chips are abbreviated ("Wed, 07 Oct") — one change in `DeliveryDateOption.DisplayLabel`.
+- **Product page date chips** are 44pt tall (list was 88pt) and size to their text, with the cycle-menu dish name on a second small line only when there is one.
+- **Fonts**: Roboto Condensed (the deck's "Robotso Condensed"; Apache-licensed, bundled as TTF in `Resources/Fonts`, registered in `MauiProgram.cs`) is now the body font for every Label, Button, Entry, Editor, SearchBar, Picker and DatePicker via `Styles.xaml`. Headings (every bold label at 16pt+, 54 of them across 23 views, plus the Headline/SubHeadline styles) reference a single `HeadingFont` resource. **Gotcha Gothic is not a font I could source** — it isn't a Google/open font and isn't embedded in the deck (the deck's own text is set in Adirek Serif / Playfair / Proxima Nova). `HeadingFont` therefore points at Roboto Condensed Bold for now; switching is three steps documented in `Styles.xaml` once the font file is supplied.
+- **Logo**: replaced with the deck's serif wordmark, without "Powered by CSG Foods", keeping the short underline rule beneath it. Built from the largest copy in the deck (the "full lockup" on the minimum-sizes page, ~550px wide, keyed to transparency and produced in dark-ink and cream-ink variants under the existing file names). It's adequate on screen but not as crisp as a vector export at 3× density; swap in the designer's SVG/PNG when available — same two file names.
+
+## Export menu, Playfair Display headings, vector-quality logo
+
+- **Admin > Active Orders**: the five document buttons are now one **Export** button that opens an action sheet (Production Sheet PDF / Excel, Delivery Notes PDF, Invoices PDF, Quick share as text) — same pattern as Companies > Delivery.
+- **"Gotcha Gothic" resolved**: it isn't an obtainable font, and the brand deck's own typography page sets its "Gotcha Gothic" sample in **Playfair Display Bold** (the only page in the PDF that embeds that font) — the logo wordmark is Playfair Display too (rendered side by side with the deck's: identical glyphs). Playfair Display is open-licensed (OFL), so Regular + Bold are bundled in `Resources/Fonts`, registered in `MauiProgram.cs`, and `HeadingFont` now points at `PlayfairDisplayBold` — all 54 heading labels switch over. Body stays Roboto Condensed.
+- **Logo** re-rendered from the font at 2723×479 (was a ~550px crop from a deck screenshot): "your kitchen" Regular + "co." Bold with the deck's tighter tracking and the short underline rule, no "Powered by". Same two file names, dark-ink and cream-ink variants.
+
+## Logo underline
+- Per the client's reference image: the logo now has a thin, lighter underline spanning the full width of the wordmark, sitting just under it (replaces the short centred rule). Same two file names; rendered from Playfair Display at 2724×455.
+
+## Popup centring
+- Alert/confirm and prompt dialogs (`AppAlertPage`, `AppPromptPage`) sat off-centre on Android: `MaximumWidthRequest="360"` + `HorizontalOptions="Center"` arranges the card from the left edge rather than centring it. The card now fills the width inside an even 28pt side margin, and the title and message are centre-aligned, matching the action sheet. Affects every confirm (theme change, sign-out, delivery-day prompts, admin prompts).
+
+## Dashboard: locked header, scrolling menu
+
+- `Views/UserDashboardPage.xaml` is now a two-row grid. Everything from the logo down to and including the "Orders close at 9:00 AM, two business days before your delivery date." banner (logo + cart, search + date pill, Main/Cycling toggle, category slider, cutoff banner) sits in a fixed top row and never moves. Only the category banners and dish cards below it scroll.
+- The category slider therefore stays on screen at all times while the menu scrolls, and still scrolls sideways on its own so no category name is ever clipped at the edge (13 categories in the main menu — wrapping them all onto screen at once would take roughly a third of the display, so they stay on one swipeable line).
+- The menu list is still the virtualized grouped `CollectionView` (the header content moved out of `CollectionView.Header` into its own row), so the post-login freeze fix is unaffected. The floating cart bar and the change-day overlay span both rows as before.
+
+## Popup centring, second pass
+
+- Reported again after the first fix: the alert/confirm card (e.g. "Apply this theme?") still sat left of centre on Android. Cause: the card `Border` carried a `Shadow` and an initial `Scale="0.92"`; on Android a shadowed/pre-scaled Border reports a wider box than it draws, so the card was arranged from the left edge.
+- `Views/Popups/AppAlertPage.xaml` and `AppPromptPage.xaml`: the card is now placed by the grid itself (`ColumnDefinitions="28, *, 28"`, card in the middle column, `RowDefinitions="*, Auto, *"` for vertical centring) with no Margin/HorizontalOptions tricks, no Shadow and no Scale. The entrance/exit animation is a fade plus a short slide (`TranslateTo`) instead of a scale, in both code-behinds.
+- The bottom action sheet was already full-width and is unchanged.
+
 ## Still to build before the Supabase connection
 
 - **Push notifications** — Admin Notifications "send" still just logs to an in-memory list and shows an alert; there's no real push delivery mechanism, and this needs a backend to send them anyway

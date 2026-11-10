@@ -55,7 +55,7 @@
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Total Sales" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
-                        <Label Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding TotalRevenue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource BrandGold}, Dark={StaticResource BrandGoldDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -66,7 +66,7 @@
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Orders Completed" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
-                        <Label Text="{Binding TotalOrders}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding TotalOrders}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -77,7 +77,7 @@
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Avg. Order Value" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" FontAttributes="Bold" />
-                        <Label Text="{Binding AverageOrderValue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding AverageOrderValue, StringFormat='R{0:F2}'}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -94,7 +94,7 @@
             </Grid>
 
             <!-- Revenue by Day/Week Bar Chart -->
-            <Label Text="Revenue Over Time" 
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Revenue Over Time" 
                    FontSize="18" 
                    FontAttributes="Bold" 
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -107,7 +107,7 @@
             </Border>
 
             <!-- Revenue Share Pie/Donut Chart + Legend -->
-            <Label Text="Revenue Share by Item" 
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Revenue Share by Item" 
                    FontSize="18" 
                    FontAttributes="Bold" 
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -140,7 +140,7 @@
                     BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                     Padding="14">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Download as Excel" FontSize="16" FontAttributes="Bold"
+                    <Label FontFamily="{StaticResource HeadingFont}" Text="Download as Excel" FontSize="16" FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     <Label Text="Each report opens the share sheet as a .xlsx (Save to Files, Drive, email, print). Filters above apply."
                            FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
@@ -164,7 +164,7 @@
             </Border>
 
             <!-- Top 10 best performers -->
-            <Label Text="Top 10 Best Performers" FontSize="18" FontAttributes="Bold"
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Top 10 Best Performers" FontSize="18" FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
             <CollectionView ItemsSource="{Binding TopPerformers}" HorizontalOptions="Fill">
                 <CollectionView.EmptyView>
@@ -184,7 +184,7 @@
             </CollectionView>
 
             <!-- Bottom 10 worst performers (menu dishes with no sales come first) -->
-            <Label Text="Bottom 10 Worst Performers" FontSize="18" FontAttributes="Bold"
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Bottom 10 Worst Performers" FontSize="18" FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
             <CollectionView ItemsSource="{Binding BottomPerformers}" HorizontalOptions="Fill">
                 <CollectionView.EmptyView>
@@ -215,7 +215,7 @@
                             <TapGestureRecognizer Command="{Binding ToggleExtraReportsCommand}" />
                         </Grid.GestureRecognizers>
                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                            <Label Text="More Reports" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label FontFamily="{StaticResource HeadingFont}" Text="More Reports" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             <Label Text="Revenue by company · by category · demand by delivery day · top customers · subsidy &amp; discount costs" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                         </VerticalStackLayout>
                         <Label Grid.Column="1" Text="▸" FontSize="18" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}">
@@ -304,7 +304,7 @@
             </Border>
 
             <!-- Disputed Orders — only shows when there's something to see -->
-            <Label Text="Disputed Orders" 
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Disputed Orders" 
                    FontSize="18" 
                    FontAttributes="Bold" 
                    IsVisible="{Binding HasDisputes}"

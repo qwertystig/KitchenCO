@@ -6,31 +6,36 @@
              Shell.NavBarIsVisible="False"
              Shell.FlyoutBehavior="Disabled">
 
-    <Grid>
+    <!-- Centring is done by the grid columns (equal 28-wide gutters either side, the card
+         fills the middle column), not by Margin/MaximumWidthRequest/HorizontalOptions on the
+         card. The card also carries no Shadow and no Scale: on Android a Border with a Shadow
+         (and a Border scaled below 1 before first layout) reports a wider box than it draws,
+         so the card ended up arranged from the left instead of in the middle. Entrance is a
+         fade + short upward slide instead. -->
+    <Grid ColumnDefinitions="28, *, 28" RowDefinitions="*, Auto, *">
         <Border x:Name="CardBorder"
+                Grid.Column="1" Grid.Row="1"
                 StrokeShape="RoundRectangle 20"
                 StrokeThickness="0"
                 BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}"
                 Padding="26,24"
-                MaximumWidthRequest="360"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                Margin="34"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                Margin="0,34"
                 Opacity="0"
-                Scale="0.92">
-            <Border.Shadow>
-                <Shadow Brush="Black" Offset="0,8" Radius="24" Opacity="0.35" />
-            </Border.Shadow>
+                TranslationY="14">
 
             <VerticalStackLayout Spacing="16">
-                <Label x:Name="TitleLabel"
+                <Label FontFamily="{StaticResource HeadingFont}" x:Name="TitleLabel"
                        FontSize="19"
                        FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
 
                 <Label x:Name="MessageLabel"
                        FontSize="14"
                        LineBreakMode="WordWrap"
+                       HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
                 <VerticalStackLayout x:Name="ButtonStack" Spacing="10" Margin="0,6,0,0" />

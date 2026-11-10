@@ -50,7 +50,7 @@
 
                             <!-- User Info -->
                             <VerticalStackLayout Grid.Column="0" Grid.Row="0" Spacing="2">
-                                <Label Text="{Binding FullName}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding FullName}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                 <Label Text="{Binding Email}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                             </VerticalStackLayout>
 

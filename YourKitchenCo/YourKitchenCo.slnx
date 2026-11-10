@@ -1,5 +1,3 @@
 <Solution>
-  <Project Path="YourKitchenCo/YourKitchenCo.csproj">
-    <Deploy Solution="Debug|*" />
-  </Project>
+  <Project Path="YourKitchenCo/YourKitchenCo.csproj" />
 </Solution>

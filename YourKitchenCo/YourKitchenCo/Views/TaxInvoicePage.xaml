@@ -12,7 +12,7 @@
 
             <!-- Header -->
             <VerticalStackLayout Spacing="2">
-                <Label Text="Invoice" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                <Label FontFamily="{StaticResource HeadingFont}" Text="Invoice" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                 <Label Text="{Binding Order.TaxInvoiceNumber}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
             </VerticalStackLayout>
 
@@ -76,7 +76,7 @@
 
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Grid.Column="0" Text="Total Paid (ZAR)" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                        <Label Grid.Column="1" Text="{Binding Order.TotalAmount, StringFormat='R {0:F2}'}" FontSize="17" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        <Label FontFamily="{StaticResource HeadingFont}" Grid.Column="1" Text="{Binding Order.TotalAmount, StringFormat='R {0:F2}'}" FontSize="17" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                     </Grid>
 
                     <Label Text="VAT: Not applicable — zero-rated corporate catering." FontSize="10" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />

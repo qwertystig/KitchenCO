@@ -48,7 +48,7 @@
 
             <!-- User Primary Identification Text Layout -->
             <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,0,0,5">
-                <Label Text="{Binding UserName}" 
+                <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding UserName}" 
                        FontSize="22" 
                        FontAttributes="Bold" 
                        HorizontalOptions="Center" 

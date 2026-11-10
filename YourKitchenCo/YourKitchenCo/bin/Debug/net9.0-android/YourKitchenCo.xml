@@ -270,6 +270,7 @@
             <inheritdoc/>
             <inheritdoc/>
             <inheritdoc/>
+            <inheritdoc/>
         </member>
         <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintOrderSheetAsync">
             <summary>
@@ -282,6 +283,13 @@
         </member>
         <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync">
             <summary>Same idea as PrintOrderSheetAsync, but for the aggregated kitchen prep list instead of individual orders.</summary>
+        </member>
+        <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ExportAsync">
+            <summary>
+            Single "Export" button → action sheet listing every document for the
+            filtered orders (same pattern as Companies > Delivery), instead of a
+            row of five near-identical buttons.
+            </summary>
         </member>
         <member name="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfAsync">
             <summary>
@@ -349,6 +357,12 @@
         </member>
         <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetCommand">
             <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.PrintPrepSheetAsync"/>.</summary>
+        </member>
+        <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.exportCommand">
+            <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ExportCommand"/>.</summary>
+        </member>
+        <member name="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ExportCommand">
+            <summary>Gets an <see cref="T:CommunityToolkit.Mvvm.Input.IAsyncRelayCommand"/> instance wrapping <see cref="M:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.ExportAsync"/>.</summary>
         </member>
         <member name="F:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.downloadProductionSheetPdfCommand">
             <summary>The backing field for <see cref="P:YourKitchenCo.ViewModel.AdminActiveOrdersViewModel.DownloadProductionSheetPdfCommand"/>.</summary>
@@ -1487,6 +1501,9 @@
             specific items; for the static menu it's left null since the menu doesn't
             change day to day.
             </summary>
+        </member>
+        <member name="P:YourKitchenCo.Models.DeliveryDateOption.DisplayLabel">
+            <summary>"Wed, 07 Oct" — abbreviated weekday (was "Wednesday, 07 Oct"), per client feedback.</summary>
         </member>
         <member name="T:YourKitchenCo.Models.MenuType">
             <summary>

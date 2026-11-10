@@ -18,6 +18,17 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+
+                // Brand typography (per the client's guideline deck): body text in
+                // Roboto Condensed ("Robotso Condensed" in the deck); headings in
+                // Playfair Display — see HeadingFont in Styles.xaml.
+                fonts.AddFont("RobotoCondensed-Regular.ttf", "RobotoCondensed");
+                fonts.AddFont("RobotoCondensed-Bold.ttf", "RobotoCondensedBold");
+                // Headings: the deck calls this "Gotcha Gothic", but every sample of it
+                // in the deck (and the logo wordmark itself) is set in Playfair Display
+                // (open-licensed, embedded in the deck PDF), so that's what's bundled.
+                fonts.AddFont("PlayfairDisplay-Regular.ttf", "PlayfairDisplay");
+                fonts.AddFont("PlayfairDisplay-Bold.ttf", "PlayfairDisplayBold");
             });
 
         // 1. Services

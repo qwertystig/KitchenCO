@@ -121,7 +121,7 @@
                                 <Label Text="🍳" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.8" />
                             </Border>
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="No Active Orders" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
+                                <Label FontFamily="{StaticResource HeadingFont}" Text="No Active Orders" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                 <Label Text="Your live kitchen orders will appear here in real-time as soon as you place them."
                                        FontSize="13" HorizontalTextAlignment="Center" MaximumWidthRequest="280"
@@ -339,7 +339,7 @@
                             </Border>
 
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="No Order History"
+                                <Label FontFamily="{StaticResource HeadingFont}" Text="No Order History"
                                        FontSize="18"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"

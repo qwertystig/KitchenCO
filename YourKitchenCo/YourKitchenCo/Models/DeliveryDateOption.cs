@@ -10,7 +10,8 @@ public class DeliveryDateOption
 {
     public DateOnly Date { get; set; }
 
-    public string DisplayLabel => Date.ToString("dddd, dd MMM");
+    /// <summary>"Wed, 07 Oct" — abbreviated weekday (was "Wednesday, 07 Oct"), per client feedback.</summary>
+    public string DisplayLabel => Date.ToString("ddd, dd MMM");
 
     public CycleMenuDay? CycleMenu { get; set; }
 

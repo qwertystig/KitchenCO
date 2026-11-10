@@ -61,7 +61,7 @@ public partial class AppPromptPage : ContentPage
     {
         await Task.WhenAll(
             CardBorder.FadeTo(0, 120, Easing.CubicIn),
-            CardBorder.ScaleTo(0.92, 120, Easing.CubicIn));
+            CardBorder.TranslateTo(0, 14, 120, Easing.CubicIn));
 
         await Navigation.PopModalAsync(false);
 
@@ -74,7 +74,7 @@ public partial class AppPromptPage : ContentPage
 
         await Task.WhenAll(
             CardBorder.FadeTo(1, 180, Easing.CubicOut),
-            CardBorder.ScaleTo(1, 180, Easing.SpringOut));
+            CardBorder.TranslateTo(0, 0, 180, Easing.CubicOut));
 
         InputEntry.Focus();
     }

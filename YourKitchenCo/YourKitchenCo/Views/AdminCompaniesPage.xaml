@@ -15,7 +15,7 @@
         <Grid Grid.Row="1" RowDefinitions="Auto, *">
 
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="16,12,16,8" VerticalOptions="Center">
-            <Label Grid.Column="0"
+            <Label FontFamily="{StaticResource HeadingFont}" Grid.Column="0"
                    Text="Client Companies"
                    FontSize="18"
                    FontAttributes="Bold"
@@ -54,7 +54,7 @@
                                 <!-- Company header -->
                                 <Grid ColumnDefinitions="*, Auto, Auto">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                        <Label Text="{Binding Company.Name}" FontAttributes="Bold" FontSize="16"
+                                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding Company.Name}" FontAttributes="Bold" FontSize="16"
                                                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                         <Label Text="{Binding Company.BillingEmail}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextLight}, Dark={StaticResource MutedTextDark}}" />
                                     </VerticalStackLayout>

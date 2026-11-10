@@ -23,7 +23,7 @@
             </Border.Shadow>
 
             <VerticalStackLayout Spacing="14">
-                <Label x:Name="TitleLabel"
+                <Label FontFamily="{StaticResource HeadingFont}" x:Name="TitleLabel"
                        FontSize="16"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center"

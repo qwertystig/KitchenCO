@@ -227,6 +227,40 @@ public partial class AdminActiveOrdersViewModel : ObservableObject
         });
     }
 
+    /// <summary>
+    /// Single "Export" button → action sheet listing every document for the
+    /// filtered orders (same pattern as Companies > Delivery), instead of a
+    /// row of five near-identical buttons.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportAsync()
+    {
+        if (!await EnsureRowsAsync()) return;
+
+        const string prodPdf = "Production Sheet — PDF";
+        const string prodXlsx = "Production Sheet — Excel";
+        const string notesPdf = "Delivery Notes — PDF";
+        const string invPdf = "Invoices for these orders — PDF";
+        const string quickText = IsPrepViewActiveQuickTextLabel;
+
+        var choice = await AlertService.Instance.ShowActionSheetAsync(
+            $"Export\n{FilterLine()}", "Cancel",
+            prodPdf, prodXlsx, notesPdf, invPdf, quickText);
+
+        switch (choice)
+        {
+            case prodPdf: await DownloadProductionSheetPdfAsync(); break;
+            case prodXlsx: await DownloadProductionSheetExcelAsync(); break;
+            case notesPdf: await DownloadDeliveryNotesPdfAsync(); break;
+            case invPdf: await DownloadInvoicesPdfAsync(); break;
+            case quickText:
+                if (IsPrepViewActive) await PrintPrepSheetAsync(); else await PrintOrderSheetAsync();
+                break;
+        }
+    }
+
+    private const string IsPrepViewActiveQuickTextLabel = "Quick share as text";
+
     // ===================== Production sheet / delivery notes / invoices =====================
     // All three use the orders behind the current Company + Date filters (the
     // same rows the screen is showing), so "today's production sheet" is just

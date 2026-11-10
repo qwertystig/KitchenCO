@@ -62,7 +62,7 @@
 
         <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="16,0,16,12" VerticalOptions="Center"
               IsVisible="{Binding CurrentMenuType, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Static}">
-            <Label Grid.Column="0" 
+            <Label FontFamily="{StaticResource HeadingFont}" Grid.Column="0" 
                    Text="Menu Inventory" 
                    FontSize="18" 
                    FontAttributes="Bold" 

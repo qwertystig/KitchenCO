@@ -53,7 +53,7 @@
             </Grid>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Which day are you ordering for?"
+                <Label FontFamily="{StaticResource HeadingFont}" Text="Which day are you ordering for?"
                        FontSize="24"
                        FontAttributes="Bold"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />

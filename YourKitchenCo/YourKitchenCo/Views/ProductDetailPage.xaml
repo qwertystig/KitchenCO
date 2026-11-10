@@ -24,8 +24,8 @@
                            Aspect="AspectFill" />
                 </Border>
 
-                <Label Text="{Binding SelectedProduct.Name}" FontSize="24" FontAttributes="Bold" />
-                <Label Text="{Binding TotalPrice, StringFormat='R{0:F2}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" FontAttributes="Bold" />
+                <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding SelectedProduct.Name}" FontSize="24" FontAttributes="Bold" />
+                <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding TotalPrice, StringFormat='R{0:F2}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" FontAttributes="Bold" />
                 <Label Text="{Binding SelectedProduct.Description}" FontSize="14" TextColor="Gray" />
             </VerticalStackLayout>
 
@@ -44,12 +44,12 @@
 
             <!-- Delivery date picker -->
             <VerticalStackLayout Spacing="10">
-                <Label Text="Choose a delivery day" FontAttributes="Bold" FontSize="16" />
+                <Label FontFamily="{StaticResource HeadingFont}" Text="Choose a delivery day" FontAttributes="Bold" FontSize="16" />
 
                 <CollectionView ItemsSource="{Binding AvailableDeliveryDates}"
                                 SelectionMode="Single"
                                 SelectedItem="{Binding SelectedDeliveryDate, Mode=TwoWay}"
-                                HeightRequest="88">
+                                HeightRequest="52">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
@@ -58,8 +58,9 @@
                             <Border StrokeThickness="1"
                                     Stroke="{AppThemeBinding Light={StaticResource Gold}, Dark={StaticResource GoldDark}}"
                                     StrokeShape="RoundRectangle 10"
-                                    Padding="12,8"
-                                    WidthRequest="130">
+                                    Padding="14,0"
+                                    HeightRequest="44"
+                                    MinimumWidthRequest="104">
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroupList>
                                         <VisualStateGroup Name="CommonStates">
@@ -84,7 +85,7 @@
                                     </VisualStateGroupList>
                                 </VisualStateManager.VisualStateGroups>
 
-                                <VerticalStackLayout Spacing="2">
+                                <VerticalStackLayout Spacing="0" VerticalOptions="Center">
                                     <Label x:Name="DayLabel"
                                            Text="{Binding DisplayLabel}"
                                            FontSize="12"
@@ -94,7 +95,8 @@
                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                                     <Label x:Name="MealLabel"
                                            Text="{Binding CycleMenu.MainMeal}"
-                                           FontSize="10"
+                                           FontSize="9"
+                                           MaximumWidthRequest="140"
                                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                                            HorizontalTextAlignment="Center"
                                            LineBreakMode="TailTruncation"
@@ -115,7 +117,7 @@
                         <VerticalStackLayout Spacing="10">
 
                             <!-- Group Title (e.g., Extras, Spice Level) -->
-                            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" />
+                            <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding Title}" FontAttributes="Bold" FontSize="16" />
 
                             <!-- SINGLE-SELECT UI (Radio Buttons) -->
                             <!-- SingleSelectOptions is empty for multi-select groups, so no hidden RadioButtons get created for them (see CustomizationGroup.cs) -->
@@ -213,7 +215,7 @@
                  mentioning an allergy is still surfaced as a chef alert on the
                  order/invoice (see ProductDetailViewModel.AddToCart). -->
             <VerticalStackLayout Spacing="5">
-                <Label Text="Special Requests &amp; Allergy Notes" FontAttributes="Bold" FontSize="16" />
+                <Label FontFamily="{StaticResource HeadingFont}" Text="Special Requests &amp; Allergy Notes" FontAttributes="Bold" FontSize="16" />
                 <Label Text="Preferences, or anything the chef must know — e.g. no onions, severe nut allergy."
                        FontSize="12"
                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />

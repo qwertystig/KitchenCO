@@ -4,6 +4,16 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <!--
+        Brand typography. Body = Roboto Condensed. Headings = Playfair Display
+        Bold — the deck labels its heading font "Gotcha Gothic", but the deck's
+        own samples of it and the logo wordmark are rendered in Playfair Display,
+        so that is the approved look. Every heading label in the app references
+        this one key; change it here to re-font every heading at once.
+    -->
+    <x:String x:Key="HeadingFont">PlayfairDisplayBold</x:String>
+    <x:String x:Key="BodyFont">RobotoCondensed</x:String>
+
     <!-- Activity & Indicators -->
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
@@ -24,7 +34,7 @@
     <Style TargetType="Button">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontFamily" Value="RobotoCondensed"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="14,10"/>
@@ -56,12 +66,14 @@
 
     <!-- Inputs -->
     <Style TargetType="Entry">
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
     </Style>
 
     <Style TargetType="Editor">
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -70,20 +82,32 @@
     <!-- Labels -->
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
         <Setter Property="FontSize" Value="14" />
     </Style>
 
     <Style TargetType="Label" x:Key="Headline">
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="Label" x:Key="SubHeadline">
+        <Setter Property="FontFamily" Value="{StaticResource HeadingFont}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="SearchBar">
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
+    </Style>
+    <Style TargetType="Picker">
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
+    </Style>
+    <Style TargetType="DatePicker">
+        <Setter Property="FontFamily" Value="RobotoCondensed" />
     </Style>
 
     <!-- Shell, Page & Navigation -->

@@ -12,7 +12,7 @@
             <VerticalStackLayout Spacing="20">
 
                 <VerticalStackLayout Spacing="6" Margin="4,5,0,5">
-                    <Label Text="Need Assistance?" 
+                    <Label FontFamily="{StaticResource HeadingFont}" Text="Need Assistance?" 
                            FontSize="24" 
                            FontAttributes="Bold" 
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -31,7 +31,7 @@
                         <Label Text="✉️" 
                                FontSize="32" 
                                HorizontalOptions="Center" />
-                        <Label Text="Direct Email Support" 
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="Direct Email Support" 
                                FontAttributes="Bold" 
                                FontSize="16"
                                HorizontalOptions="Center"

@@ -20,7 +20,7 @@
                     StrokeThickness="0">
                 <VerticalStackLayout Spacing="14">
 
-                    <Label Text="Compose Broadcast" 
+                    <Label FontFamily="{StaticResource HeadingFont}" Text="Compose Broadcast" 
                            FontSize="18" 
                            FontAttributes="Bold" 
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -60,7 +60,7 @@
             </Border>
 
             <!-- Notification History Header -->
-            <Label Text="Sent History" 
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Sent History" 
                    FontSize="18" 
                    FontAttributes="Bold" 
                    Margin="0,10,0,0"

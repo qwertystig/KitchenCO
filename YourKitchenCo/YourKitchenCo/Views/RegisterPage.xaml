@@ -17,7 +17,7 @@
 
             <!-- Title Header -->
             <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                <Label Text="Create Account" 
+                <Label FontFamily="{StaticResource HeadingFont}" Text="Create Account" 
                        FontSize="28" 
                        FontAttributes="Bold" 
                        HorizontalOptions="Center"

@@ -9,23 +9,23 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBgLight}, Dark={StaticResource PageBgDark}}">
 
-    <Grid>
+    <Grid RowDefinitions="Auto, *">
     <!--
-        The product list used to be a plain ScrollView + nested
-        BindableLayout (non-virtualizing — it instantiated every category's
-        every dish view all at once). That was the root cause of the
-        app-wide freeze/ANR reported right after login: 40+ card views (each
-        with its own labels, converters, gesture recognizers, and a nested
-        FlexLayout for dietary tags) built synchronously on the main thread
-        the instant the dashboard populated. It's now a single grouped,
-        virtualized CollectionView — everything that isn't the product list
-        itself (logo, search, menu toggle, category slider, cutoff banner)
-        lives in its Header, so it still scrolls together as one unit, but
-        only the dish rows actually on/near screen get built.
+        Layout: two rows. Row 0 is a fixed, non-scrolling block — the themed
+        header band (logo, cart, search, date pill), the menu toggle, the
+        category slider and the cutoff banner — so everything down to
+        "Orders close at 9:00 AM…" stays locked in place. Row 1 is the
+        grouped, virtualized CollectionView of category banners + dish
+        cards, and it is the only thing that scrolls.
+
+        (History: the product list used to be a plain ScrollView + nested
+        BindableLayout, which built every dish view at once and froze the
+        app after login. It became a grouped CollectionView with the header
+        content living in CollectionView.Header; that header has now moved
+        out into its own pinned row, which keeps the virtualization — only
+        on/near-screen dish rows get built — while the top stays put.)
     -->
-    <CollectionView ItemsSource="{Binding GroupedProducts}" IsGrouped="True">
-        <CollectionView.Header>
-        <VerticalStackLayout>
+        <VerticalStackLayout Grid.Row="0">
 
             <!--
                 Themed header band: the logo row and the search/date row sit
@@ -195,7 +195,11 @@
                 </Grid>
             </Border>
 
-            <!-- 6. Category Slider — plain text, no icons, underline indicator on the active one -->
+            <!--
+                6. Category Slider — plain text, no icons, underline indicator on the active one.
+                Sits in the locked row, so it stays on screen however far the dish list is scrolled;
+                it scrolls sideways on its own (no chip is ever clipped off the edge).
+            -->
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,10">
                 <HorizontalStackLayout Spacing="22" Padding="16,0">
 
@@ -257,8 +261,8 @@
                 </HorizontalStackLayout>
             </ScrollView>
 
-            <!-- 7. Ordering / Cutoff Message -->
-            <Border Margin="16,0,16,14"
+            <!-- 7. Ordering / Cutoff Message — bottom edge of the locked block; the list scrolls beneath it -->
+            <Border Margin="16,0,16,6"
                     StrokeThickness="1"
                     Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                     StrokeShape="RoundRectangle 10"
@@ -270,7 +274,8 @@
             </Border>
 
         </VerticalStackLayout>
-        </CollectionView.Header>
+
+    <CollectionView Grid.Row="1" ItemsSource="{Binding GroupedProducts}" IsGrouped="True">
 
         <!-- Category hero banner — group header for that category's dishes below it -->
         <CollectionView.GroupHeaderTemplate>
@@ -282,7 +287,7 @@
                     <Grid>
                         <Image Source="{Binding Category.ImageUrl}" Aspect="AspectFill" />
                         <BoxView BackgroundColor="#8C000000" />
-                        <Label Text="{Binding Category.DisplayName}"
+                        <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding Category.DisplayName}"
                                FontSize="22"
                                FontAttributes="Bold"
                                TextColor="White"
@@ -315,7 +320,7 @@
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="14">
 
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="{Binding Name}"
+                            <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding Name}"
                                    FontAttributes="Bold"
                                    FontSize="16"
                                    LineBreakMode="TailTruncation"
@@ -365,7 +370,7 @@
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End" VerticalOptions="Center" MinimumWidthRequest="78">
-                            <Label Text="{Binding BasePrice, StringFormat='R {0:F2}'}"
+                            <Label FontFamily="{StaticResource HeadingFont}" Text="{Binding BasePrice, StringFormat='R {0:F2}'}"
                                    FontAttributes="Bold"
                                    FontSize="16"
                                    HorizontalOptions="End"
@@ -399,7 +404,8 @@
     </CollectionView>
 
         <!-- Floating cart bar — only shown once something's in the basket, sits above the bottom nav -->
-        <Border StrokeThickness="1"
+        <Border Grid.Row="0" Grid.RowSpan="2"
+                StrokeThickness="1"
                 Stroke="{AppThemeBinding Light=#66FFFFFF, Dark=#66000000}"
                 StrokeShape="RoundRectangle 20"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
@@ -438,6 +444,6 @@
         </Border>
 
         <!-- Change-delivery-day overlay — topmost, hidden until DayPicker.Open() is called. -->
-        <controls:DeliveryDayOverlay BindingContext="{Binding DayPicker}" />
+        <controls:DeliveryDayOverlay Grid.Row="0" Grid.RowSpan="2" BindingContext="{Binding DayPicker}" />
     </Grid>
 </ContentPage>

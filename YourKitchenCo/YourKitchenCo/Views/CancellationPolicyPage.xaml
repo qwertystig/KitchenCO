@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="18">
 
-            <Label Text="Cancellation &amp; Holiday Policy" FontSize="20" FontAttributes="Bold"
+            <Label FontFamily="{StaticResource HeadingFont}" Text="Cancellation &amp; Holiday Policy" FontSize="20" FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
 
             <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" StrokeShape="RoundRectangle 14" BackgroundColor="{AppThemeBinding Light={StaticResource CardBgLight}, Dark={StaticResource CardBgDark}}" Padding="16">
